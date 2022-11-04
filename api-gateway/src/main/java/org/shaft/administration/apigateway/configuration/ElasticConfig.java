@@ -1,5 +1,9 @@
 package org.shaft.administration.apigateway.configuration;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -16,11 +20,15 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import javax.net.ssl.SSLContext;
 
@@ -49,7 +57,7 @@ public class ElasticConfig {
             final SSLContext sslContext = sslBuilder.build();
             RestHighLevelClient client = new RestHighLevelClient(RestClient
                     //.builder(new HttpHost(host, port, "https")) // If elasticsearch is running with https
-                    .builder(new HttpHost(host, port))
+                    .builder(new HttpHost(host,port))
                     .setDefaultHeaders(compatibilityHeaders())
                     .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
                         @Override
@@ -76,7 +84,6 @@ public class ElasticConfig {
         }
     }
 
-
     @Bean
     public ElasticsearchOperations elasticsearchTemplate() {
         try {
@@ -85,6 +92,18 @@ public class ElasticConfig {
             throw new RuntimeException(e);
         }
     }
+
+    /*
+    @Bean
+    public ConfigurableServletWebServerFactory webServerFactory()
+    {
+        JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
+        factory.setPort(9000);
+        factory.setContextPath("/myapp");
+        factory.
+        factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
+        return factory;
+    }*/
 
     private Header[] compatibilityHeaders() {
         return new Header[]{

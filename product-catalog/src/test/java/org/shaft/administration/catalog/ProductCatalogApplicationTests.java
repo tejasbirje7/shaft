@@ -1,4 +1,4 @@
-package org.shaft.administration.productcatalog;
+package org.shaft.administration.catalog;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

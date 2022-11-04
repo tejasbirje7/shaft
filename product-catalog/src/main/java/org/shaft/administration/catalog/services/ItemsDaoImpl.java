@@ -1,9 +1,9 @@
-package org.shaft.administration.productcatalog.services;
+package org.shaft.administration.catalog.services;
 
 import com.google.common.collect.Lists;
-import org.shaft.administration.productcatalog.dao.ItemsDao;
-import org.shaft.administration.productcatalog.entity.Item;
-import org.shaft.administration.productcatalog.repositories.ItemsRepository;
+import org.shaft.administration.catalog.dao.ItemsDao;
+import org.shaft.administration.catalog.entity.Item;
+import org.shaft.administration.catalog.repositories.ItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,11 @@ public class ItemsDaoImpl implements ItemsDao {
 
     private ItemsRepository itemsRepository;
 
-    public static int ACCOUNT_ID;
+    public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
+
+    public static int getAccount() {
+        return ACCOUNT_ID.get();
+    }
 
     @Autowired
     public ItemsDaoImpl(ItemsRepository itemsRepository) {
@@ -24,20 +28,12 @@ public class ItemsDaoImpl implements ItemsDao {
 
     @Override
     public List<Item> getItems(int accountId) {
-        ACCOUNT_ID = accountId;
-        List<Item> items = new ArrayList<>();
+        ACCOUNT_ID.set(accountId);
         try {
-            items = Lists.newArrayList(itemsRepository.findAll());
+            return Lists.newArrayList(itemsRepository.findAll());
         } catch (Exception ex) {
             System.out.println("Exception "+ ex.getMessage());
+            return new ArrayList<>();
         }
-        return items;
-    }
-
-    public static void main(String[] args) {
-    }
-
-    public static int getAccount() {
-        return ACCOUNT_ID;
     }
 }

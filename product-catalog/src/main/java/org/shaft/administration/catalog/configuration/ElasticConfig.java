@@ -1,4 +1,4 @@
-package org.shaft.administration.productcatalog.configuration;
+package org.shaft.administration.catalog.configuration;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;

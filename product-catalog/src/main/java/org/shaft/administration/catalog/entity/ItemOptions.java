@@ -1,6 +1,4 @@
-package org.shaft.administration.productcatalog.entity;
-
-import org.springframework.data.elasticsearch.annotations.Field;
+package org.shaft.administration.catalog.entity;
 
 public class ItemOptions {
 

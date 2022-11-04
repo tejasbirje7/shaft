@@ -1,5 +1,6 @@
-package org.shaft.administration.apigateway.common;
+package org.shaft.administration.catalog.common;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -8,12 +9,12 @@ import java.util.Map;
 
 public final class ShaftResponseHandler {
 
-    public static ResponseEntity<Object> generateResponse(String message, String code, Object responseObj) {
+    public static ResponseEntity<Object> generateResponse(String message, String code, Object responseObj, HttpHeaders headers) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("message", message);
         map.put("code", code);
         map.put("data", responseObj);
-        return new ResponseEntity<Object>(map,HttpStatus.OK);
+        return new ResponseEntity<Object>(map,headers,HttpStatus.OK);
     }
     public static ResponseEntity<Object> generateResponse(String message, String code, Object responseObj,HttpStatus status) {
         Map<String, Object> map = new HashMap<String, Object>();

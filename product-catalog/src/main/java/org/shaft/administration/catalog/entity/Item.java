@@ -1,4 +1,4 @@
-package org.shaft.administration.productcatalog.entity;
+package org.shaft.administration.catalog.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -6,9 +6,8 @@ import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.util.List;
 
-@Document(indexName = "#{T(org.shaft.administration.productcatalog.services.ItemsDaoImpl).getAccount()}_items")
+@Document(indexName = "#{T(org.shaft.administration.catalog.services.ItemsDaoImpl).getAccount()}_items")
 public class Item {
-
     @Id
     private String id;
     @Field("name")
