@@ -1,7 +1,7 @@
 package org.shaft.administration.apigateway.services;
 
 import org.shaft.administration.apigateway.common.CacheStore;
-import org.shaft.administration.apigateway.dao.AppMappingService;
+import org.shaft.administration.apigateway.dao.AppMappingDAO;
 import org.shaft.administration.apigateway.entity.AppMapping;
 import org.shaft.administration.apigateway.repositories.AppMappingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class CacheAppMappingServiceImpl implements AppMappingService {
+public class CacheAppMappingDAOImpl implements AppMappingDAO {
     private AppMappingsRepository appMappingRepo;
     private AppMapping mappings;
     private CacheStore<AppMapping> mappingCache = new CacheStore<AppMapping>(86400, TimeUnit.SECONDS);

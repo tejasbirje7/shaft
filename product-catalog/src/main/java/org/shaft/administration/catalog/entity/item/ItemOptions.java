@@ -1,4 +1,4 @@
-package org.shaft.administration.catalog.entity;
+package org.shaft.administration.catalog.entity.item;
 
 public class ItemOptions {
 

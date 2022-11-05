@@ -1,8 +1,8 @@
 package org.shaft.administration.catalog.services;
 
 import com.google.common.collect.Lists;
-import org.shaft.administration.catalog.dao.CategoryDao;
-import org.shaft.administration.catalog.entity.Category;
+import org.shaft.administration.catalog.dao.CategoryDAO;
+import org.shaft.administration.catalog.entity.category.Category;
 import org.shaft.administration.catalog.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CategoryDaoImpl implements CategoryDao {
+public class CategoryDAOImpl implements CategoryDAO {
 
     private CategoryRepository categoryRepository;
 
@@ -26,6 +26,11 @@ public class CategoryDaoImpl implements CategoryDao {
         this.categoryRepository = categoryRepository;
     }
 
+    /**
+     * #TODO Implement Cache here
+     * @param accountId
+     * @return List
+     */
     @Override
     public List<Category> getCategories(int accountId) {
         ACCOUNT_ID.set(accountId);

@@ -2,7 +2,7 @@ package org.shaft.administration.apigateway.controllers;
 
 import org.shaft.administration.apigateway.common.ShaftResponseHandler;
 import org.shaft.administration.apigateway.entity.AppMapping;
-import org.shaft.administration.apigateway.dao.AppMappingService;
+import org.shaft.administration.apigateway.dao.AppMappingDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,12 +18,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/shaft")
 public class AppGateway {
-    private AppMappingService appMapping;
+    private AppMappingDAO appMapping;
     private RestTemplate httpFactory;
     HttpHeaders headers;
 
     @Autowired
-    public AppGateway(AppMappingService appMapping, RestTemplate httpFactory) {
+    public AppGateway(AppMappingDAO appMapping, RestTemplate httpFactory) {
         this.appMapping = appMapping;
         this.httpFactory = httpFactory;
     }

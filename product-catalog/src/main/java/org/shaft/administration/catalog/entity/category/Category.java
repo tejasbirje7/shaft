@@ -1,10 +1,10 @@
-package org.shaft.administration.catalog.entity;
+package org.shaft.administration.catalog.entity.category;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
-@Document(indexName = "#{T(org.shaft.administration.catalog.services.CategoryDaoImpl).getAccount()}_category")
+@Document(indexName = "#{T(org.shaft.administration.catalog.services.CategoryDAOImpl).getAccount()}_category")
 public class Category {
 
     @Id

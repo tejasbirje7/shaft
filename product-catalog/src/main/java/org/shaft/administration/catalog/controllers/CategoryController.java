@@ -1,10 +1,8 @@
 package org.shaft.administration.catalog.controllers;
 
 import org.shaft.administration.catalog.common.ShaftResponseHandler;
-import org.shaft.administration.catalog.dao.CategoryDao;
-import org.shaft.administration.catalog.dao.ItemsDao;
-import org.shaft.administration.catalog.entity.Category;
-import org.shaft.administration.catalog.entity.Item;
+import org.shaft.administration.catalog.dao.CategoryDAO;
+import org.shaft.administration.catalog.entity.category.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,7 +19,7 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryDao categoryDao;
+    private CategoryDAO categoryDao;
 
     @PostMapping("/category")
     public ResponseEntity<Object> handleShopRequest(@RequestHeader(value="account") int account) {
