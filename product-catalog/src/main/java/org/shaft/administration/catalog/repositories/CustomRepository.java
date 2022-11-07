@@ -1,9 +1,8 @@
-package org.shaft.administration.inventorymanagement.repositories;
+package org.shaft.administration.catalog.repositories;
 
-import com.google.common.collect.Lists;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.shaft.administration.inventorymanagement.entity.orders.Order;
+import org.shaft.administration.catalog.entity.item.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -11,7 +10,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,12 +22,13 @@ public class CustomRepository {
         this.elasticOperations = elasticOperations;
     }
 
-    public List<Order> getOrders(List<Integer> orderIds) {
+
+    public List<Item> getItems(List<String> itemIds) {
         QueryBuilder query = QueryBuilders.boolQuery()
-                .must(QueryBuilders.termsQuery("oid",orderIds));
+                .must(QueryBuilders.termsQuery("id.keyword",itemIds));
         NativeSearchQuery ns = new NativeSearchQueryBuilder().withQuery(query).build();
-        SearchHits<Order> hits = elasticOperations.search(ns, Order.class);
-        return (List<Order>)(List<?>) hits.stream().collect(Collectors.toList());
+        SearchHits<Item> hits = elasticOperations.search(ns, Item.class);
+        return (List<Item>)(List<?>) hits.stream().collect(Collectors.toList());
     }
 
 }

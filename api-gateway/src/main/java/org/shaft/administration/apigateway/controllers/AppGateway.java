@@ -29,7 +29,7 @@ public class AppGateway {
     }
 
     @PostMapping("shop/v1")
-    public ResponseEntity<String> handleShopRequest(
+    public ResponseEntity<ShaftResponseHandler> handleShopRequest(
             @RequestHeader(value="operation-type") String operationType,
             @RequestHeader(value="user",required = false) String user,
             @RequestHeader(value="i",required = false) String i,
@@ -46,7 +46,7 @@ public class AppGateway {
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
 
         // Invoke service according to mappings
-        ResponseEntity<String> resp = httpFactory.exchange("http://localhost:8081/catalog/category", HttpMethod.POST,entity,String.class);
+        ResponseEntity<ShaftResponseHandler> resp = httpFactory.exchange("http://localhost:8081/catalog/category", HttpMethod.POST,entity,ShaftResponseHandler.class);
 
         // Return response from microservice
         return resp;

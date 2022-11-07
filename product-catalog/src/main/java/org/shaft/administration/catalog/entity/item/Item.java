@@ -1,14 +1,19 @@
 package org.shaft.administration.catalog.entity.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.util.List;
+import java.util.UUID;
 
 @Document(indexName = "#{T(org.shaft.administration.catalog.services.ItemsDAOImpl).getAccount()}_items")
 public class Item {
     @Id
+    private String _id = UUID.randomUUID().toString();
+    @Field("id")
+    @JsonIgnore
     private String id;
     @Field("name")
     private String name;
@@ -36,7 +41,6 @@ public class Item {
     public String get_id() {
         return id;
     }
-
     public void set_id(String _id) {
         this.id = _id;
     }
@@ -129,10 +133,19 @@ public class Item {
         this.quantity = quantity;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Item{" +
-                "_id='" + id + '\'' +
+                "_id='" + _id + '\'' +
+                ", id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", detail='" + detail + '\'' +
