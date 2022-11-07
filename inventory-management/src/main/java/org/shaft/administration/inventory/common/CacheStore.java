@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement.common;
+package org.shaft.administration.inventory.common;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

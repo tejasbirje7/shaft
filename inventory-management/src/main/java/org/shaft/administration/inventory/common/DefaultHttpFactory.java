@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement.common;
+package org.shaft.administration.inventory.common;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;

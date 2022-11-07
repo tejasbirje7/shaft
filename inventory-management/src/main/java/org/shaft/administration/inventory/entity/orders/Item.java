@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement.entity.orders;
+package org.shaft.administration.inventory.entity.orders;
 
 public class Item {
     private String id;

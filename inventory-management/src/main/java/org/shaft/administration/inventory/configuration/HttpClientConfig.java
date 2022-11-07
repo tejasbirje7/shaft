@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement.configuration;
+package org.shaft.administration.inventory.configuration;
 
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;

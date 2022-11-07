@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement.entity.orders;
+package org.shaft.administration.inventory.entity.orders;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -6,7 +6,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.util.List;
 
-@Document(indexName = "1600_orders")
+@Document(indexName = "#{T(org.shaft.administration.inventory.services.OrdersDAOImpl).getAccount()}_orders")
 public class Order {
     @Id
     private int oid;

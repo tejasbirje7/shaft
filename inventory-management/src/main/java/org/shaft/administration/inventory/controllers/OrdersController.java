@@ -1,15 +1,12 @@
-package org.shaft.administration.inventorymanagement.controllers;
+package org.shaft.administration.inventory.controllers;
 
-import org.shaft.administration.inventorymanagement.common.ShaftResponseHandler;
-import org.shaft.administration.inventorymanagement.dao.OrdersDao;
+import org.shaft.administration.inventory.common.ShaftResponseHandler;
+import org.shaft.administration.inventory.dao.OrdersDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,8 +17,8 @@ public class OrdersController {
     @Autowired
     OrdersDao ordersDao;
 
-    @PostMapping("/orders")
-    public ResponseEntity<Object> handleShopRequest(@RequestHeader(value="account") int account,
+    @GetMapping("/orders")
+    public ResponseEntity<Object> getOrders(@RequestHeader(value="account") int account,
                                                     @RequestHeader(value="i") int i) {
         List<Object> orders = ordersDao.getOrdersForI(account, i);
         HttpHeaders headers = new HttpHeaders();

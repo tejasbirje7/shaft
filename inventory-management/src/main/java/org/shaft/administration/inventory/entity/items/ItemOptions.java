@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement.entity.items;
+package org.shaft.administration.inventory.entity.items;
 
 public class ItemOptions {
 

@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement.common;
+package org.shaft.administration.inventory.common;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

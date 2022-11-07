@@ -27,7 +27,7 @@ public class ItemsController {
      * @return
      */
     @GetMapping ("/items")
-    public ResponseEntity<Object> handleShopRequest(@RequestHeader(value="account") int account) {
+    public ResponseEntity<Object> getItems(@RequestHeader(value="account") int account) {
         List<Item> items = itemsDao.getItems(account);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

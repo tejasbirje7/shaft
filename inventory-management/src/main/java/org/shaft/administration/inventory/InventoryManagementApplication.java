@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement;
+package org.shaft.administration.inventory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

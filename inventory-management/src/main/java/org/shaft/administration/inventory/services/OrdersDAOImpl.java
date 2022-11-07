@@ -1,15 +1,13 @@
-package org.shaft.administration.inventorymanagement.services;
+package org.shaft.administration.inventory.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-import org.shaft.administration.inventorymanagement.common.ShaftResponseHandler;
-import org.shaft.administration.inventorymanagement.dao.OrdersDao;
-import org.shaft.administration.inventorymanagement.entity.orders.Item;
-import org.shaft.administration.inventorymanagement.entity.orders.Order;
-import org.shaft.administration.inventorymanagement.repositories.CustomRepository;
-import org.shaft.administration.inventorymanagement.repositories.OrdersRepository;
+import org.shaft.administration.inventory.common.ShaftResponseHandler;
+import org.shaft.administration.inventory.dao.OrdersDao;
+import org.shaft.administration.inventory.entity.orders.Item;
+import org.shaft.administration.inventory.entity.orders.Order;
+import org.shaft.administration.inventory.repositories.CustomRepository;
+import org.shaft.administration.inventory.repositories.OrdersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +27,10 @@ public class OrdersDAOImpl implements OrdersDao {
     private RestTemplate httpFactory;
     private HttpHeaders httpHeaders;
     private ObjectMapper objectMapper = new ObjectMapper();
+    public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
+    public static int getAccount() {
+        return ACCOUNT_ID.get();
+    }
 
     @Autowired
     public OrdersDAOImpl(OrdersRepository ordersRepository, CustomRepository customRepository, RestTemplate httpFactory) {
@@ -39,6 +41,9 @@ public class OrdersDAOImpl implements OrdersDao {
 
     @Override
     public List<Object> getOrdersForI(int accountId, int i) {
+
+        ACCOUNT_ID.set(accountId);
+
         // Get Orders
         List<Order> orders = ordersRepository.findByI(i);
         List<String> iTemIds = orders.stream()

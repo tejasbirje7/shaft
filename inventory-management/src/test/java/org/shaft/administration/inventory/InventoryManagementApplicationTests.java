@@ -1,4 +1,4 @@
-package org.shaft.administration.inventorymanagement;
+package org.shaft.administration.inventory;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

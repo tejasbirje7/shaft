@@ -3,6 +3,7 @@ package org.shaft.administration.apigateway.controllers;
 import org.shaft.administration.apigateway.common.ShaftResponseHandler;
 import org.shaft.administration.apigateway.entity.AppMapping;
 import org.shaft.administration.apigateway.dao.AppMappingDAO;
+import org.shaft.administration.apigateway.entity.Routes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,15 +39,33 @@ public class AppGateway {
 
         // Get Mappings from cache
         AppMapping mapping = appMapping.getMappings();
-        Map<String,Object> routes = (Map<String, Object>) mapping.getRoutes().get(operationType);
+        Routes routes = mapping.getRoutes().get(operationType);
 
         // Configure HTTP Request
         headers = new HttpHeaders();
         headers.set("account",account);
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
 
+        // Identify service to invoke
+        String path = routes.getPath().split("/")[1];
+        String host = "";
+        switch (path) {
+            case "catalog":
+                host = mapping.getCatalog();
+                break;
+            case "inventory":
+                host = mapping.getInventory();
+                break;
+        }
+        HttpMethod httpMethod = routes.getMethod().equals("GET") ? HttpMethod.GET : HttpMethod.POST;
+
+        // Respond with failure if host or method is empty
+        if(host.isEmpty() || httpMethod == null) {
+           // #TODO Response with failure if host is empty
+        }
+
         // Invoke service according to mappings
-        ResponseEntity<ShaftResponseHandler> resp = httpFactory.exchange("http://localhost:8081/catalog/category", HttpMethod.POST,entity,ShaftResponseHandler.class);
+        ResponseEntity<ShaftResponseHandler> resp = httpFactory.exchange(host + routes.getPath(), httpMethod,entity,ShaftResponseHandler.class);
 
         // Return response from microservice
         return resp;
@@ -59,16 +78,4 @@ public class AppGateway {
 
         return response;
     }
-
-
-//
-//    public static void main(String[] args) {
-//        String route = "getItems";
-//        Map<String,Object> routes = new HashMap<>();
-//        routes.put("port",9200);
-//        Map<String,Object> o = new HashMap<>();
-//        o.put(route,routes);
-//
-//        System.out.println(o.get(route));
-//    }
 }
