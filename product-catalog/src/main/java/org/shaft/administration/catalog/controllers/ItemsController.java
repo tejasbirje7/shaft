@@ -26,17 +26,18 @@ public class ItemsController {
      * @param account
      * @return
      */
-    @GetMapping ("/items")
-    public ResponseEntity<Object> getItems(@RequestHeader(value="account") int account) {
-        List<Item> items = itemsDao.getItems(account);
+    @RequestMapping(value = "/items", method = { RequestMethod.GET, RequestMethod.POST })
+    public ResponseEntity<Object> getItems(@RequestHeader(value="account") int account,
+                                           @RequestBody(required = false) Map<String,Object> body) {
+        List<Item> items = itemsDao.getItems(account,body);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S78gsd8v",items,headers);
     }
 
-    @PostMapping("/items/bulk")
+    @RequestMapping(value = "/items/bulk", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getBulkItems(@RequestHeader(value="account") int account,
-                                                  @RequestBody Map<String,Object> body) {
+                                               @RequestBody(required = false) Map<String,Object> body) {
         List<Item> items = itemsDao.getBulkItems(account,body);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

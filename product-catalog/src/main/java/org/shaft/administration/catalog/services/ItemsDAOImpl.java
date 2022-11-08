@@ -37,24 +37,32 @@ public class ItemsDAOImpl implements ItemsDAO {
      * @return List
      */
     @Override
-    public List<Item> getItems(int accountId) {
+    public List<Item> getItems(int accountId, Map<String,Object> body) {
         ACCOUNT_ID.set(accountId);
         try {
-            return Lists.newArrayList(itemsRepository.findAll());
+            if (body!=null && body.containsKey("fields")) {
+                String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
+                return customRepository.getItemsWithSource(fields);
+            } else {
+                return Lists.newArrayList(itemsRepository.findAll());
+            }
         } catch (Exception ex) {
             System.out.println("Exception "+ ex.getMessage());
             return new ArrayList<>();
         }
     }
 
-    // #TODO Get one more parameter from request with name field so that only required fields will be fetched from database
     @Override
     public List<Item> getBulkItems(int accountId, Map<String,Object> body) {
         ACCOUNT_ID.set(accountId);
         try {
             List<String> itemIds = (List<String>) body.get("items");
-            return Lists.newArrayList(itemsRepository.findByIdIn(itemIds));
-            //return customRepository.getItems(itemIds);
+            if (body!=null && body.containsKey("fields")) {
+                String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
+                return customRepository.getItemsWithSource(itemIds,fields);
+            } else {
+                return Lists.newArrayList(itemsRepository.findByIdIn(itemIds));
+            }
         } catch (Exception ex) {
             System.out.println("Exception "+ex.getMessage());
             return new ArrayList<>();

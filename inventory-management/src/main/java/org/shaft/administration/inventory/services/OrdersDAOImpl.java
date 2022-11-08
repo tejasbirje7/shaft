@@ -55,6 +55,7 @@ public class OrdersDAOImpl implements OrdersDao {
         // Invoke catalog API to get more information about items in orders
         Map<String,Object> request = new HashMap<>();
         request.put("items",iTemIds);
+        request.put("fields",new String[]{"id","name","description","category","gallery"});
         httpHeaders = new HttpHeaders();
         httpHeaders.set("account",String.valueOf(accountId));
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,httpHeaders);
@@ -62,7 +63,9 @@ public class OrdersDAOImpl implements OrdersDao {
         
         // Invoke API and parse response
         try {
-            ResponseEntity<ShaftResponseHandler> response = httpFactory.exchange("http://localhost:8081/catalog/items/bulk", HttpMethod.POST,entity,ShaftResponseHandler.class);
+            ResponseEntity<ShaftResponseHandler> response = httpFactory.exchange(
+                    "http://localhost:8081/catalog/items/bulk",
+                    HttpMethod.POST,entity,ShaftResponseHandler.class);
             items = (List<Object>) response.getBody().getData();
         } catch (Exception ex){
             System.out.println(ex.getMessage());
@@ -92,23 +95,27 @@ public class OrdersDAOImpl implements OrdersDao {
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+        } finally {
+            ACCOUNT_ID.remove();
         }
         
         return response;
     }
 
-    /*
     @Override
-    public List<Order> getOrders(int accountId, int i) {
+    public boolean saveOrders(int accountId, Map<String,Object> order) {
+        ACCOUNT_ID.set(accountId);
+        // Validate request body by parsing
+        Order o = (Order) order;
+        // Insert into database order
         try {
-            ArrayList<Integer> arr = new ArrayList<>();
-            arr.add(1656863920);
-            //arr.add(1656863920);
-            List<Order> o = customRepository.getOrders(arr);
-            return o;
-        } catch (Exception ex){
-            System.out.println(ex.getMessage());
+            ordersRepository.save(o);
+            // #TODO Remove orders from cart
+        } catch (Exception ex) {
+            return false;
+        } finally {
+            ACCOUNT_ID.remove();
         }
-        return null;
-    }*/
+        return true;
+    }
 }

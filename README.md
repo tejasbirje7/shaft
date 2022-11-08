@@ -32,4 +32,4 @@ Payment Management: This is responsible for processing payment and fraud trackin
 Inventory Management: This is responsible for keep tracking of back orders and pre-orders.
 Track Management: This is responsible for keep track of shipment and notifying of orders via push notifications, SMS and email.
 Reporting Management: This is responsible for web analytics, business intelligence, product sales reports and many more.
-Marketing Engine: This is responsible for personalised marketing and management of recommending products.
+Marketing Engine: This is responsible for personalised marketing and management of recommending productsInCarts.

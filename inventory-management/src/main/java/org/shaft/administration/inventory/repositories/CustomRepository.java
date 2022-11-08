@@ -25,7 +25,10 @@ public class CustomRepository {
     public List<Order> getOrders(List<Integer> orderIds) {
         QueryBuilder query = QueryBuilders.boolQuery()
                 .must(QueryBuilders.termsQuery("oid",orderIds));
-        NativeSearchQuery ns = new NativeSearchQueryBuilder().withQuery(query).build();
+        NativeSearchQuery ns = new NativeSearchQueryBuilder()
+                .withQuery(query)
+                .withFields()
+                .build();
         SearchHits<Order> hits = elasticOperations.search(ns, Order.class);
         return (List<Order>)(List<?>) hits.stream().collect(Collectors.toList());
     }

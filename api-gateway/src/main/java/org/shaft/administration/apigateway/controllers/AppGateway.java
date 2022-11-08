@@ -13,14 +13,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/shaft")
 public class AppGateway {
-    private AppMappingDAO appMapping;
-    private RestTemplate httpFactory;
+    private final AppMappingDAO appMapping;
+    private final RestTemplate httpFactory;
     HttpHeaders headers;
 
     @Autowired
@@ -29,22 +31,19 @@ public class AppGateway {
         this.httpFactory = httpFactory;
     }
 
-    @PostMapping("shop/v1")
+    // #TODO Add try..catch for this method with appropriate responses
+    @RequestMapping(value = "/shop/v1", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<ShaftResponseHandler> handleShopRequest(
             @RequestHeader(value="operation-type") String operationType,
             @RequestHeader(value="user",required = false) String user,
             @RequestHeader(value="i",required = false) String i,
             @RequestHeader(value="account") String account,
-            @RequestBody Map<String,Object> request) {
+            @RequestBody(required = false) Map<String,Object> request) {
 
         // Get Mappings from cache
         AppMapping mapping = appMapping.getMappings();
         Routes routes = mapping.getRoutes().get(operationType);
 
-        // Configure HTTP Request
-        headers = new HttpHeaders();
-        headers.set("account",account);
-        HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
 
         // Identify service to invoke
         String path = routes.getPath().split("/")[1];
@@ -63,6 +62,12 @@ public class AppGateway {
         if(host.isEmpty() || httpMethod == null) {
            // #TODO Response with failure if host is empty
         }
+
+        // Configure HTTP Request
+        headers = new HttpHeaders();
+        headers.set("account",account);
+
+        HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
 
         // Invoke service according to mappings
         ResponseEntity<ShaftResponseHandler> resp = httpFactory.exchange(host + routes.getPath(), httpMethod,entity,ShaftResponseHandler.class);
