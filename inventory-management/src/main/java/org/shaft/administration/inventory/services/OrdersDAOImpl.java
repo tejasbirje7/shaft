@@ -107,10 +107,26 @@ public class OrdersDAOImpl implements OrdersDao {
         ACCOUNT_ID.set(accountId);
         // Validate request body by parsing
         Order o = (Order) order;
-        // Insert into database order
         try {
+            // Insert order to database
             ordersRepository.save(o);
-            // #TODO Remove orders from cart
+
+            // Remove orders from cart
+            Map<String,Object> request = new HashMap<>();
+            httpHeaders = new HttpHeaders();
+            httpHeaders.set("account",String.valueOf(accountId));
+            httpHeaders.set("i",String.valueOf(o.getI()));
+            HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,httpHeaders);
+
+            // Invoke API and parse response
+            try {
+                ResponseEntity<ShaftResponseHandler> response = httpFactory.exchange(
+                        "http://localhost:8083/cart/empty",
+                        HttpMethod.POST,entity,ShaftResponseHandler.class);
+                ShaftResponseHandler data = response.getBody();
+            } catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
         } catch (Exception ex) {
             return false;
         } finally {
