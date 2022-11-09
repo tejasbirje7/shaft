@@ -12,7 +12,7 @@
 	<artifactId>reporting-management</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Reporting Management</name>
-	<description>This is responsible for web analytics, business intelligence, product sales reports and many more.</description>
+	<description>This is responsible for web analytics, business intelligence, products sales reports and many more.</description>
 	<properties>
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>

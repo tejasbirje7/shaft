@@ -9,10 +9,7 @@ import org.shaft.administration.inventory.entity.orders.Order;
 import org.shaft.administration.inventory.repositories.CustomRepository;
 import org.shaft.administration.inventory.repositories.OrdersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -105,24 +102,26 @@ public class OrdersDAOImpl implements OrdersDao {
     @Override
     public boolean saveOrders(int accountId, Map<String,Object> order) {
         ACCOUNT_ID.set(accountId);
+
         // Validate request body by parsing
-        Order o = (Order) order;
+        //Order o = (Order) order;
+        Order o = objectMapper.convertValue(order,Order.class);
         try {
             // Insert order to database
             ordersRepository.save(o);
 
             // Remove orders from cart
-            Map<String,Object> request = new HashMap<>();
             httpHeaders = new HttpHeaders();
             httpHeaders.set("account",String.valueOf(accountId));
             httpHeaders.set("i",String.valueOf(o.getI()));
-            HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,httpHeaders);
+            httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+            HttpEntity<ShaftResponseHandler> entity = new HttpEntity<ShaftResponseHandler>(httpHeaders);
 
             // Invoke API and parse response
             try {
                 ResponseEntity<ShaftResponseHandler> response = httpFactory.exchange(
                         "http://localhost:8083/cart/empty",
-                        HttpMethod.POST,entity,ShaftResponseHandler.class);
+                        HttpMethod.GET,entity,ShaftResponseHandler.class);
                 ShaftResponseHandler data = response.getBody();
             } catch (Exception ex){
                 System.out.println(ex.getMessage());

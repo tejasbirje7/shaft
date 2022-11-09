@@ -21,7 +21,7 @@
 		<module>marketing-engine</module>
 		<module>order</module>
 		<module>payment-management</module>
-		<module>product-catalog</module>
+		<module>products-catalog</module>
 		<module>reporting-management</module>
 		<module>track-management</module>
 		<module>user-management</module>

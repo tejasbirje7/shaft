@@ -11,7 +11,7 @@ public class Cart {
     @Id
     private String _id = UUID.randomUUID().toString();
     private int i;
-    private List<ProductsInCart> productsInCarts;
+    private List<Products> products;
 
     public int getI() {
         return i;
@@ -21,19 +21,19 @@ public class Cart {
         this.i = i;
     }
 
-    public List<ProductsInCart> getProducts() {
-        return productsInCarts;
+    public List<Products> getProducts() {
+        return products;
     }
 
-    public void setProducts(List<ProductsInCart> productsInCarts) {
-        this.productsInCarts = productsInCarts;
+    public void setProducts(List<Products> products) {
+        this.products = products;
     }
 
     @Override
     public String toString() {
         return "Cart{" +
                 "i=" + i +
-                ", productsInCarts=" + productsInCarts +
+                ", products=" + products +
                 '}';
     }
 }

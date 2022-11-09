@@ -4,7 +4,7 @@ public class PaymentInfo {
     private String holderName;
     private long cardNumber;
     private String expiredDate;
-    private int cvv;
+    private int cvc;
 
     public String getHolderName() {
         return holderName;
@@ -30,12 +30,12 @@ public class PaymentInfo {
         this.expiredDate = expiredDate;
     }
 
-    public int getCvv() {
-        return cvv;
+    public int getCvc() {
+        return cvc;
     }
 
-    public void setCvv(int cvv) {
-        this.cvv = cvv;
+    public void setCvc(int cvc) {
+        this.cvc = cvc;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PaymentInfo {
                 "holderName='" + holderName + '\'' +
                 ", cardNumber=" + cardNumber +
                 ", expiredDate='" + expiredDate + '\'' +
-                ", cvv=" + cvv +
+                ", cvc=" + cvc +
                 '}';
     }
 }

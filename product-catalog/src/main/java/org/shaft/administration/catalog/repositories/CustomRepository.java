@@ -1,17 +1,16 @@
 package org.shaft.administration.catalog.repositories;
 
+import co.elastic.clients.elasticsearch.core.UpdateByQueryRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.UpdateByQueryRequestBuilder;
 import org.shaft.administration.catalog.entity.item.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SourceFilter;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
