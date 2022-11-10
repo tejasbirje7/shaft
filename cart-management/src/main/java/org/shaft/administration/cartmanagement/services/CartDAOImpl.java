@@ -3,12 +3,14 @@ package org.shaft.administration.cartmanagement.services;
 import com.google.common.collect.Lists;
 import org.shaft.administration.cartmanagement.dao.CartDao;
 import org.shaft.administration.cartmanagement.entity.Cart;
+import org.shaft.administration.cartmanagement.entity.Products;
 import org.shaft.administration.cartmanagement.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CartDAOImpl implements CartDao {
@@ -44,6 +46,19 @@ public class CartDAOImpl implements CartDao {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             return new ArrayList<>();
+        } finally {
+            ACCOUNT_ID.remove();
         }
+    }
+
+    @Override
+    public Map<String, Object> updateCartProducts(int accountId, int i, List<Products> products) {
+        ACCOUNT_ID.set(i);
+        try {
+            Long updated = cartRepository.updateCartProducts(i,products);
+        } catch (Exception ex) {
+
+        }
+        return null;
     }
 }

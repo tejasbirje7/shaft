@@ -1,8 +1,7 @@
 package org.shaft.administration.inventory.controllers;
 
-import org.shaft.administration.inventory.common.ShaftResponseHandler;
 import org.shaft.administration.inventory.dao.OrdersDao;
-import org.shaft.administration.inventory.entity.orders.Order;
+import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

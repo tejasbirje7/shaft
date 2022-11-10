@@ -1,7 +1,7 @@
 package org.shaft.administration.cartmanagement.controllers;
 
-import org.shaft.administration.cartmanagement.common.ShaftResponseHandler;
 import org.shaft.administration.cartmanagement.dao.CartDao;
+import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

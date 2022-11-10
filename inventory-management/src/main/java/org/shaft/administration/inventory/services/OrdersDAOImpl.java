@@ -2,7 +2,6 @@ package org.shaft.administration.inventory.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.shaft.administration.inventory.common.ShaftResponseHandler;
 import org.shaft.administration.inventory.dao.OrdersDao;
 import org.shaft.administration.inventory.entity.orders.Item;
 import org.shaft.administration.inventory.entity.orders.Order;

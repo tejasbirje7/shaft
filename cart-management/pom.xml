@@ -73,7 +73,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.shaft.administration</groupId>
+            <artifactId>obligatory-services</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 	<dependencyManagement>
 		<dependencies>

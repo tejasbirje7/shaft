@@ -60,6 +60,11 @@
 			<version>28.2-android</version>
 		</dependency>
 		<dependency>
+			<groupId>org.shaft.administration</groupId>
+			<artifactId>obligatory-services</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>

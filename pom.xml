@@ -14,24 +14,16 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<modules>
+		<module>obligatory-services</module>
 		<module>api-gateway</module>
 		<module>cart-management</module>
 		<module>customer-management</module>
 		<module>inventory-management</module>
 		<module>marketing-engine</module>
-		<module>order</module>
 		<module>payment-management</module>
 		<module>products-catalog</module>
 		<module>reporting-management</module>
 		<module>track-management</module>
 		<module>user-management</module>
 	</modules>
-<!--	<build>-->
-<!--		<plugins>-->
-<!--			<plugin>-->
-<!--				<groupId>org.springframework.boot</groupId>-->
-<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--			</plugin>-->
-<!--		</plugins>-->
-<!--	</build>-->
 </project>

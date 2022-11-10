@@ -1,9 +1,9 @@
 package org.shaft.administration.apigateway.controllers;
 
-import org.shaft.administration.apigateway.common.ShaftResponseHandler;
 import org.shaft.administration.apigateway.entity.AppMapping;
 import org.shaft.administration.apigateway.dao.AppMappingDAO;
 import org.shaft.administration.apigateway.entity.Routes;
+import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
