@@ -1,6 +1,6 @@
 package org.shaft.administration.cartmanagement.repositories.custom;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -8,9 +8,6 @@ import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
-import org.shaft.administration.cartmanagement.entity.Product;
-import org.shaft.administration.cartmanagement.entity.Products;
-import org.shaft.administration.cartmanagement.repositories.custom.CartCustomRepository;
 import org.shaft.administration.cartmanagement.services.CartDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -31,25 +28,43 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
     }
 
     @Override
-    public Long updateCartProducts(int i,List<Products> products) {
-        UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(String.valueOf(CartDAOImpl.getAccount()) + "_cart");
+    public Long addProductToCart(int i,Map<String,Object> product) {
+        String index = CartDAOImpl.getAccount() + "_cart";
+        UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
+
         updateRequest.setConflicts("proceed");
         updateRequest.setQuery(QueryBuilders
                 .boolQuery()
                 .must(QueryBuilders
                         .termQuery("i",i)));
-        Map<String,Object> params = new HashMap<>();
-        params.put("products", params.toString());
-        updateRequest.setScript(new Script(ScriptType.INLINE,
-                "painless", "ctx._source.products.add(" + params.get("products") +")",
-                params));
+        updateRequest.setScript(prepareProductsUpdateScript(product));
         updateRequest.setRefresh(true);
         try {
             BulkByScrollResponse bulkResponse = esClient.updateByQuery(updateRequest, RequestOptions.DEFAULT);
             return bulkResponse.getTotal();
+            /*
+            TimeValue timeTaken = bulkResponse.getTook();
+            log.info("[ELASTICSEARCH_SERVICE] [UPDATE_EXPIRATION_DATE] [TOTAL_UPDATED_DOCS: {}] [TOTAL_DURATION: {}]", totalDocs, timeTaken.getMillis()); */
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return 0L;
+    }
+
+    private Script prepareProductsUpdateScript(Map<String,Object> product) {
+        String scriptStr = "ctx._source.products = params.get(\"product\")";
+        Map<String,Object> params = new HashMap<>();
+        params.put("product", product);
+        return new Script(ScriptType.INLINE, "painless", scriptStr, params);
+    }
+
+    // https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-document-update.html
+    public Long updateCart(int i, List<Object> products) {
+        String index = CartDAOImpl.getAccount() + "_cart";
+        UpdateRequest req = new UpdateRequest(index,"");
+        Map<String,Object> params = new HashMap<>();
+        params.put("products",products);
+        req.docAsUpsert(true).doc(params);
         return 0L;
     }
 }

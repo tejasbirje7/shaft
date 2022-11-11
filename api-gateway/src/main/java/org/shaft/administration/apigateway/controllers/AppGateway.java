@@ -1,5 +1,6 @@
 package org.shaft.administration.apigateway.controllers;
 
+import org.shaft.administration.apigateway.dao.FingerPrintingDAO;
 import org.shaft.administration.apigateway.entity.AppMapping;
 import org.shaft.administration.apigateway.dao.AppMappingDAO;
 import org.shaft.administration.apigateway.entity.Routes;
@@ -20,12 +21,14 @@ import java.util.Map;
 @RequestMapping("/shaft")
 public class AppGateway {
     private final AppMappingDAO appMapping;
+    private final FingerPrintingDAO fingerprintingDAO;
     private final RestTemplate httpFactory;
     HttpHeaders headers;
 
     @Autowired
-    public AppGateway(AppMappingDAO appMapping, RestTemplate httpFactory) {
+    public AppGateway(AppMappingDAO appMapping, FingerPrintingDAO fingerprintingDAO, RestTemplate httpFactory) {
         this.appMapping = appMapping;
+        this.fingerprintingDAO = fingerprintingDAO;
         this.httpFactory = httpFactory;
     }
 
@@ -33,10 +36,13 @@ public class AppGateway {
     @RequestMapping(value = "/shop/v1", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<ShaftResponseHandler> handleShopRequest(
             @RequestHeader(value="operation-type") String operationType,
+            @RequestHeader(value="account") String account,
             @RequestHeader(value="user",required = false) String user,
             @RequestHeader(value="i",required = false) String i,
-            @RequestHeader(value="account") String account,
             @RequestBody(required = false) Map<String,Object> request) {
+
+        // Do fingerprinting tracking
+        fingerprintingDAO.checkIdentity(request);
 
         // Get Mappings from cache
         AppMapping mapping = appMapping.getMappings();
@@ -53,6 +59,8 @@ public class AppGateway {
             case "inventory":
                 host = mapping.getInventory();
                 break;
+            case "cart":
+                host = mapping.getCart();
         }
         HttpMethod httpMethod = routes.getMethod().equals("GET") ? HttpMethod.GET : HttpMethod.POST;
 

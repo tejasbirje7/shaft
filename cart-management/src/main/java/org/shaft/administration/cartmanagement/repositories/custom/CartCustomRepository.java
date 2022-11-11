@@ -1,9 +1,7 @@
 package org.shaft.administration.cartmanagement.repositories.custom;
 
-import org.shaft.administration.cartmanagement.entity.Products;
-
-import java.util.List;
+import java.util.Map;
 
 public interface CartCustomRepository {
-    Long updateCartProducts(int i, List<Products> products);
+    Long addProductToCart(int i, Map<String,Object> product);
 }

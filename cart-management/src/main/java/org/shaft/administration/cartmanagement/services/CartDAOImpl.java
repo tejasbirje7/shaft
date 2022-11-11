@@ -1,14 +1,17 @@
 package org.shaft.administration.cartmanagement.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.shaft.administration.cartmanagement.dao.CartDao;
 import org.shaft.administration.cartmanagement.entity.Cart;
+import org.shaft.administration.cartmanagement.entity.Product;
 import org.shaft.administration.cartmanagement.entity.Products;
 import org.shaft.administration.cartmanagement.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +19,7 @@ import java.util.Map;
 public class CartDAOImpl implements CartDao {
 
     private CartRepository cartRepository;
+    private ObjectMapper objectMapper = new ObjectMapper();
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
     public static int getAccount() {
         return ACCOUNT_ID.get();
@@ -39,7 +43,7 @@ public class CartDAOImpl implements CartDao {
     }
 
     @Override
-    public List<Cart> getCartItemsForI(int accountId, int i) {
+    public List<Cart> getCartProductsForI(int accountId, int i) {
         ACCOUNT_ID.set(accountId);
         try {
             return Lists.newArrayList(cartRepository.findByI(i));
@@ -52,13 +56,33 @@ public class CartDAOImpl implements CartDao {
     }
 
     @Override
-    public Map<String, Object> updateCartProducts(int accountId, int i, List<Products> products) {
-        ACCOUNT_ID.set(i);
+    public Map<String, Object> updateCartProducts(int accountId, int i, Map<String,Object> product) {
+        ACCOUNT_ID.set(accountId);
+        // #TODO Check here if already there's cart for the `i` and call saveCartItems if there cart doesn't exist.
+        Map<String,Object> response = new HashMap<>();
         try {
-            Long updated = cartRepository.updateCartProducts(i,products);
+            Long updated = cartRepository.addProductToCart(i,product);
+            response.put("updated",updated);
         } catch (Exception ex) {
-
+            System.out.println(ex.getMessage());
+            response.put("updated",0);
+        } finally {
+            ACCOUNT_ID.remove();
         }
-        return null;
+        return response;
     }
+
+    @Override
+    public boolean saveCartItems(int account, Map<String,Object> cart) {
+        ACCOUNT_ID.set(account);
+        Cart c = objectMapper.convertValue(cart,Cart.class);
+        try {
+            cartRepository.save(c);
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
+    }
+
 }

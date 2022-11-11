@@ -8,6 +8,7 @@ import java.util.Map;
 
 public interface CartDao {
     public boolean emptyCartItems(int accountId,int i);
-    public List<Cart> getCartItemsForI(int accountId, int i);
-    public Map<String,Object> updateCartProducts(int accountId, int i, List<Products> products);
+    public List<Cart> getCartProductsForI(int accountId, int i);
+    public Map<String,Object> updateCartProducts(int accountId, int i, Map<String,Object> product);
+    public boolean saveCartItems(int account, Map<String,Object> cart);
 }

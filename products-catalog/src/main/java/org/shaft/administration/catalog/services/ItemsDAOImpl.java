@@ -3,7 +3,7 @@ package org.shaft.administration.catalog.services;
 import com.google.common.collect.Lists;
 import org.shaft.administration.catalog.dao.ItemsDAO;
 import org.shaft.administration.catalog.entity.item.Item;
-import org.shaft.administration.catalog.repositories.CustomRepository;
+import org.shaft.administration.catalog.repositories.items.ItemsCustomRepositoryImpl;
 import org.shaft.administration.catalog.repositories.ItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,9 +16,6 @@ import java.util.Map;
 public class ItemsDAOImpl implements ItemsDAO {
 
     private ItemsRepository itemsRepository;
-
-    @Autowired
-    private CustomRepository customRepository;
 
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 
@@ -42,7 +39,7 @@ public class ItemsDAOImpl implements ItemsDAO {
         try {
             if (body!=null && body.containsKey("fields")) {
                 String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
-                return customRepository.getItemsWithSource(fields);
+                return itemsRepository.getItemsWithSource(fields);
             } else {
                 return Lists.newArrayList(itemsRepository.findAll());
             }
@@ -59,7 +56,7 @@ public class ItemsDAOImpl implements ItemsDAO {
             List<String> itemIds = (List<String>) body.get("items");
             if (body!=null && body.containsKey("fields")) {
                 String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
-                return customRepository.getItemsWithSource(itemIds,fields);
+                return itemsRepository.getItemsWithSource(itemIds,fields);
             } else {
                 return Lists.newArrayList(itemsRepository.findByIdIn(itemIds));
             }

@@ -1,9 +1,7 @@
-package org.shaft.administration.catalog.repositories;
+package org.shaft.administration.catalog.repositories.items;
 
-import co.elastic.clients.elasticsearch.core.UpdateByQueryRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.UpdateByQueryRequestBuilder;
 import org.shaft.administration.catalog.entity.item.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -17,22 +15,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class CustomRepository {
+public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
     ElasticsearchOperations elasticOperations;
     QueryBuilder query;
     NativeSearchQuery ns;
 
     @Autowired
-    public CustomRepository(ElasticsearchOperations elasticOperations) {
+    public ItemsCustomRepositoryImpl(ElasticsearchOperations elasticOperations) {
         this.elasticOperations = elasticOperations;
     }
 
+    @Override
     public List<Item> getItemsWithSource(List<String> itemIds, String[] fields) {
         query = QueryBuilders.boolQuery()
                 .must(QueryBuilders.termsQuery("id.keyword",itemIds));
         return queryWithSource(fields);
     }
 
+    @Override
     public List<Item> getItemsWithSource(String[] fields) {
         query = QueryBuilders.matchAllQuery();
         return queryWithSource(fields);

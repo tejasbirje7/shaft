@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.shaft.administration.inventory.dao.OrdersDao;
 import org.shaft.administration.inventory.entity.orders.Item;
 import org.shaft.administration.inventory.entity.orders.Order;
-import org.shaft.administration.inventory.repositories.CustomRepository;
 import org.shaft.administration.inventory.repositories.OrdersRepository;
+import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class OrdersDAOImpl implements OrdersDao {
 
     private OrdersRepository ordersRepository;
-    private CustomRepository customRepository;
     private RestTemplate httpFactory;
     private HttpHeaders httpHeaders;
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -29,9 +28,8 @@ public class OrdersDAOImpl implements OrdersDao {
     }
 
     @Autowired
-    public OrdersDAOImpl(OrdersRepository ordersRepository, CustomRepository customRepository, RestTemplate httpFactory) {
+    public OrdersDAOImpl(OrdersRepository ordersRepository, RestTemplate httpFactory) {
         this.ordersRepository = ordersRepository;
-        this.customRepository = customRepository;
         this.httpFactory = httpFactory;
     }
 
