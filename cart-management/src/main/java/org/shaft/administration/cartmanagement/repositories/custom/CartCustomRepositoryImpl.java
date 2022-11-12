@@ -8,6 +8,8 @@ import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
+import org.shaft.administration.cartmanagement.entity.Product;
+import org.shaft.administration.cartmanagement.entity.Products;
 import org.shaft.administration.cartmanagement.services.CartDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -51,10 +53,8 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
         return 0L;
     }
 
-    private Script prepareProductsUpdateScript(Map<String,Object> product) {
+    private Script prepareProductsUpdateScript(Map<String,Object> params) {
         String scriptStr = "ctx._source.products = params.get(\"product\")";
-        Map<String,Object> params = new HashMap<>();
-        params.put("product", product);
         return new Script(ScriptType.INLINE, "painless", scriptStr, params);
     }
 

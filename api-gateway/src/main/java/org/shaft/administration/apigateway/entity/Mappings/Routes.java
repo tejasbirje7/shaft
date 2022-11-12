@@ -1,4 +1,4 @@
-package org.shaft.administration.apigateway.entity;
+package org.shaft.administration.apigateway.entity.Mappings;
 
 public class Routes {
     private String path;

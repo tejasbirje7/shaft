@@ -1,6 +1,7 @@
 package org.shaft.administration.cartmanagement.dao;
 
 import org.shaft.administration.cartmanagement.entity.Cart;
+import org.shaft.administration.cartmanagement.entity.Product;
 import org.shaft.administration.cartmanagement.entity.Products;
 
 import java.util.List;

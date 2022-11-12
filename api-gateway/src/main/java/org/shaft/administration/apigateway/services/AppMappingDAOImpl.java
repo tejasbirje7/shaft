@@ -2,7 +2,7 @@ package org.shaft.administration.apigateway.services;
 
 import org.shaft.administration.apigateway.common.CacheStore;
 import org.shaft.administration.apigateway.dao.AppMappingDAO;
-import org.shaft.administration.apigateway.entity.AppMapping;
+import org.shaft.administration.apigateway.entity.Mappings.AppMapping;
 import org.shaft.administration.apigateway.repositories.AppGatewayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,9 @@
 package org.shaft.administration.apigateway.controllers;
 
 import org.shaft.administration.apigateway.dao.FingerPrintingDAO;
-import org.shaft.administration.apigateway.entity.AppMapping;
+import org.shaft.administration.apigateway.entity.Mappings.AppMapping;
 import org.shaft.administration.apigateway.dao.AppMappingDAO;
-import org.shaft.administration.apigateway.entity.Routes;
+import org.shaft.administration.apigateway.entity.Mappings.Routes;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;

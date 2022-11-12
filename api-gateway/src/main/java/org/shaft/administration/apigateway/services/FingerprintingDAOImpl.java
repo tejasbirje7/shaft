@@ -1,7 +1,7 @@
 package org.shaft.administration.apigateway.services;
 
 import org.shaft.administration.apigateway.dao.FingerPrintingDAO;
-import org.shaft.administration.apigateway.entity.Fingerprinting;
+import org.shaft.administration.apigateway.entity.FingerPrint.Fingerprinting;
 import org.shaft.administration.apigateway.repositories.FingerPrintingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

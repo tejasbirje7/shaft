@@ -1,4 +1,4 @@
-package org.shaft.administration.apigateway.entity;
+package org.shaft.administration.apigateway.entity.FingerPrint;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

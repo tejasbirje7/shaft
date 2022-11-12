@@ -1,6 +1,5 @@
 package org.shaft.administration.apigateway.repositories.fingerprint;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -13,7 +12,7 @@ import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.shaft.administration.apigateway.entity.Fingerprinting;
+import org.shaft.administration.apigateway.entity.FingerPrint.Fingerprinting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
