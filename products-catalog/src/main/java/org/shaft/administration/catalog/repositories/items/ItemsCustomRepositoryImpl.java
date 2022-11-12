@@ -43,6 +43,7 @@ public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
         final SourceFilter filter = new FetchSourceFilter(fields, null);
         ns = new NativeSearchQueryBuilder()
                 .withQuery(query)
+                .withMaxResults(100)
                 .withPageable(PageRequest.of(0,50))
                 .withSourceFilter(filter)
                 .build();

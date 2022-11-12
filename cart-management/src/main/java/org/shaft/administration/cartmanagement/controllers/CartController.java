@@ -20,24 +20,24 @@ public class CartController {
     @Autowired
     CartDao cartDao;
 
-    @GetMapping("/get/products")
+    @RequestMapping(value = "/get/products", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getCartProducts(@RequestHeader int account,
-                                               @RequestHeader int i) {
+                                                  @RequestHeader int i) {
         List<Cart> response = cartDao.getCartProductsForI(account,i);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S7394",response, headers);
     }
 
-    @GetMapping("/update/products")
-    public ResponseEntity<Object> updateCartProducts(@RequestHeader int account,
+    @RequestMapping(value = "/transact/products", method = { RequestMethod.GET, RequestMethod.POST })
+    public ResponseEntity<Object> transactCartProducts(@RequestHeader int account,
                                                       @RequestHeader int i,
                                                       @RequestBody Map<String,Object> productsToUpdate) {
-        cartDao.updateCartProducts(account,i,productsToUpdate);
+        cartDao.transactCartProducts(account,i,productsToUpdate);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
     }
 
-    @PostMapping("/save/products")
+    @RequestMapping(value = "/save/products", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> saveCartProducts(@RequestHeader int account,
                                                    @RequestBody Map<String,Object> cart) {
         cartDao.saveCartItems(account,cart);
@@ -45,7 +45,7 @@ public class CartController {
         return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
     }
 
-    @GetMapping("/empty")
+    @RequestMapping(value = "/empty", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> emptyCartItems(@RequestHeader int account,
                                                  @RequestHeader int i) {
         cartDao.emptyCartItems(account,i);

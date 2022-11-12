@@ -35,14 +35,14 @@ public class AppGateway {
     // #TODO Add try..catch for this method with appropriate responses
     @RequestMapping(value = "/shop/v1", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<ShaftResponseHandler> handleShopRequest(
-            @RequestHeader(value="operation-type") String operationType,
+            @RequestHeader(value="operation_type") String operationType,
             @RequestHeader(value="account") String account,
             @RequestHeader(value="user",required = false) String user,
             @RequestHeader(value="i",required = false) String i,
             @RequestBody(required = false) Map<String,Object> request) {
 
         // Do fingerprinting tracking
-        fingerprintingDAO.checkIdentity(request);
+        //fingerprintingDAO.checkIdentity(request);
 
         // Get Mappings from cache
         AppMapping mapping = appMapping.getMappings();
@@ -62,21 +62,16 @@ public class AppGateway {
             case "cart":
                 host = mapping.getCart();
         }
-        HttpMethod httpMethod = routes.getMethod().equals("GET") ? HttpMethod.GET : HttpMethod.POST;
-
-        // Respond with failure if host or method is empty
-        if(host.isEmpty() || httpMethod == null) {
-           // #TODO Response with failure if host is empty
-        }
 
         // Configure HTTP Request
         headers = new HttpHeaders();
         headers.set("account",account);
+        headers.set("i",i);
 
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
 
         // Invoke service according to mappings
-        ResponseEntity<ShaftResponseHandler> resp = httpFactory.exchange(host + routes.getPath(), httpMethod,entity,ShaftResponseHandler.class);
+        ResponseEntity<ShaftResponseHandler> resp = httpFactory.exchange(host + routes.getPath(), HttpMethod.POST,entity,ShaftResponseHandler.class);
 
         // Return response from microservice
         return resp;

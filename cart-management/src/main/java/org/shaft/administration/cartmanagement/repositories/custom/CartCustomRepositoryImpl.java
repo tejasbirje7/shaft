@@ -28,7 +28,7 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
     }
 
     @Override
-    public Long addProductToCart(int i,Map<String,Object> product) {
+    public Long transactCartProducts(int i,Map<String,Object> product) {
         String index = CartDAOImpl.getAccount() + "_cart";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 

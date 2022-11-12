@@ -18,7 +18,7 @@ public class AppMapping {
     private String _id = UUID.randomUUID().toString();
     private String catalog;
     private String inventory;
-    private  String cart;
+    private String cart;
     @Field("mappings")
     private Map<String,Routes> routes;
 }

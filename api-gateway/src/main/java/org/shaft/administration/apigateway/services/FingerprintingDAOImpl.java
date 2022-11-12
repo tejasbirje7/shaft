@@ -25,22 +25,31 @@ public class FingerprintingDAOImpl implements FingerPrintingDAO {
     public Map<String, Integer> checkIdentity(Map<String,Object> details) {
         // #TODO Handle all exceptions and provide different response code for each exception
         String fp = (String) details.get("fp");
+        // Check if `i` exists in request
         if (details.containsKey("i")) {
+            // `i` exists in request
             int i = (int) details.get("i");
             List<Fingerprinting> fpDetails = fingerPrintingRepository.checkIfFpExistsForI(fp,i);
+            // Check if `fp` exists for `i` received in request
             if (fpDetails.isEmpty()) {
+                // Update `fp` for this `i`
                 Long totalUpdated = fingerPrintingRepository.updateFp(fp,i);
-                if (totalUpdated < 0) {
+                if (totalUpdated > 0) {
                     return (Map<String, Integer>) new HashMap<>().put("i",i);
                 } else {
                     // #TODO Raise Exception
                 }
             } else {
+                // `fp` exists return `i`
                 return (Map<String, Integer>) new HashMap<>().put("i",i);
             }
         } else {
+            // `i` doesn't exist in request
             List<Fingerprinting> fpDetails = fingerPrintingRepository.checkIfIExistsForFp(fp);
+            // Check if `i` exists for received `fp`
             if(fpDetails.isEmpty()) {
+                // insert `fp` i.e. new `i` case
+                // #TODO Retrieve this `idx` variable from account meta service
                 String idx = "1600_1659262362";
                 Fingerprinting newFpToI = new Fingerprinting();
                 if (details.containsKey("requestTime")) {
@@ -50,10 +59,12 @@ public class FingerprintingDAOImpl implements FingerPrintingDAO {
                     fpArray.add((Map<String, String>) new HashMap<>().put("g",fp));
                     newFpToI.setFingerPrint(fpArray);
                     fingerPrintingRepository.save(newFpToI);
+                    // #TODO  Insert the event schema into `idx` index fetched above to track events
                 } else {
                     // #TODO Raise Exception BAD REQUEST
                 }
             } else {
+                // `i` exists return `fp`
                 return (Map<String, Integer>) new HashMap<>().put("i",fpDetails.get(0).getIdentity());
             }
         }

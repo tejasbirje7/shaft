@@ -56,12 +56,12 @@ public class CartDAOImpl implements CartDao {
     }
 
     @Override
-    public Map<String, Object> updateCartProducts(int accountId, int i, Map<String,Object> product) {
+    public Map<String, Object> transactCartProducts(int accountId, int i, Map<String,Object> product) {
         ACCOUNT_ID.set(accountId);
-        // #TODO Check here if already there's cart for the `i` and call saveCartItems if there cart doesn't exist.
+        // #TODO Check here if already there's cart for the `i` and call saveCartItems if cart doesn't exist.
         Map<String,Object> response = new HashMap<>();
         try {
-            Long updated = cartRepository.addProductToCart(i,product);
+            Long updated = cartRepository.transactCartProducts(i,product);
             response.put("updated",updated);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());

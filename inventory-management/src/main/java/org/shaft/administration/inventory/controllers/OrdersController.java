@@ -22,15 +22,17 @@ public class OrdersController {
     public OrdersController(OrdersDao ordersDao) {
         this.ordersDao = ordersDao;
     }
-    @GetMapping("/orders")
+
+    @RequestMapping(value = "/orders", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getOrders(@RequestHeader(value="account") int account,
-                                            @RequestHeader(value="i") int i) {
+                                            @RequestBody Map<String,Object> i) {
         List<Object> orders = ordersDao.getOrdersForI(account, i);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S62864923",orders,headers);
     }
 
-    @PostMapping("/orders/placed")
+
+    @RequestMapping(value = "/orders/placed", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> placeOrders(@RequestHeader(value="account") int accountId,
                                               @RequestBody Map<String,Object> body) {
         boolean response = ordersDao.saveOrders(accountId, body);

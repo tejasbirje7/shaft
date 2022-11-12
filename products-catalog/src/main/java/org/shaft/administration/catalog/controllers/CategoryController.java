@@ -18,7 +18,7 @@ public class CategoryController {
     @Autowired
     private CategoryDAO categoryDao;
 
-    @GetMapping("/categories")
+    @RequestMapping(value = "/categories", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getCategories(@RequestHeader(value="account") int account) {
         List<Category> categories = categoryDao.getCategories(account);
         HttpHeaders headers = new HttpHeaders();

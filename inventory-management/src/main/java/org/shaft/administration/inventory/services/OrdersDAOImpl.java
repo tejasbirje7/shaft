@@ -34,9 +34,16 @@ public class OrdersDAOImpl implements OrdersDao {
     }
 
     @Override
-    public List<Object> getOrdersForI(int accountId, int i) {
+    public List<Object> getOrdersForI(int accountId, Map<String,Object> body) {
 
         ACCOUNT_ID.set(accountId);
+        int i;
+        if(body.containsKey("i")) {
+            i = (int) body.get("i");
+        } else {
+            return new ArrayList<>();
+            // #TODO Throw exception BAD REQUEST
+        }
 
         // Get Orders
         List<Order> orders = ordersRepository.findByI(i);
@@ -76,7 +83,7 @@ public class OrdersDAOImpl implements OrdersDao {
                     Item perItemInOrder = itemsInOrder.get(it);
                     for(int k=0; k < items.size() ; k++) {
                         Map<String,Object> itemFromDB = (Map<String, Object>) items.get(k);
-                        if ((itemFromDB.get("_id").equals(perItemInOrder.getId()))){
+                        if ((itemFromDB.get("id").equals(perItemInOrder.getId()))){
                             itemFromDB.put("costPrice",perItemInOrder.getCostPrice());
                             itemFromDB.put("quantity",perItemInOrder.getQuantity());
                             itemFromDB.put("options",perItemInOrder.getOption());
