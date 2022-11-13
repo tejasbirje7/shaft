@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -17,11 +18,14 @@ import java.util.Map;
 @Component
 public class AuthenticationFilter implements GatewayFilter {
 
-    @Autowired
-    private RouterValidator routerValidator;
-    @Autowired
-    private JWTUtil jwtUtil;
+    private final RouterValidator routerValidator;
+    private final JWTUtil jwtUtil;
 
+    @Autowired
+    public AuthenticationFilter(RouterValidator routerValidator, JWTUtil jwtUtil) {
+        this.routerValidator = routerValidator;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

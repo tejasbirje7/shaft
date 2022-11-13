@@ -1,5 +1,6 @@
 package org.shaft.administration.appgateway.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 

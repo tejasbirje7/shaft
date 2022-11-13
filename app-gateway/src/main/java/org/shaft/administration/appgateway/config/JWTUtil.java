@@ -12,20 +12,18 @@ import java.util.Map;
 
 @Component
 public class JWTUtil {
-    @Value("${shaft.jwt.keys.path}")
-    private String keysPath;
     private ShaftJWT shaftJWT;
     private boolean invalidToken;
     private boolean expiredToken;
 
-
-    @PostConstruct
-    public void init(){
+    public JWTUtil(@Value("${shaft.jwt.keys.path}")String keys) {
         try {
-            this.shaftJWT = new ShaftJWT(keysPath,ShaftJWT.PKCS_LOADER);
+            this.shaftJWT = new ShaftJWT(keys,ShaftJWT.PKCS_LOADER);
         } catch (Exception e) {
+            System.out.println("Not able to create shaftJWT");
             throw new RuntimeException(e);
         }
+
     }
 
     public String issueToken() {
