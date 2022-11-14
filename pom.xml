@@ -15,9 +15,9 @@
 	</properties>
 	<modules>
 		<module>obligatory-services</module>
-		<module>api-gateway</module>
 		<module>discovery-server</module>
 		<module>app-gateway</module>
+		<module>account-management</module>
 		<module>cart-management</module>
 		<module>customer-management</module>
 		<module>inventory-management</module>

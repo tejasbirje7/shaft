@@ -8,14 +8,11 @@
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>org.shaft.administration</groupId>
-	<artifactId>user-management</artifactId>
+	<groupId>com.shaft.administration</groupId>
+	<artifactId>account-management</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>User Management</name>
-	<description>
-		This is responsible for user authentication and management through social gateways,
-		manual authentication, email verification and mobile number verification.
-	</description>
+	<name>Account Management</name>
+	<description>Account API and workers</description>
 	<properties>
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -26,6 +23,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>elasticsearch-rest-high-level-client</artifactId>
@@ -36,11 +34,7 @@
 			<artifactId>spring-data-elasticsearch</artifactId>
 			<version>4.4.5</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>10.0.1</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -51,11 +45,13 @@
 			<artifactId>obligatory-services</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>

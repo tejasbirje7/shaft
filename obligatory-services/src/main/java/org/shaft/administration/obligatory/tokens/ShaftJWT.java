@@ -13,6 +13,7 @@ import org.shaft.administration.obligatory.tokens.utils.AppLogger;
 import java.io.IOException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ShaftJWT {
@@ -77,9 +78,9 @@ public class ShaftJWT {
 
     public static void main(String[] args) throws Exception {
         String keysPath = "/opt/springboot/unified/obligatory-services/src/main/java/org/shaft/administration/obligatory/tokens/keys";
-        ShaftJWT shaftJWT = new ShaftJWT(keysPath,PKCS_GENERATOR);
-        shaftJWT.generatePKCSKeys();
-        //System.out.println(shaftJWT.generateToken("1600_readyToCook",80,"shaft org","claim"));
+        ShaftJWT shaftJWT = new ShaftJWT(keysPath,PKCS_LOADER);
+        //shaftJWT.generatePKCSKeys();
+        System.out.println(shaftJWT.generateToken("1600_readyToCook","",new HashMap<>(),80));
         //System.out.println(shaftJWT.validateToken("eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.Tn_PnLlmwPVa_QwMVBbi87sTse6LaH-74n3DDz5WJp4glRQ-zEus4nxYP9XgM907lqqJ-oBg9RCUX78RW4ugSOSGLjLVgA3BtGzfSuf684tkyqcsjS-nGJAv9lsQMGQn0DgCpwVdc3jEiC1wFSAT42v9krnUlwaaE-3bNFBchi1LYr0_hn2-V3sNom1xtWPo-rsNyOs9RDJKrUkNpjBmjC_ek4w8un2rK85cC22wf9Qbby2NgC3rkYAcua_EAuPGxZkfUH2b7XjG6pSrkLD-Tp1_yg_Dd4ayVFYcouxq8nIfkuIwTPItqGY5aJWwsV07YLL8a8GsfPdnL6u-OilGCw.VELDCyVFxGssj__GQKflIA.NjSV0MMkylEj8-a2OIkpTQyJsF_cc_vGP48HCVucOhfxc-gHQ05K6wvLiPblqd4bnqIycQx6wYfI2wkBNHYUDWHNHQBbZr8qESQ9zaMbrQ62mFjzJp-LhiDgLAaW2V5ahgTQoVJJfKVyDiwvHKMfsaFRuS8Qxci8dmkHe8YsbQdjIOyYt5aPoLBa69yN8WiRlX4jrGbq6QYVAzAbqth-uacO9ECDWd2r6HWnOGveVqahRTLQep83w_H2cLjpoIe24xbcF_nDBSNfrzcvyl2ZaaqbaUWCzZKhzpDD_Kts66WmZk1e76xndljfk6DKWP0LMw6319n4DcBqjzWsldCCRZfULTP-ZjFl8DFrbChDm8zKLrgE0pJdodzLO4n8zbX10EceMYzApBU3xgcCYyJmHpfLqTkv3hHwsD-WliaJtcZHWuJiG1dzk4VfXnLE7-MV2AM4e3kKEgaBXnZZqr7izdvhJi530XlLlj5R0_eJXe0TatImXGAdsWuF7qvLTmk7OkHBtdgliH0LZp5-ZpcNdx63kVtk_KzOIGxT_mMaGyEhzbRIOsfKV0Fq7V2w5tcdlOGAzjsSaG8xCGLcIMTIkD6Uznn9EWslLMbmPL4NMsvDqN_Ld5X7o_QgOIUkd-_K3rOex1Lqf8HOh4kG_Ht84_PNEZffQLggxafXkyG4_pJWdSdx43YTc8l0gwscCD1FHBZOY8BdWpi6BNY7P5os4tXBplHGMuVEJcIA5c-SFMywysL_HLP0D8W4l0byAL-SmJK0DmtjX-N7-lwCm1q5sQ.RhbPg4wNN_-vbjaZ3QeBHOpgtW8Pl-e-3eHeDXkTRWc"));
     }
 

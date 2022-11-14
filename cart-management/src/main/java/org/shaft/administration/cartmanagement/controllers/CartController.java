@@ -19,8 +19,12 @@ import java.util.Map;
 @RequestMapping("/cart")
 public class CartController {
     HttpHeaders headers = new HttpHeaders();
-    @Autowired
     CartDao cartDao;
+
+    @Autowired
+    public CartController(CartDao cartDao) {
+        this.cartDao = cartDao;
+    }
 
     @RequestMapping(value = "/get/products", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getCartProducts(@RequestHeader int account,
