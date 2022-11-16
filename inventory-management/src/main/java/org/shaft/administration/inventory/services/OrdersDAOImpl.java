@@ -18,19 +18,19 @@ import java.util.stream.Collectors;
 @Service
 public class OrdersDAOImpl implements OrdersDao {
 
-    private OrdersRepository ordersRepository;
-    private RestTemplate httpFactory;
+    private final OrdersRepository ordersRepository;
+    private final RestTemplate restTemplate;
     private HttpHeaders httpHeaders;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
     public static int getAccount() {
         return ACCOUNT_ID.get();
     }
 
     @Autowired
-    public OrdersDAOImpl(OrdersRepository ordersRepository, RestTemplate httpFactory) {
+    public OrdersDAOImpl(OrdersRepository ordersRepository, RestTemplate restTemplate) {
         this.ordersRepository = ordersRepository;
-        this.httpFactory = httpFactory;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -60,14 +60,14 @@ public class OrdersDAOImpl implements OrdersDao {
         httpHeaders = new HttpHeaders();
         httpHeaders.set("account",String.valueOf(accountId));
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,httpHeaders);
-        List<Object> items = new ArrayList<>();
+        List<Item> items = new ArrayList<>();
         
         // Invoke API and parse response
         try {
-            ResponseEntity<ShaftResponseHandler> response = httpFactory.exchange(
+            ResponseEntity<ShaftResponseHandler> response = restTemplate.exchange(
                     "http://localhost:8081/catalog/items/bulk",
                     HttpMethod.POST,entity,ShaftResponseHandler.class);
-            items = (List<Object>) response.getBody().getData();
+            items = (List<Item>) response.getBody().getData();
         } catch (Exception ex){
             System.out.println(ex.getMessage());
         }
@@ -123,7 +123,7 @@ public class OrdersDAOImpl implements OrdersDao {
 
             // Invoke API and parse response
             try {
-                ResponseEntity<ShaftResponseHandler> response = httpFactory.exchange(
+                ResponseEntity<ShaftResponseHandler> response = restTemplate.exchange(
                         "http://localhost:8083/cart/empty",
                         HttpMethod.GET,entity,ShaftResponseHandler.class);
                 ShaftResponseHandler data = response.getBody();
