@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 public class ItemsDAOImpl implements ItemsDAO {
 
-    private ItemsRepository itemsRepository;
+    private final ItemsRepository itemsRepository;
 
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 

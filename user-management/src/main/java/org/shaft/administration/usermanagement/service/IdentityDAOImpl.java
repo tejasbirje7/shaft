@@ -1,11 +1,17 @@
 package org.shaft.administration.usermanagement.service;
 
 
+import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,15 +22,17 @@ import java.util.Map;
 public class IdentityDAOImpl implements IdentityDAO {
 
     IdentityRepository identityRepository;
-
+    private HttpHeaders httpHeaders;
+    private final RestTemplate restTemplate;
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
     public static int getAccount() {
         return ACCOUNT_ID.get();
     }
 
     @Autowired
-    public IdentityDAOImpl(IdentityRepository identityRepository) {
+    public IdentityDAOImpl(IdentityRepository identityRepository, RestTemplate restTemplate) {
         this.identityRepository = identityRepository;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -58,18 +66,39 @@ public class IdentityDAOImpl implements IdentityDAO {
             if(fpDetails.isEmpty()) {
                 // insert `fp` i.e. new `i` case
                 // #TODO Retrieve this `idx` variable from account meta service
-                String idx = "1600_1659262362";
-                Identity newFpToI = new Identity();
-                if (details.containsKey("requestTime")) {
-                    newFpToI.setIdentity((Integer) details.get("requestTime"));
-                    newFpToI.setIdentified(false);
-                    List<Map<String,String>> fpArray = new ArrayList<>();
-                    fpArray.add((Map<String, String>) new HashMap<>().put("g",fp));
-                    newFpToI.setFingerPrint(fpArray);
-                    identityRepository.save(newFpToI);
-                    // #TODO  Insert the event schema into `idx` index fetched above to track events
+
+                Map<String,Object> request = new HashMap<>();
+                request.put("fields",new String[]{"idx"});
+                httpHeaders = new HttpHeaders();
+                httpHeaders.set("account",String.valueOf(account));
+                HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,httpHeaders);
+                String idx = "";
+                // Invoke API and parse response
+                try {
+                    ResponseEntity<ShaftResponseHandler> response = restTemplate.exchange(
+                            "http://localhost:8084/catalog/items/bulk",
+                            HttpMethod.POST,entity,ShaftResponseHandler.class);
+                    idx = (String) ((Map<String,Object>)response.getBody().getData()).get("idx");
+                } catch (Exception ex){
+                    System.out.println(ex.getMessage());
+                }
+                if(!idx.isEmpty()) {
+                    Identity newFpToI = new Identity();
+                    if (details.containsKey("requestTime")) {
+                        newFpToI.setIdentity((Integer) details.get("requestTime"));
+                        newFpToI.setIdentified(false);
+                        List<Map<String,String>> fpArray = new ArrayList<>();
+                        fpArray.add((Map<String, String>) new HashMap<>().put("g",fp));
+                        newFpToI.setFingerPrint(fpArray);
+                        identityRepository.save(newFpToI);
+                        // #TODO  Insert the event schema into `idx` index fetched above to track events
+                    } else {
+                        ACCOUNT_ID.remove();
+                        // #TODO Raise Exception BAD REQUEST
+                    }
                 } else {
-                    // #TODO Raise Exception BAD REQUEST
+                    ACCOUNT_ID.remove();
+                    // #TODO Raise Exception ACCOUNT SERVICE DOWN
                 }
             } else {
                 // `i` exists return `fp`

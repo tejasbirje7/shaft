@@ -1,5 +1,6 @@
 package com.shaft.administration.accountmanagement.controllers;
 
+import com.shaft.administration.accountmanagement.dao.MetaDAO;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,11 +14,13 @@ import java.util.Map;
 @RequestMapping("/account")
 public class MetaController {
 
+    MetaDAO metaDao;
     HttpHeaders headers = new HttpHeaders();
 
     @RequestMapping(value = "/meta/fields", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getMetaFields(@RequestHeader int account,
                                                 @RequestBody Map<String,Object> request) {
+        metaDao.getMetaFields(account,request);
         Map<String,Object> fields = new HashMap<>();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S7394",fields, headers);
