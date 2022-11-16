@@ -1,9 +1,8 @@
-package org.shaft.administration.inventory.configuration;
+package org.shaft.administration.obligatory.protocols.http;
 
 import lombok.AllArgsConstructor;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -17,12 +16,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -37,9 +33,9 @@ import java.security.NoSuchAlgorithmException;
  */
 
 @AllArgsConstructor
-public class HttpClientConfig {
+public class ShaftHttpClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShaftHttpClient.class);
     private int connectTimeout;
     private int requestTimeout;
     private int socketTimeout;
@@ -99,21 +95,18 @@ public class HttpClientConfig {
     }
 
     public ConnectionKeepAliveStrategy getConnectionKeepAliveStrategy() {
-        return new ConnectionKeepAliveStrategy() {
-            @Override
-            public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
-                HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
-                while (it.hasNext()) {
-                    HeaderElement he = it.nextElement();
-                    String param = he.getName();
-                    String value = he.getValue();
+        return (response, context) -> {
+            HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+            while (it.hasNext()) {
+                HeaderElement he = it.nextElement();
+                String param = he.getName();
+                String value = he.getValue();
 
-                    if (value != null && param.equalsIgnoreCase("timeout")) {
-                        return Long.parseLong(value) * 1000;
-                    }
+                if (value != null && param.equalsIgnoreCase("timeout")) {
+                    return Long.parseLong(value) * 1000;
                 }
-                return keepAliveTime;
             }
+            return keepAliveTime;
         };
     }
 }

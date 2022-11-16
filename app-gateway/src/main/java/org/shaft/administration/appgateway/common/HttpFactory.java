@@ -1,37 +1,40 @@
-package org.shaft.administration.inventory.configuration;
+package org.shaft.administration.appgateway.common;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.shaft.administration.obligatory.protocols.http.ShaftHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Configuration
+/**
+ * Create different http factory if you need to override default
+ * configuration of http request which are mentioned in ShaftHttpClient.java
+ */
+@Component
 @EnableScheduling
-public class MonitoringConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringConfig.class);
-    private static final List<PoolingHttpClientConnectionManager> connectionManagers = new ArrayList<>();
-    private static final int CLOSE_IDLE_CONNECTION_WAIT_TIME_SECS = 30;
+public class HttpFactory {
 
     CloseableHttpClient httpClient;
 
-    @Autowired
-    public MonitoringConfig(CloseableHttpClient httpClient) {
-        this.httpClient = httpClient;
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpFactory.class);
+    private static final List<PoolingHttpClientConnectionManager> connectionManagers = new ArrayList<>();
+    private static final int CLOSE_IDLE_CONNECTION_WAIT_TIME_SECS = 30;
+
+    public HttpFactory() {
+        this.httpClient = this.getDefaultHTTPClient();
     }
 
     @Bean
@@ -44,6 +47,17 @@ public class MonitoringConfig {
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
         clientHttpRequestFactory.setHttpClient(httpClient);
         return clientHttpRequestFactory;
+    }
+
+    /**
+     * Modify or create http configurations based on requirements for each service
+     */
+    public CloseableHttpClient getDefaultHTTPClient() {
+        ShaftHttpClient client = new ShaftHttpClient(30000,30000,
+                60000,50,2,2000,null);
+        PoolingHttpClientConnectionManager connectionManager = client.getPoolingConnectionManager();
+        addConnectionManager(connectionManager);
+        return client.getHttpClient(connectionManager, client.getConnectionKeepAliveStrategy());
     }
 
 
@@ -93,4 +107,9 @@ public class MonitoringConfig {
     public static void addConnectionManager(PoolingHttpClientConnectionManager connectionManager) {
         connectionManagers.add(connectionManager);
     }
+
+
+
+
 }
+
