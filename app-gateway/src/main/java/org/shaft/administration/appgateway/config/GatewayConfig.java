@@ -22,12 +22,12 @@ public class GatewayConfig {
                 .route("orderId", r->r.path("/catalog/**")
                         .filters(f -> f.filter(authenticationFilter))
                         .uri("lb://PRODUCT-CATALOG"))
-                .route("user-service", r -> r.path("/users/**")
+                .route("user-services", r -> r.path("/users/**")
                         .filters(f -> f.filter(authenticationFilter))
-                        .uri("lb://user-service"))
-                .route("auth-service", r -> r.path("/auth/**")
+                        .uri("lb://user-services"))
+                .route("auth-services", r -> r.path("/auth/**")
                         .filters(f -> f.filter(authenticationFilter))
-                        .uri("lb://auth-service"))
+                        .uri("lb://auth-services"))
                 .build();
         /*
         return builder.routes()

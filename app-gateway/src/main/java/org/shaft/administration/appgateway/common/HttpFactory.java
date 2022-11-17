@@ -50,7 +50,7 @@ public class HttpFactory {
     }
 
     /**
-     * Modify or create http configurations based on requirements for each service
+     * Modify or create http configurations based on requirements for each services
      */
     public CloseableHttpClient getDefaultHTTPClient() {
         ShaftHttpClient client = new ShaftHttpClient(30000,30000,

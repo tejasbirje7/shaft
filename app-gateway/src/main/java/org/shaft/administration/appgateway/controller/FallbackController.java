@@ -8,11 +8,11 @@ public class FallbackController {
 
     @GetMapping("/fallback1")
     public String userFallback() {
-        return "User service is not available";
+        return "User services is not available";
     }
 
     @GetMapping("/auth-fallback")
     public String authFallback() {
-        return "Auth service is not available";
+        return "Auth services is not available";
     }
 }

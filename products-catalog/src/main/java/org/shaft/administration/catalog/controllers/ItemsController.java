@@ -22,7 +22,7 @@ public class ItemsController {
     }
 
     /**
-     * #TODO Check best practices for threadlocal to set in controller or service layer
+     * #TODO Check best practices for threadlocal to set in controller or services layer
      * @param account
      * @return
      */

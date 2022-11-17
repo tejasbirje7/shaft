@@ -16,7 +16,7 @@ import java.util.UUID;
 @ToString
 @Getter
 @Setter
-@Document(indexName = "#{T(org.shaft.administration.catalog.services.ItemsDAOImpl).getAccount()}_devices")
+@Document(indexName = "#{T(org.shaft.administration.usermanagement.services.IdentityDAOImpl).getAccount()}_devices")
 public class Identity {
 
     @Id

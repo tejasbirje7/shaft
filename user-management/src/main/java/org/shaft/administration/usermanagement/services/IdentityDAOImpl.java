@@ -1,4 +1,4 @@
-package org.shaft.administration.usermanagement.service;
+package org.shaft.administration.usermanagement.services;
 
 
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
@@ -40,6 +40,7 @@ public class IdentityDAOImpl implements IdentityDAO {
         ACCOUNT_ID.set(account);
         // #TODO Handle all exceptions and provide different response code for each exception
         String fp = (String) details.get("fp");
+        Map<String,Integer> response;
         // Check if `i` exists in request
         if (details.containsKey("i")) {
             // `i` exists in request
@@ -57,15 +58,18 @@ public class IdentityDAOImpl implements IdentityDAO {
             } else {
                 // `fp` exists return `i`
                 ACCOUNT_ID.remove();
-                return (Map<String, Integer>) new HashMap<>().put("i",i);
+                response = new HashMap<>();
+                response.put("i",i);
+                return response;
             }
         } else {
             // `i` doesn't exist in request
-            List<Identity> fpDetails = identityRepository.checkIfIExistsForFp(fp);
+            boolean isIdentified = details.containsKey("isIdentified") && (boolean) details.get("isIdentified");
+            List<Identity> fpDetails = identityRepository.checkIfIExistsForFp(fp,isIdentified);
             // Check if `i` exists for received `fp`
             if(fpDetails.isEmpty()) {
                 // insert `fp` i.e. new `i` case
-                // #TODO Retrieve this `idx` variable from account meta service
+                // #TODO Retrieve this `idx` variable from account meta services
 
                 Map<String,Object> request = new HashMap<>();
                 request.put("fields",new String[]{"idx"});
@@ -75,10 +79,10 @@ public class IdentityDAOImpl implements IdentityDAO {
                 String idx = "";
                 // Invoke API and parse response
                 try {
-                    ResponseEntity<ShaftResponseHandler> response = restTemplate.exchange(
-                            "http://localhost:8084/catalog/items/bulk",
+                    ResponseEntity<ShaftResponseHandler> meta = restTemplate.exchange(
+                            "http://localhost:8084/account/meta/fields",
                             HttpMethod.POST,entity,ShaftResponseHandler.class);
-                    idx = (String) ((Map<String,Object>)response.getBody().getData()).get("idx");
+                    idx = (String) ((Map<String,Object>)meta.getBody().getData()).get("idx");
                 } catch (Exception ex){
                     System.out.println(ex.getMessage());
                 }
@@ -90,7 +94,7 @@ public class IdentityDAOImpl implements IdentityDAO {
                         List<Map<String,String>> fpArray = new ArrayList<>();
                         fpArray.add((Map<String, String>) new HashMap<>().put("g",fp));
                         newFpToI.setFingerPrint(fpArray);
-                        identityRepository.save(newFpToI);
+                        //identityRepository.save(newFpToI);
                         // #TODO  Insert the event schema into `idx` index fetched above to track events
                     } else {
                         ACCOUNT_ID.remove();
@@ -103,7 +107,9 @@ public class IdentityDAOImpl implements IdentityDAO {
             } else {
                 // `i` exists return `fp`
                 ACCOUNT_ID.remove();
-                return (Map<String, Integer>) new HashMap<>().put("i",fpDetails.get(0).getIdentity());
+                response = new HashMap<>();
+                response.put("i",fpDetails.get(0).getIdentity());
+                return response;
             }
         }
         ACCOUNT_ID.remove();

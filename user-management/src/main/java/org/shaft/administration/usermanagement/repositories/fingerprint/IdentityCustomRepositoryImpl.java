@@ -67,11 +67,11 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     }
 
     @Override
-    public List<Identity> checkIfIExistsForFp(String fp) {
+    public List<Identity> checkIfIExistsForFp(String fp, boolean isIdentified) {
         String index = 1600 + "_devices";
 
         query = new BoolQueryBuilder()
-                .must(QueryBuilders.termQuery("isIdentified",false))
+                .must(QueryBuilders.termQuery("isIdentified",isIdentified))
                 .must(QueryBuilders.termQuery("fp.g",fp));
         final SourceFilter filter = new FetchSourceFilter(new String[]{"i"}, null);
         ns = new NativeSearchQueryBuilder()
