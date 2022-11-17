@@ -19,20 +19,21 @@ public class GatewayConfig {
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("orderId", r->r.path("/catalog/**")
+                .route("product-catalog", r->r.path("/catalog/**")
                         .filters(f -> f.filter(authenticationFilter))
-                        .uri("lb://PRODUCT-CATALOG"))
-                .route("user-services", r -> r.path("/users/**")
+                        .uri("lb://PRODUCT-CATALOG")) // 8081
+                .route("inventory-management", r->r.path("/inventory/**")
                         .filters(f -> f.filter(authenticationFilter))
-                        .uri("lb://user-services"))
-                .route("auth-services", r -> r.path("/auth/**")
+                        .uri("lb://INVENTORY-MANAGEMENT")) // 8082
+                .route("cart-management", r->r.path("/cart/**")
                         .filters(f -> f.filter(authenticationFilter))
-                        .uri("lb://auth-services"))
+                        .uri("lb://CART-MANAGEMENT")) // 8083
+                .route("account-management", r->r.path("/account/**")
+                        .filters(f -> f.filter(authenticationFilter))
+                        .uri("lb://ACCOUNT-MANAGEMENT")) // 8084
+                .route("user-management", r->r.path("/user/**")
+                        .filters(f -> f.filter(authenticationFilter))
+                        .uri("lb://USER-MANAGEMENT")) // 8085
                 .build();
-        /*
-        return builder.routes()
-				.route("orderId", r->r.path("/catalog/**").uri("lb://PRODUCT-CATALOG"))
-				.build();
-         */
     }
 }

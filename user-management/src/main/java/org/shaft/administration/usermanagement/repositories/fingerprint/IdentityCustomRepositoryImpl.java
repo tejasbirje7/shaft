@@ -13,6 +13,7 @@ import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.shaft.administration.usermanagement.entity.Identity;
+import org.shaft.administration.usermanagement.services.IdentityDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -44,17 +45,17 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     }
 
     @Override
-    public List<Identity> checkIfFpExistsForI(String fp, int i) {
-        String index = 1600 + "_devices";
-
+    public List<Identity> checkIfFpExistsForI(String fp, int i, boolean isIdentified) {
         query = new BoolQueryBuilder()
                 .must(QueryBuilders.nestedQuery("fp",
                         QueryBuilders.boolQuery()
                                 .must(QueryBuilders.termQuery("fp.g.keyword", fp)), ScoreMode.None))
-                .must(QueryBuilders.termQuery("i", i));
+                .must(QueryBuilders.termQuery("i", i))
+                .must(QueryBuilders.termQuery("isIdentified",isIdentified));
 
         ns = new NativeSearchQueryBuilder()
                 .withQuery(query)
+                .withMaxResults(1)
                 .build();
         try {
             elasticOperations.search(ns, Identity.class);
@@ -67,11 +68,9 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     }
 
     @Override
-    public List<Identity> checkIfIExistsForFp(String fp, boolean isIdentified) {
-        String index = 1600 + "_devices";
-
+    public List<Identity> checkIfIExistsForFp(String fp) {
         query = new BoolQueryBuilder()
-                .must(QueryBuilders.termQuery("isIdentified",isIdentified))
+                .must(QueryBuilders.termQuery("isIdentified",false))
                 .must(QueryBuilders.termQuery("fp.g",fp));
         final SourceFilter filter = new FetchSourceFilter(new String[]{"i"}, null);
         ns = new NativeSearchQueryBuilder()
@@ -92,7 +91,7 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
 
     @Override
     public Long updateFp(String fp,int i) {
-        String index = 1600 + "_devices";
+        String index = IdentityDAOImpl.getAccount() + "_devices";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 
         updateRequest.setConflicts("proceed");

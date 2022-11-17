@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class IdentityDAOImpl implements IdentityDAO {
@@ -45,7 +42,8 @@ public class IdentityDAOImpl implements IdentityDAO {
         if (details.containsKey("i")) {
             // `i` exists in request
             int i = (int) details.get("i");
-            List<Identity> fpDetails = identityRepository.checkIfFpExistsForI(fp,i);
+            boolean isIdentified = details.containsKey("isIdentified") && (boolean) details.get("isIdentified");
+            List<Identity> fpDetails = identityRepository.checkIfFpExistsForI(fp,i,isIdentified);
             // Check if `fp` exists for `i` received in request
             if (fpDetails.isEmpty()) {
                 // Update `fp` for this `i`
@@ -64,12 +62,10 @@ public class IdentityDAOImpl implements IdentityDAO {
             }
         } else {
             // `i` doesn't exist in request
-            boolean isIdentified = details.containsKey("isIdentified") && (boolean) details.get("isIdentified");
-            List<Identity> fpDetails = identityRepository.checkIfIExistsForFp(fp,isIdentified);
+            List<Identity> fpDetails = identityRepository.checkIfIExistsForFp(fp);
             // Check if `i` exists for received `fp`
             if(fpDetails.isEmpty()) {
                 // insert `fp` i.e. new `i` case
-                // #TODO Retrieve this `idx` variable from account meta services
 
                 Map<String,Object> request = new HashMap<>();
                 request.put("fields",new String[]{"idx"});
@@ -82,10 +78,11 @@ public class IdentityDAOImpl implements IdentityDAO {
                     ResponseEntity<ShaftResponseHandler> meta = restTemplate.exchange(
                             "http://localhost:8084/account/meta/fields",
                             HttpMethod.POST,entity,ShaftResponseHandler.class);
-                    idx = (String) ((Map<String,Object>)meta.getBody().getData()).get("idx");
+                    idx = (String) ((Map<String,Object>) Objects.requireNonNull(meta.getBody()).getData()).get("idx");
                 } catch (Exception ex){
                     System.out.println(ex.getMessage());
                 }
+
                 if(!idx.isEmpty()) {
                     Identity newFpToI = new Identity();
                     if (details.containsKey("requestTime")) {
