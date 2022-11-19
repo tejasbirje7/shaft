@@ -3,22 +3,21 @@ package org.shaft.administration.appgateway.config;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.obligatory.tokens.exceptions.ExpiredToken;
 import org.shaft.administration.obligatory.tokens.exceptions.InvalidToken;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class JWTUtil {
-    private ShaftJWT shaftJWT;
+    private final ShaftJWT shaftJWT;
     private boolean invalidToken;
     private boolean expiredToken;
 
-    public JWTUtil(@Value("${shaft.jwt.keys.path}")String keys) {
+    // #TODO Remove dependency of keys file from app gateway. Let keys be in obligatory services
+    public JWTUtil() {
         try {
-            this.shaftJWT = new ShaftJWT(keys,ShaftJWT.PKCS_LOADER);
+            this.shaftJWT = new ShaftJWT();
         } catch (Exception e) {
             System.out.println("Not able to create shaftJWT");
             throw new RuntimeException(e);

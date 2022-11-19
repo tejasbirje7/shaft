@@ -23,8 +23,6 @@ public class ItemsController {
 
     /**
      * #TODO Check best practices for threadlocal to set in controller or services layer
-     * @param account
-     * @return
      */
     @RequestMapping(value = "/items", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getItems(@RequestHeader(value="account") int account,

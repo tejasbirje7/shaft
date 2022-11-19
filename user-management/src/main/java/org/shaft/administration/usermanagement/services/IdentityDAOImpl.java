@@ -1,6 +1,7 @@
 package org.shaft.administration.usermanagement.services;
 
 
+import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
@@ -20,6 +21,7 @@ public class IdentityDAOImpl implements IdentityDAO {
 
     IdentityRepository identityRepository;
     private HttpHeaders httpHeaders;
+    private ShaftJWT jwtUtil;
     private final RestTemplate restTemplate;
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
     public static int getAccount() {
@@ -27,9 +29,10 @@ public class IdentityDAOImpl implements IdentityDAO {
     }
 
     @Autowired
-    public IdentityDAOImpl(IdentityRepository identityRepository, RestTemplate restTemplate) {
+    public IdentityDAOImpl(IdentityRepository identityRepository, RestTemplate restTemplate) throws Exception {
         this.identityRepository = identityRepository;
         this.restTemplate = restTemplate;
+        this.jwtUtil = new ShaftJWT();
     }
 
     @Override
@@ -41,7 +44,7 @@ public class IdentityDAOImpl implements IdentityDAO {
         // Check if `i` exists in request
         if (details.containsKey("i")) {
             // `i` exists in request
-            int i = (int) details.get("i");
+            int i = Integer.parseInt((String) details.get("i"));
             boolean isIdentified = details.containsKey("isIdentified") && (boolean) details.get("isIdentified");
             List<Identity> fpDetails = identityRepository.checkIfFpExistsForI(fp,i,isIdentified);
             // Check if `fp` exists for `i` received in request
@@ -110,6 +113,27 @@ public class IdentityDAOImpl implements IdentityDAO {
             }
         }
         ACCOUNT_ID.remove();
-        return null;
+        return new HashMap<>();
+    }
+
+    /**
+     * Don't expose user details via token, since this is invoked
+     * without auth filter from app-gateway, so don't change return type.
+     * It should strictly only return `i`
+     * @param token
+     * @return `i`
+     */
+    @Override
+    public Map<String, Integer> getUserDetailsFromToken(String token) {
+        Map<String,Integer> i = new HashMap<>();
+        try {
+            Map<String,Object> tokenDetails = this.jwtUtil.validateToken(token);
+            if(tokenDetails.containsKey("i")) {
+                i.put("i", (Integer) tokenDetails.get("i"));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return i;
     }
 }
