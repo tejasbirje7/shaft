@@ -22,6 +22,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -53,31 +60,27 @@
                 <artifactId>kafka-avro-serializer</artifactId>
             </dependency>
             <dependency>
-                <groupId>org.shaft.administration</groupId>
-                <artifactId>app-config-data</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.shaft.administration</groupId>
-                <artifactId>kafka-model</artifactId>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.shaft.administration</groupId>
-            <artifactId>kafka-model</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>app-config-data</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.shaft.administration</groupId>
-            <artifactId>app-config-data</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>kafka-model</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>2.9.2</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
