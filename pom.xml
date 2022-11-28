@@ -16,7 +16,7 @@
 		<elasticsearch-rest-high-level-client-version>7.17.6</elasticsearch-rest-high-level-client-version>
 		<spring-data-elasticsearch-version>4.4.5</spring-data-elasticsearch-version>
 		<avro-version>1.11.1</avro-version>
-		<kafka-avro-serializer-version>7.3.0</kafka-avro-serializer-version>
+		<kafka-avro-serializer-version>3.3.1</kafka-avro-serializer-version>
 		<lambok-version>1.18.24</lambok-version>
 		<obligatory-service-version>0.0.1-SNAPSHOT</obligatory-service-version>
 		<spring-cloud.version>2021.0.5</spring-cloud.version>
@@ -26,7 +26,17 @@
 		<common-config-data-version>0.0.1-SNAPSHOT</common-config-data-version>
 		<kafka-model-version>0.0.1-SNAPSHOT</kafka-model-version>
 		<spring-kafka-version>2.9.2</spring-kafka-version>
+		<kafka-schema-registry-client-version>5.3.0</kafka-schema-registry-client-version>
+		<kafka-schema-registry-version>3.3.1</kafka-schema-registry-version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>confluent</id>
+			<url>https://packages.confluent.io/maven/</url>
+		</repository>
+	</repositories>
+
 
 	<modules>
 		<module>obligatory-services</module>
@@ -121,6 +131,16 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
+				<groupId>io.confluent</groupId>
+				<artifactId>kafka-schema-registry-client</artifactId>
+				<version>${kafka-schema-registry-client-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.confluent</groupId>
+				<artifactId>kafka-schema-registry</artifactId>
+				<version>${kafka-schema-registry-version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jetty</artifactId>
 				<version>${springboot-version}</version>
@@ -181,10 +201,4 @@
 		</pluginManagement>
 	</build>
 
-	<repositories>
-		<repository>
-			<id>confluent</id>
-			<url>https://packages.confluent.io/maven/</url>
-		</repository>
-	</repositories>
 </project>

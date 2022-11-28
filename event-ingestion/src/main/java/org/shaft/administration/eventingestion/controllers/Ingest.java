@@ -26,6 +26,9 @@ public class Ingest {
     @RequestMapping(value = "/event", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> transactCartProducts(@RequestBody Map<String,Object> productsToUpdate) {
 
+        // #TODO Handle extra keys error present in schema - com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field
+        // #TODO Handle wrong datatype / format in schema - com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize
+        // #TODO create generic object mapper and expose it via obligatory services
         final EventAction pojo = objectMapper.convertValue(productsToUpdate, EventAction.class);
         kafkaStatusListener.onStatus(pojo);
         headers.setContentType(MediaType.APPLICATION_JSON);
