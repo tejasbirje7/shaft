@@ -1,5 +1,7 @@
 package org.shaft.administration.eventprocessor.transformer;
 
+import org.shaft.administration.eventprocessor.consumer.impl.EventModel;
+import org.shaft.administration.kafka.avro.model.EventAvroModel;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -9,12 +11,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class AvroToElasticModelTransformer {
+public class AvroToShaftEventTransformer {
 
-    /*
-    public List<Object> getElasticModels(List<TwitterAvroModel> avroModels) {
+
+    public List<EventModel> getElasticModels(List<EventAvroModel> avroModels) {
         return avroModels.stream()
-                .map(avroModel -> TwitterIndexModel
+                .map(avroModel -> EventModel
                         .builder()
                         .userId(avroModel.getUserId())
                         .id(String.valueOf(avroModel.getId()))
@@ -23,5 +25,5 @@ public class AvroToElasticModelTransformer {
                                 ZoneId.systemDefault()))
                         .build()
                 ).collect(Collectors.toList());
-    }*/
+    }
 }

@@ -2,7 +2,7 @@ package org.shaft.administration.eventingestion.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.shaft.administration.eventingestion.entity.EventAction;
-import org.shaft.administration.eventingestion.listener.TwitterKafkaStatusListener;
+import org.shaft.administration.eventingestion.listener.ShaftKafkaEventListener;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -19,10 +19,10 @@ public class Ingest {
 
     HttpHeaders headers = new HttpHeaders();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    TwitterKafkaStatusListener kafkaStatusListener;
+    ShaftKafkaEventListener kafkaStatusListener;
 
     @Autowired
-    public Ingest(TwitterKafkaStatusListener kafkaStatusListener) {
+    public Ingest(ShaftKafkaEventListener kafkaStatusListener) {
         this.kafkaStatusListener = kafkaStatusListener;
     }
 

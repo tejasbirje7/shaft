@@ -1,14 +1,14 @@
 package org.shaft.administration.eventingestion.transformer;
 
 import org.shaft.administration.eventingestion.entity.EventAction;
-import org.shaft.administration.kafka.avro.model.TwitterAvroModel;
+import org.shaft.administration.kafka.avro.model.EventAvroModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TwitterStatusToAvroTransformer {
+public class ShaftEventToAvroTransformer {
 
-    public TwitterAvroModel getTwitterAvroModelFromStatus(EventAction status) {
-        return TwitterAvroModel
+    public EventAvroModel getEventAvroModel(EventAction status) {
+        return EventAvroModel
                 .newBuilder()
                 .setId(status.getId())
                 .setUserId(status.getUserId())

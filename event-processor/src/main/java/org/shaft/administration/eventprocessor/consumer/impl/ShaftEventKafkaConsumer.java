@@ -2,8 +2,9 @@ package org.shaft.administration.eventprocessor.consumer.impl;
 
 import org.shaft.administration.appconfigdata.KafkaConfigData;
 import org.shaft.administration.eventprocessor.consumer.KafkaConsumer;
+import org.shaft.administration.eventprocessor.transformer.AvroToShaftEventTransformer;
 import org.shaft.administration.kafka.admin.client.KafkaAdminClient;
-import org.shaft.administration.kafka.avro.model.TwitterAvroModel;
+import org.shaft.administration.kafka.avro.model.EventAvroModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -16,9 +17,9 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 @Service
-public class TwitterKafkaConsumer implements KafkaConsumer<Long, TwitterAvroModel> {
+public class ShaftEventKafkaConsumer implements KafkaConsumer<Long, EventAvroModel> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TwitterKafkaConsumer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ShaftEventKafkaConsumer.class);
 
     private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
@@ -27,12 +28,16 @@ public class TwitterKafkaConsumer implements KafkaConsumer<Long, TwitterAvroMode
     private final KafkaConfigData kafkaConfigData;
 
 
-    public TwitterKafkaConsumer(KafkaListenerEndpointRegistry listenerEndpointRegistry,
-                                KafkaAdminClient adminClient,
-                                KafkaConfigData configData) {
+    private final AvroToShaftEventTransformer avroToShaftEventTransformer;
+
+
+    public ShaftEventKafkaConsumer(KafkaListenerEndpointRegistry listenerEndpointRegistry,
+                                   KafkaAdminClient adminClient,
+                                   KafkaConfigData configData, AvroToShaftEventTransformer avroToShaftEventTransformer) {
         this.kafkaListenerEndpointRegistry = listenerEndpointRegistry;
         this.kafkaAdminClient = adminClient;
         this.kafkaConfigData = configData;
+        this.avroToShaftEventTransformer = avroToShaftEventTransformer;
     }
 
     @EventListener
@@ -44,7 +49,7 @@ public class TwitterKafkaConsumer implements KafkaConsumer<Long, TwitterAvroMode
 
     @Override
     @KafkaListener(id = "twitterTopicListener", topics = "${kafka-config.topic-name}")
-    public void receive(@Payload List<TwitterAvroModel> messages,
+    public void receive(@Payload List<EventAvroModel> messages,
                         @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) List<Long> keys,
                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
                         @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
@@ -60,9 +65,11 @@ public class TwitterKafkaConsumer implements KafkaConsumer<Long, TwitterAvroMode
         } catch (Throwable t) {
             System.out.println(t.getMessage());
         }
+        List<EventModel> eventModels = avroToShaftEventTransformer.getElasticModels(messages);
+        eventModels.forEach(System.out::println);
         /*
-        List<TwitterIndexModel> twitterIndexModels = avroToElasticModelTransformer.getElasticModels(messages);
-        List<String> documentIds = elasticIndexClient.save(twitterIndexModels);
+        List<EventModel> eventModels = avroToElasticModelTransformer.getElasticModels(messages);
+        List<String> documentIds = elasticIndexClient.save(eventModels);
         LOG.info("Documents saved to elasticsearch with ids {}", documentIds.toArray());*/
     }
 }

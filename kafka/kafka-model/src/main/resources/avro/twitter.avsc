@@ -1,6 +1,6 @@
 {"namespace": "org.shaft.administration.kafka.avro.model",
   "type": "record",
-  "name": "TwitterAvroModel",
+  "name": "EventAvroModel",
   "fields": [
     {"name": "userId", "type": "long"},
     {"name": "id", "type": "long"},

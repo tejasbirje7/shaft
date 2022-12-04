@@ -5,34 +5,32 @@
  */
 package org.shaft.administration.kafka.avro.model;
 
-import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
-import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
 import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
-public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
   private static final long serialVersionUID = -5353382515154144454L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"TwitterAvroModel\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"userId\",\"type\":\"long\"},{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"text\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"createdAt\",\"type\":[\"null\",\"long\"],\"logicalType\":[\"null\",\"date\"]}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventAvroModel\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"userId\",\"type\":\"long\"},{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"text\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"createdAt\",\"type\":[\"null\",\"long\"],\"logicalType\":[\"null\",\"date\"]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
 
-  private static final BinaryMessageEncoder<TwitterAvroModel> ENCODER =
+  private static final BinaryMessageEncoder<EventAvroModel> ENCODER =
       new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
-  private static final BinaryMessageDecoder<TwitterAvroModel> DECODER =
+  private static final BinaryMessageDecoder<EventAvroModel> DECODER =
       new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
    * @return the message encoder used by this class
    */
-  public static BinaryMessageEncoder<TwitterAvroModel> getEncoder() {
+  public static BinaryMessageEncoder<EventAvroModel> getEncoder() {
     return ENCODER;
   }
 
@@ -40,7 +38,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
    * Return the BinaryMessageDecoder instance used by this class.
    * @return the message decoder used by this class
    */
-  public static BinaryMessageDecoder<TwitterAvroModel> getDecoder() {
+  public static BinaryMessageDecoder<EventAvroModel> getDecoder() {
     return DECODER;
   }
 
@@ -49,12 +47,12 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
-  public static BinaryMessageDecoder<TwitterAvroModel> createDecoder(SchemaStore resolver) {
+  public static BinaryMessageDecoder<EventAvroModel> createDecoder(SchemaStore resolver) {
     return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
-   * Serializes this TwitterAvroModel to a ByteBuffer.
+   * Serializes this EventAvroModel to a ByteBuffer.
    * @return a buffer holding the serialized data for this instance
    * @throws java.io.IOException if this instance could not be serialized
    */
@@ -63,12 +61,12 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
   }
 
   /**
-   * Deserializes a TwitterAvroModel from a ByteBuffer.
+   * Deserializes a EventAvroModel from a ByteBuffer.
    * @param b a byte buffer holding serialized data for an instance of this class
-   * @return a TwitterAvroModel instance decoded from the given buffer
+   * @return a EventAvroModel instance decoded from the given buffer
    * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
    */
-  public static TwitterAvroModel fromByteBuffer(
+  public static EventAvroModel fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
@@ -83,7 +81,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>.
    */
-  public TwitterAvroModel() {}
+  public EventAvroModel() {}
 
   /**
    * All-args constructor.
@@ -92,7 +90,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
    * @param text The new value for text
    * @param createdAt The new value for createdAt
    */
-  public TwitterAvroModel(java.lang.Long userId, java.lang.Long id, java.lang.String text, java.lang.Long createdAt) {
+  public EventAvroModel(java.lang.Long userId, java.lang.Long id, java.lang.String text, java.lang.Long createdAt) {
     this.userId = userId;
     this.id = id;
     this.text = text;
@@ -199,45 +197,45 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
   }
 
   /**
-   * Creates a new TwitterAvroModel RecordBuilder.
-   * @return A new TwitterAvroModel RecordBuilder
+   * Creates a new EventAvroModel RecordBuilder.
+   * @return A new EventAvroModel RecordBuilder
    */
-  public static org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder newBuilder() {
-    return new org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder();
+  public static EventAvroModel.Builder newBuilder() {
+    return new EventAvroModel.Builder();
   }
 
   /**
-   * Creates a new TwitterAvroModel RecordBuilder by copying an existing Builder.
+   * Creates a new EventAvroModel RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new TwitterAvroModel RecordBuilder
+   * @return A new EventAvroModel RecordBuilder
    */
-  public static org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder newBuilder(org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder other) {
+  public static EventAvroModel.Builder newBuilder(EventAvroModel.Builder other) {
     if (other == null) {
-      return new org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder();
+      return new EventAvroModel.Builder();
     } else {
-      return new org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder(other);
+      return new EventAvroModel.Builder(other);
     }
   }
 
   /**
-   * Creates a new TwitterAvroModel RecordBuilder by copying an existing TwitterAvroModel instance.
+   * Creates a new EventAvroModel RecordBuilder by copying an existing EventAvroModel instance.
    * @param other The existing instance to copy.
-   * @return A new TwitterAvroModel RecordBuilder
+   * @return A new EventAvroModel RecordBuilder
    */
-  public static org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder newBuilder(org.shaft.administration.kafka.avro.model.TwitterAvroModel other) {
+  public static EventAvroModel.Builder newBuilder(EventAvroModel other) {
     if (other == null) {
-      return new org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder();
+      return new EventAvroModel.Builder();
     } else {
-      return new org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder(other);
+      return new EventAvroModel.Builder(other);
     }
   }
 
   /**
-   * RecordBuilder for TwitterAvroModel instances.
+   * RecordBuilder for EventAvroModel instances.
    */
   @org.apache.avro.specific.AvroGenerated
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<TwitterAvroModel>
-    implements org.apache.avro.data.RecordBuilder<TwitterAvroModel> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<EventAvroModel>
+    implements org.apache.avro.data.RecordBuilder<EventAvroModel> {
 
     private long userId;
     private long id;
@@ -253,7 +251,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder other) {
+    private Builder(EventAvroModel.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.userId)) {
         this.userId = data().deepCopy(fields()[0].schema(), other.userId);
@@ -274,10 +272,10 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
     }
 
     /**
-     * Creates a Builder by copying an existing TwitterAvroModel instance
+     * Creates a Builder by copying an existing EventAvroModel instance
      * @param other The existing instance to copy.
      */
-    private Builder(org.shaft.administration.kafka.avro.model.TwitterAvroModel other) {
+    private Builder(EventAvroModel other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.userId)) {
         this.userId = data().deepCopy(fields()[0].schema(), other.userId);
@@ -311,7 +309,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * @param value The value of 'userId'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder setUserId(long value) {
+    public EventAvroModel.Builder setUserId(long value) {
       validate(fields()[0], value);
       this.userId = value;
       fieldSetFlags()[0] = true;
@@ -331,7 +329,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * Clears the value of the 'userId' field.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder clearUserId() {
+    public EventAvroModel.Builder clearUserId() {
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -350,7 +348,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * @param value The value of 'id'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder setId(long value) {
+    public EventAvroModel.Builder setId(long value) {
       validate(fields()[1], value);
       this.id = value;
       fieldSetFlags()[1] = true;
@@ -370,7 +368,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * Clears the value of the 'id' field.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder clearId() {
+    public EventAvroModel.Builder clearId() {
       fieldSetFlags()[1] = false;
       return this;
     }
@@ -389,7 +387,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * @param value The value of 'text'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder setText(java.lang.String value) {
+    public EventAvroModel.Builder setText(java.lang.String value) {
       validate(fields()[2], value);
       this.text = value;
       fieldSetFlags()[2] = true;
@@ -409,7 +407,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * Clears the value of the 'text' field.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder clearText() {
+    public EventAvroModel.Builder clearText() {
       text = null;
       fieldSetFlags()[2] = false;
       return this;
@@ -429,7 +427,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * @param value The value of 'createdAt'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder setCreatedAt(java.lang.Long value) {
+    public EventAvroModel.Builder setCreatedAt(java.lang.Long value) {
       validate(fields()[3], value);
       this.createdAt = value;
       fieldSetFlags()[3] = true;
@@ -449,7 +447,7 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
       * Clears the value of the 'createdAt' field.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.TwitterAvroModel.Builder clearCreatedAt() {
+    public EventAvroModel.Builder clearCreatedAt() {
       createdAt = null;
       fieldSetFlags()[3] = false;
       return this;
@@ -457,9 +455,9 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
 
     @Override
     @SuppressWarnings("unchecked")
-    public TwitterAvroModel build() {
+    public EventAvroModel build() {
       try {
-        TwitterAvroModel record = new TwitterAvroModel();
+        EventAvroModel record = new EventAvroModel();
         record.userId = fieldSetFlags()[0] ? this.userId : (java.lang.Long) defaultValue(fields()[0]);
         record.id = fieldSetFlags()[1] ? this.id : (java.lang.Long) defaultValue(fields()[1]);
         record.text = fieldSetFlags()[2] ? this.text : (java.lang.String) defaultValue(fields()[2]);
@@ -474,8 +472,8 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumWriter<TwitterAvroModel>
-    WRITER$ = (org.apache.avro.io.DatumWriter<TwitterAvroModel>)MODEL$.createDatumWriter(SCHEMA$);
+  private static final org.apache.avro.io.DatumWriter<EventAvroModel>
+    WRITER$ = (org.apache.avro.io.DatumWriter<EventAvroModel>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -483,8 +481,8 @@ public class TwitterAvroModel extends org.apache.avro.specific.SpecificRecordBas
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumReader<TwitterAvroModel>
-    READER$ = (org.apache.avro.io.DatumReader<TwitterAvroModel>)MODEL$.createDatumReader(SCHEMA$);
+  private static final org.apache.avro.io.DatumReader<EventAvroModel>
+    READER$ = (org.apache.avro.io.DatumReader<EventAvroModel>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {
