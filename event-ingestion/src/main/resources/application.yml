@@ -28,4 +28,4 @@ kafka-producer-config:
   request-timeout-ms: 60000
   retry-count: 5
 
-JAVA_OPTS : "-Xms512m -Xmx1024m"
+JAVA_OPTS : "-Xms128m -Xmx256m"

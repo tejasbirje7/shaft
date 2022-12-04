@@ -1,5 +1,6 @@
 package org.shaft.administration.kafka.producer.config.service.impl;
 
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.shaft.administration.kafka.avro.model.TwitterAvroModel;
 import org.shaft.administration.kafka.producer.config.service.KafkaProducer;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ public class TwitterKafkaProducer implements KafkaProducer<Long, TwitterAvroMode
     @Override
     public void send(String topicName, Long key, TwitterAvroModel message) {
         LOG.info("Sending message='{}' to topic='{}'", message, topicName);
+        LOG.info("Bootstrap servers information: {}",
+                kafkaTemplate.getProducerFactory().getConfigurationProperties().get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
         ListenableFuture<SendResult<Long, TwitterAvroModel>> kafkaResultFuture =
                 kafkaTemplate.send(topicName, key, message);
         addCallback(topicName, message, kafkaResultFuture);

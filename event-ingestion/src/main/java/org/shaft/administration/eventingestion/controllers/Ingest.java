@@ -18,10 +18,13 @@ import java.util.Map;
 public class Ingest {
 
     HttpHeaders headers = new HttpHeaders();
-
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Autowired
     TwitterKafkaStatusListener kafkaStatusListener;
+
+    @Autowired
+    public Ingest(TwitterKafkaStatusListener kafkaStatusListener) {
+        this.kafkaStatusListener = kafkaStatusListener;
+    }
 
     @RequestMapping(value = "/event", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> transactCartProducts(@RequestBody Map<String,Object> productsToUpdate) {
