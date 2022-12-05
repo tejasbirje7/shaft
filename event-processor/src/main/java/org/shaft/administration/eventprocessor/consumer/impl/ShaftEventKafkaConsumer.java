@@ -67,6 +67,7 @@ public class ShaftEventKafkaConsumer implements KafkaConsumer<Long, EventAvroMod
         }
         List<EventModel> eventModels = avroToShaftEventTransformer.getElasticModels(messages);
         eventModels.forEach(System.out::println);
+        // #TODO Invoke NIFI for ingestion here
         /*
         List<EventModel> eventModels = avroToElasticModelTransformer.getElasticModels(messages);
         List<String> documentIds = elasticIndexClient.save(eventModels);
