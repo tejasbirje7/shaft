@@ -43,7 +43,7 @@ public class GatewayConfig {
                 .route("product-catalog", r->r.path("/catalog/**")
                         .uri("lb://PRODUCT-CATALOG")) // 8081
                 .route("inventory-management", r->r.path("/inventory/**")
-                        .filters(f -> f.filter(authenticationFilter))
+                        //.filters(f -> f.filter(authenticationFilter))
                         .uri("lb://INVENTORY-MANAGEMENT")) // 8082
                 .route("cart-management", r->r.path("/cart/**")
                         .filters(f -> f.filter(authenticationFilter))

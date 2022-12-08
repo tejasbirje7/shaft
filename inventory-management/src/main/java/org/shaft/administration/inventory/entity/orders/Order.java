@@ -22,8 +22,7 @@ public class Order {
     private int i;
     private int ts;
     private double totalPrice;
-    private int sg;
-    private boolean st;
+    private int sg; // #TODO Replace this with ENUM
     private CustomerInfo customerInfo;
     private DeliveryInfo deliveryInfo;
     private PaymentInfo paymentInfo;

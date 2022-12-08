@@ -53,12 +53,17 @@ public class ItemsDAOImpl implements ItemsDAO {
     public List<Item> getBulkItems(int accountId, Map<String,Object> body) {
         ACCOUNT_ID.set(accountId);
         try {
-            List<String> itemIds = (List<String>) body.get("items");
-            if (body!=null && body.containsKey("fields")) {
-                String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
-                return itemsRepository.getItemsWithSource(itemIds,fields);
+            if(body != null) {
+                List<String> itemIds = (List<String>) body.get("items");
+                if (body.containsKey("fields")) {
+                    String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
+                    return itemsRepository.getItemsWithSource(itemIds,fields);
+                } else {
+                    return Lists.newArrayList(itemsRepository.findByIdIn(itemIds));
+                }
             } else {
-                return Lists.newArrayList(itemsRepository.findByIdIn(itemIds));
+                // #TODO Throw BAD_REQUEST exception
+                return new ArrayList<>();
             }
         } catch (Exception ex) {
             System.out.println("Exception "+ex.getMessage());

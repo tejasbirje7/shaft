@@ -1,7 +1,9 @@
 package org.shaft.administration.inventory.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.util.Lists;
 import org.shaft.administration.inventory.dao.OrdersDao;
 import org.shaft.administration.inventory.entity.orders.Item;
 import org.shaft.administration.inventory.entity.orders.Order;
@@ -34,6 +36,13 @@ public class OrdersDAOImpl implements OrdersDao {
     }
 
     @Override
+    public List<Object> getOrders(int accountId) {
+        ACCOUNT_ID.set(accountId);
+        // #TODO Handle exceptions
+        return Lists.newArrayList(ordersRepository.findAll());
+    }
+
+    @Override
     public List<Object> getOrdersForI(int accountId, Map<String,Object> body) {
 
         ACCOUNT_ID.set(accountId);
@@ -41,8 +50,8 @@ public class OrdersDAOImpl implements OrdersDao {
         if(body.containsKey("i")) {
             i = (int) body.get("i");
         } else {
-            return new ArrayList<>();
             // #TODO Throw exception BAD REQUEST
+            return new ArrayList<>();
         }
 
         // Get Orders
@@ -114,6 +123,7 @@ public class OrdersDAOImpl implements OrdersDao {
             // Insert order to database
             ordersRepository.save(o);
 
+            // #TODO Add retry mechanism here in case of failure since we have already performed ACID transaction above
             // Remove orders from cart
             httpHeaders = new HttpHeaders();
             httpHeaders.set("account",String.valueOf(accountId));
@@ -137,4 +147,46 @@ public class OrdersDAOImpl implements OrdersDao {
         }
         return true;
     }
+
+    @Override
+    public List<Object> getBulkItemsInOrder(int accountId, Map<String, Object> itemsInRequest) {
+        ACCOUNT_ID.set(accountId);
+        // Invoke catalog API to get more information about items in orders
+        Map<String, Object> request = new HashMap<>();
+        List<String> itemIds = null;
+        if (itemsInRequest.containsKey("items")) {
+            List<Item> convertedItems = objectMapper.convertValue(itemsInRequest.get("items"), new TypeReference<List<Item>>() {});
+            itemIds = convertedItems.stream()
+                    .map(Item::getId)
+                    .collect(Collectors.toList());
+        } else {
+            // #TODO Throw BAD_REQUEST exception
+        }
+        request.put("items", itemIds);
+        request.put("fields", new String[]{"id", "name", "description", "category", "gallery"});
+        List<Object> items;
+        // Invoke API and parse response
+        try {
+            httpHeaders = new HttpHeaders();
+            httpHeaders.set("account", String.valueOf(accountId));
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, httpHeaders);
+            ResponseEntity<ShaftResponseHandler> response = restTemplate.exchange(
+                    "http://localhost:8081/catalog/items/bulk",
+                    HttpMethod.POST, entity, ShaftResponseHandler.class);
+            items = (List<Object>) response.getBody().getData();
+        } catch (Exception ex) {
+            items = new ArrayList<>();
+            System.out.println(ex.getMessage());
+        } finally {
+            ACCOUNT_ID.remove();
+        }
+        return items;
+    }
+
+    @Override
+    public boolean updateOrdersStage(int accountId, Map<String, Integer> status) {
+
+        return false;
+    }
 }
+
