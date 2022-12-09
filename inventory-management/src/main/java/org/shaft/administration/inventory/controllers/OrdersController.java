@@ -62,7 +62,7 @@ public class OrdersController {
 
     @PostMapping(path= "/orders/stage")
     public ResponseEntity<Object> updateOrdersStage(@RequestHeader(value="account") int accountId,
-                                                    @RequestBody Map<String,Integer> body) {
+                                                    @RequestBody Map<String,Object> body) {
         ordersDao.updateOrdersStage(accountId,body);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S232",new ArrayList<>(),headers);

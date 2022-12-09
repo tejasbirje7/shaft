@@ -11,5 +11,5 @@ public interface OrdersDao {
     List<Object> getOrders(int accountId);
     boolean saveOrders(int accountId, Map<String,Object> order);
     List<Object> getBulkItemsInOrder(int accountId, Map<String,Object> itemIds);
-    boolean updateOrdersStage(int accountId, Map<String,Integer> status);
+    boolean updateOrdersStage(int accountId, Map<String,Object> status);
 }
