@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface ItemsDAO {
 
-    public List<Item> getItems(int accountId,Map<String,Object> body);
-    public List<Item> getBulkItems(int accountId,Map<String,Object> body);
+    List<Item> getItems(int accountId,Map<String,Object> body);
+    List<Item> getBulkItems(int accountId,Map<String,Object> body);
+    Item saveItem(int accountId,Map<String,Object> body);
 }

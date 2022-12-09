@@ -186,7 +186,7 @@ public class OrdersDAOImpl implements OrdersDao {
     @Override
     public boolean updateOrdersStage(int accountId, Map<String, Object> status) {
         if (status.containsKey("oid") && status.containsKey("sg")) {
-            Long resp = ordersRepository.updateOrderStage((String) status.get("oid"), (Integer) status.get("sg"));
+            Long resp = ordersRepository.updateOrderStage((Integer) status.get("oid"), (Integer) status.get("sg"));
             return resp > 0;
         } else {
             // #TODO Throw Bad exception

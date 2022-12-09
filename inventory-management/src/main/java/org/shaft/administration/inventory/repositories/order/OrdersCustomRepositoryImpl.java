@@ -28,7 +28,7 @@ public class OrdersCustomRepositoryImpl implements OrdersCustomRepository{
     }
 
     @Override
-    public Long updateOrderStage(String orderId,int status) {
+    public Long updateOrderStage(int orderId,int status) {
         String index = OrdersDAOImpl.getAccount() + "_orders";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
         updateRequest.setConflicts("proceed");

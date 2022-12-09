@@ -1,8 +1,14 @@
 package org.shaft.administration.catalog.repositories.items;
 
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.UpdateByQueryRequest;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.shaft.administration.catalog.entity.item.Item;
+import org.shaft.administration.catalog.services.ItemsDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -11,7 +17,9 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -36,6 +44,11 @@ public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
     public List<Item> getItemsWithSource(String[] fields) {
         query = QueryBuilders.matchAllQuery();
         return queryWithSource(fields);
+    }
+
+    private Script prepareProductsUpdateScript(Map<String,Object> itemDetails) {
+        String scriptStr = "ctx._source.products = params.get(\"product\")";
+        return new Script(ScriptType.INLINE, "painless", scriptStr, itemDetails);
     }
 
     private List<Item> queryWithSource(String[] fields) {

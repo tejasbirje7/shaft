@@ -1,6 +1,7 @@
 package org.shaft.administration.catalog.entity.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,9 +19,8 @@ import java.util.UUID;
 @Setter
 @Document(indexName = "#{T(org.shaft.administration.catalog.services.ItemsDAOImpl).getAccount()}_items")
 public class Item {
-    @Id
-    private String _id = UUID.randomUUID().toString();
     @Field("id")
+    @Id
     private String id;
     @Field("name")
     private String name;
@@ -43,6 +43,6 @@ public class Item {
     @Field("options")
     private List<ItemOptions> options;
     @Field("qt")
-    private int quantity;
+    private int qt;
 
 }

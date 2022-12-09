@@ -33,3 +33,16 @@ Inventory Management: This is responsible for keep tracking of back orders and p
 Track Management: This is responsible for keep track of shipment and notifying of orders via push notifications, SMS and email.
 Reporting Management: This is responsible for web analytics, business intelligence, products sales reports and many more.
 Marketing Engine: This is responsible for personalised marketing and management of recommending productInCarts.
+
+
+
+**THINGS TO DO IN PRODUCTION**
+
+#TODO
+Insert this setting in database production always to avoid automatic index creation if at all account id is not set
+PUT _cluster/settings
+{
+"persistent": {
+"action.auto_create_index": "false"
+}
+}

@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public interface ItemsCustomRepository {
-    public List<Item> getItemsWithSource(List<String> itemIds, String[] fields) ;
+    List<Item> getItemsWithSource(List<String> itemIds, String[] fields) ;
+    List<Item> getItemsWithSource(String[] fields) ;
 
-    public List<Item> getItemsWithSource(String[] fields) ;
 
 }

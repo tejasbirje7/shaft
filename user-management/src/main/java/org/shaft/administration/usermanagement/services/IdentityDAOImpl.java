@@ -35,6 +35,7 @@ public class IdentityDAOImpl implements IdentityDAO {
         this.jwtUtil = new ShaftJWT();
     }
 
+    // #TODO Handle identity scenario with fingerprint as well as IP, because IP changes is not very frequent
     @Override
     public Map<String, Integer> checkIdentity(int account,Map<String,Object> details) {
         ACCOUNT_ID.set(account);
