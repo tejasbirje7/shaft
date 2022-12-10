@@ -19,11 +19,11 @@ public class CategoryController {
 
     @Autowired
     private CategoryDAO categoryDao;
+    HttpHeaders headers = new HttpHeaders();
 
     @RequestMapping(value = "/categories", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> getCategories(@RequestHeader(value="account") int account) {
         List<Category> categories = categoryDao.getCategories(account);
-        HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S78gsd8v",categories,headers);
     }
@@ -32,7 +32,6 @@ public class CategoryController {
     public ResponseEntity<Object> saveCategory(@RequestHeader(value="account") int account,
                                                @RequestBody(required = true)Map<String,Object> category) {
         Category c = categoryDao.saveCategory(account,category);
-        HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S78gsd8v",c,headers);
     }
@@ -41,7 +40,6 @@ public class CategoryController {
     public ResponseEntity<Object> updateCategory(@RequestHeader(value="account") int account,
                                                @RequestBody(required = true)Map<String,Object> category) {
         Category c = categoryDao.saveCategory(account,category);
-        HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S78gsd8v",c,headers);
     }
