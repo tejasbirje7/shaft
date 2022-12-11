@@ -1,40 +1,33 @@
-package org.shaft.administration.reportingmanagement.services;
+package com.shaft.administration.accountmanagement.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.shaft.administration.obligatory.translator.elastic.ShaftQueryTranslator;
-import org.shaft.administration.reportingmanagement.dao.QueryDao;
-import org.shaft.administration.reportingmanagement.entity.AggregationQueryResults;
-import org.shaft.administration.reportingmanagement.repositories.QueryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
-public class QueryDAOImpl implements QueryDao {
-    ObjectMapper mapper;
-    ShaftQueryTranslator queryTranslator;
-    QueryRepository queryRepository;
+public class DashboardDAOImpl {
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
     public static int getAccount() {
         return ACCOUNT_ID.get();
     }
+    ObjectMapper mapper;
+    ShaftQueryTranslator queryTranslator;
 
-    @Autowired
-    public QueryDAOImpl(QueryRepository queryRepository) {
+    public DashboardDAOImpl() {
         this.mapper = new ObjectMapper();
         this.queryTranslator = new ShaftQueryTranslator();
-        this.queryRepository = queryRepository;
     }
 
-    @Override
-    public Map<String, Object> getQueryResults(int accountId, Map<String, Object> rawQuery) {
+    public void pinToDashboard(int accountId, Map<String,Object> rawQuery) {
         ACCOUNT_ID.set(accountId);
         ObjectNode rawQry = mapper.convertValue(rawQuery,ObjectNode.class);
         ObjectNode elasticQuery = queryTranslator.translateToElasticQuery(rawQry,true);
+
+
+
         try {
             String query = mapper.writeValueAsString(elasticQuery);
             AggregationQueryResults results = queryRepository.getQueryResults(accountId,query);

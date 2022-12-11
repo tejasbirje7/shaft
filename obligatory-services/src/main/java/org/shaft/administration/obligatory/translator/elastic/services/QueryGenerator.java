@@ -8,21 +8,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
 public class QueryGenerator {
-    ObjectMapper mapper = new ObjectMapper();
-    int from = 0;
-    int to = 0;
+    private ObjectMapper mapper = new ObjectMapper();
+    private int from = 0;
+    private int to = 0;
+    private static final String VALUE = "v";
+    private static final String GTE = "gte";
+    private static final String LTE = "lte";
     public static void main(String[] args) {
         QueryGenerator qG = new QueryGenerator();
         try {
+
+            String t = "Tejas,Tejas2";
+            ArrayNode m = qG.mapper.convertValue(t.split(","),ArrayNode.class);
+            System.out.println(m);
+
+
             qG.mapper.configure(JsonWriteFeature.QUOTE_FIELD_NAMES.mappedFeature(), true);
             qG.mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
             qG.mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
             ObjectNode o = qG.mapper.readValue("{\"whoDid\":[[{\"e\":0,\"fe\":false,\"o\":\"\",\"f\":\"\",\"v\":\"\",\"sT\":1635705000,\"eT\":1636137000},{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"nm\",\"v\":[\"Chicken Handi\",\"Veg Pulav\"],\"sT\":1635705000,\"eT\":1636137000},{\"e\":2,\"fe\":true,\"o\":\"GTE\",\"f\":\"p\",\"v\":\"20\",\"sT\":1635705000,\"eT\":1636137000}],[{\"e\":0,\"fe\":false,\"o\":\"\",\"f\":\"\",\"v\":\"\",\"sT\":1635705000,\"eT\":1636137000}]],\"didNot\":[],\"commonProp\":[]}",ObjectNode.class);
-            ObjectNode k = qG.prepareAnalyticsQuery(o,true);
+            ObjectNode i = qG.mapper.readValue("{\"whoDid\":[[{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"cg\",\"v\":\"rfsdf\",\"sT\":1670736428,\"eT\":1670736428},{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"cg\",\"v\":\"f676,dfsf,sf,sdfsdf\",\"sT\":1670736440,\"eT\":1670736440}]],\"didNot\":[],\"commonProp\":[]}",ObjectNode.class);
+            ObjectNode k = qG.prepareAnalyticsQuery(i,true);
 
             String json = qG.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(k);
             System.out.println(json);
@@ -34,7 +45,7 @@ public class QueryGenerator {
     private ObjectNode appendRangeQuery(int f,int t) {
         return mapper.createObjectNode().set("range" ,
                 mapper.createObjectNode().set("e.ts",
-                        mapper.createObjectNode().put("gte",f).put("lte",t)));
+                        mapper.createObjectNode().put(GTE,f).put(LTE,t)));
     }
 
     private ObjectNode getEventQuery(int eventId) {
@@ -47,25 +58,25 @@ public class QueryGenerator {
     private ObjectNode getRangeQuery(ObjectNode query) {
         return mapper.createObjectNode().set("range",
                 mapper.createObjectNode().set("e.".concat(query.get("f").textValue()),
-                        mapper.createObjectNode().set(query.get("o").textValue().toLowerCase(),query.get("v"))));
+                        mapper.createObjectNode().set(query.get("o").textValue().toLowerCase(),query.get(VALUE))));
     }
 
     private ObjectNode getDateRangeQuery(int from, int to) {
         return mapper.createObjectNode().set("range",
                 mapper.createObjectNode().set("e.ts",
-                        mapper.createObjectNode().put("gte",from).put("lte",to)));
+                        mapper.createObjectNode().put(GTE,from).put(LTE,to)));
     }
 
     private ObjectNode getTermsQuery(ObjectNode query) {
+        ArrayNode value = mapper.convertValue(query.get(VALUE).textValue().split(","),ArrayNode.class);
         return mapper.createObjectNode().set("terms",
-                mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"),
-                        mapper.createObjectNode().set("value",query.get("v"))));
+                mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"), value));
     }
 
     private ObjectNode getTermQuery(ObjectNode query) {
         return mapper.createObjectNode().set("term" ,
                 mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"),
-                        mapper.createObjectNode().set("value",query.get("v"))));
+                        mapper.createObjectNode().set("value",query.get(VALUE))));
     }
 
     private boolean isNotOperator(String operator) {
@@ -134,7 +145,7 @@ public class QueryGenerator {
                                 eachQuery.add(getEventQuery(q.get("e").intValue()));
                                 eachQuery.add(getDateRangeQuery(q.get("sT").intValue(),q.get("eT").intValue()));
                             }
-                        } else if (q.has("v") && q.get("v") instanceof ArrayNode) {
+                        } else if (q.has(VALUE) && q.get(VALUE).textValue().contains(",")) {
                             qType = "terms";
                             if (q.has("o") && isNotOperator(q.get("o").textValue())) {
                                 eachQuery.add(getEventQuery(q.get("e").intValue()));
@@ -197,8 +208,9 @@ public class QueryGenerator {
 
     public ObjectNode prepareAnalyticsQuery(ObjectNode requestQuery,boolean aggs) {
         ObjectNode boolQuery = getBoolFilteredQuery(requestQuery);
-        if(aggs) {
-            return mapper.createObjectNode().set("query",boolQuery);
+        if(!aggs) {
+            //return mapper.createObjectNode().set("query",boolQuery);
+            return boolQuery;
         } else {
             ObjectNode rangeNode = mapper.createObjectNode();
             rangeNode.put("field", "e.ts");

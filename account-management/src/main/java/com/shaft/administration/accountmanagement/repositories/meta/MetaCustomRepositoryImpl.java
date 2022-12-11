@@ -10,7 +10,9 @@ import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SourceFilter;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class MetaCustomRepositoryImpl implements MetaCustomRepository{
 
     ElasticsearchOperations elasticOperations;

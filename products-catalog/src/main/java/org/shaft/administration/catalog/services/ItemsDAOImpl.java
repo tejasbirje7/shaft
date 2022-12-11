@@ -115,7 +115,7 @@ public class ItemsDAOImpl implements ItemsDAO {
         itemDetails.put("inStock",true);
         // #TODO Replace item id's to be epoch instead of base64 strings
         if(!itemDetails.containsKey("id")) {
-            // #TODO Handling update case in save items. Isolate both flows differently. If case is update id will come from ui
+            // #TODO Handling update case in save items. Isolate both flows differently. If case is update, id will come from ui
             byte[] bytesEncoded = Base64.encodeBase64(((String)itemDetails.get("name")).getBytes());
             itemDetails.put("id",new String(bytesEncoded));
         }

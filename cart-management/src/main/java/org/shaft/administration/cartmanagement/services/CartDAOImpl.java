@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.shaft.administration.cartmanagement.dao.CartDao;
 import org.shaft.administration.cartmanagement.entity.Cart;
-import org.shaft.administration.cartmanagement.entity.Product;
-import org.shaft.administration.cartmanagement.entity.Products;
 import org.shaft.administration.cartmanagement.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
