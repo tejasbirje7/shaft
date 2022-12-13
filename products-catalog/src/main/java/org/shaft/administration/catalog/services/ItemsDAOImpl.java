@@ -54,6 +54,9 @@ public class ItemsDAOImpl implements ItemsDAO {
         } catch (Exception ex) {
             System.out.println("Exception "+ ex.getMessage());
             return new ArrayList<>();
+        } finally {
+
+            ACCOUNT_ID.remove();
         }
     }
 

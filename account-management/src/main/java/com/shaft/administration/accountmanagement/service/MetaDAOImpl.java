@@ -14,11 +14,8 @@ import java.util.Map;
 
 @Service
 public class MetaDAOImpl implements MetaDAO {
-
     MetaRepository metaRepository;
-
     ObjectMapper mapper = new ObjectMapper();
-
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 
     public static int getAccount() {

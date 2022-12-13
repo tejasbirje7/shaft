@@ -54,6 +54,7 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
     }
 
     private Script prepareProductsUpdateScript(Map<String,Object> params) {
+        // #TODO Remove Map dependency and insert string here
         String scriptStr = "ctx._source.products = params.get(\"product\")";
         return new Script(ScriptType.INLINE, "painless", scriptStr, params);
     }

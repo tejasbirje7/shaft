@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.shaft.administration.catalog.dao.CategoryDAO;
 import org.shaft.administration.catalog.entity.category.Category;
-import org.shaft.administration.catalog.entity.item.Item;
 import org.shaft.administration.catalog.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.NoSuchIndexException;

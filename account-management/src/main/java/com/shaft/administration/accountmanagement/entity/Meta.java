@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -16,4 +17,5 @@ public class Meta {
     private int aid;
     private String idx;
     private String name;
+    private Map<String,String> dashboardQueries;
 }

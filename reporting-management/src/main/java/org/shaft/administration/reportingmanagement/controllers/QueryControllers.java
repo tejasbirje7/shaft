@@ -30,4 +30,11 @@ public class QueryControllers {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S78gsd8v",new ArrayList<>(),headers);
     }
+
+    @RequestMapping(value="/query/save/filter", method = { RequestMethod.POST })
+    public ResponseEntity<Object> saveFilters(@RequestHeader(value="account") int account,
+                                              @RequestBody Map<String,Object> rawQuery) {
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return ShaftResponseHandler.generateResponse("Success","S78gsd8v",new ArrayList<>(),headers);
+    }
 }
