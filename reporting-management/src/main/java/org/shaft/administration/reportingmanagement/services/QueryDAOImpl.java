@@ -11,6 +11,7 @@ import org.shaft.administration.reportingmanagement.repositories.QueryRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,15 +33,17 @@ public class QueryDAOImpl implements QueryDao {
     }
 
     @Override
-    public Map<String, Object> getQueryResults(int accountId, Map<String, Object> rawQuery) {
+    public Map<String,Object> evaluateEncodedQueries(int accountId, Map<String,Object> request) {
         ACCOUNT_ID.set(accountId);
-        if(rawQuery.containsKey("q")) {
-            ObjectNode elasticQuery = getQueryFromRawObject(rawQuery);
+        if(request.containsKey("q")) {
+            String q = (String) request.get("q");
+            byte[] decoded = Base64.decodeBase64(q);
+            String decodedStr = new String(decoded, StandardCharsets.UTF_8);
+            ObjectNode convertedQuery = mapper.convertValue(decodedStr,ObjectNode.class);
+            ObjectNode elasticQuery = queryTranslator.translateToElasticQuery(convertedQuery,true);
+            // #TODO Hit to elasticsearch and get results
             try {
-                String query = mapper.writeValueAsString(elasticQuery);
-                AggregationQueryResults results = queryRepository.getQueryResults(accountId,query);
-                // #TODO Construct proper response
-                System.out.println(results);
+                return fireAnalyticsQuery(accountId,elasticQuery);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             } catch (Exception ex) {
@@ -49,13 +52,46 @@ public class QueryDAOImpl implements QueryDao {
                 ACCOUNT_ID.remove();
             }
         } else {
+            ACCOUNT_ID.remove();
+            // #TODO Throw Bad request exception
+        }
+        return new HashMap<>();
+    }
+
+    @Override
+    public Map<String, Object> getQueryResults(int accountId, Map<String, Object> rawQuery) {
+        ACCOUNT_ID.set(accountId);
+        if(rawQuery.containsKey("q")) {
+            ObjectNode rawQry = mapper.convertValue(rawQuery.get("q"),ObjectNode.class);
+            ObjectNode elasticQuery = queryTranslator.translateToElasticQuery(rawQry,true);
+            try {
+                return fireAnalyticsQuery(accountId,elasticQuery);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            } finally {
+                ACCOUNT_ID.remove();
+            }
+        } else {
+            ACCOUNT_ID.remove();
             throw new RuntimeException("Query not present in request");
         }
         return new HashMap<>();
     }
 
-    private ObjectNode getQueryFromRawObject(Map<String,Object> rawQuery) {
-        ObjectNode rawQry = mapper.convertValue(rawQuery.get("q"),ObjectNode.class);
-        return queryTranslator.translateToElasticQuery(rawQry,true);
+    public Map<String,Object> fireAnalyticsQuery(int accountId,ObjectNode jsonQuery) throws JsonProcessingException {
+        String query = mapper.writeValueAsString(jsonQuery);
+        AggregationQueryResults results = queryRepository.getQueryResults(accountId,query);
+        if (results.getAggregations() != null) {
+            Map<String,Object> response = new HashMap<>();
+            response.put("u",results.getUserCount());
+            response.put("g",results.getGraphCount());
+            return response;
+        } else {
+            // #TODO return query failed exception
+            throw new RuntimeException("Query Failed");
+
+        }
     }
 }

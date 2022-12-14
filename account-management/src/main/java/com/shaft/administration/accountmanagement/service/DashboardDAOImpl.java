@@ -52,21 +52,9 @@ public class DashboardDAOImpl implements DashboardDAO {
                 throw new RuntimeException(e);
             } catch (Exception ex) {
                 throw  new RuntimeException(ex.getMessage());
+            } finally {
+                ACCOUNT_ID.remove();
             }
         }
-        /*
-        try {
-            String query = mapper.writeValueAsString(elasticQuery);
-            AggregationQueryResults results = queryRepository.getQueryResults(accountId,query);
-            // #TODO Construct proper response
-            System.out.println(results);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        } finally {
-            ACCOUNT_ID.remove();
-        }
-        return new HashMap<>();*/
     }
 }

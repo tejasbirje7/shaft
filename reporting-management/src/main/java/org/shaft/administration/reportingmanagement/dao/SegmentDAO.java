@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface SegmentDAO {
-     boolean saveFilters(int accountId, Map<String,Object> rawQuery);
-     List<Segment> getSavedFilters(int accountId);
+     boolean saveSegment(int accountId, Map<String,Object> rawQuery);
+     List<Segment> getSavedSegments(int accountId);
 }

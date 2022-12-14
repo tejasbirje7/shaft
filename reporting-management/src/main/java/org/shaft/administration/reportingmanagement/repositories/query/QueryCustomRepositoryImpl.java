@@ -1,20 +1,19 @@
 package org.shaft.administration.reportingmanagement.repositories.query;
 
 
-import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.shaft.administration.reportingmanagement.entity.AggregationQueryResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -32,22 +31,27 @@ public class QueryCustomRepositoryImpl implements QueryCustomRepository{
 
     private AggregationQueryResults emptyResults = new AggregationQueryResults();
 
+    private ObjectMapper mapper;
+
     @Autowired
     public QueryCustomRepositoryImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         httpHeaders = new HttpHeaders();
-        httpHeaders.set("Content-Type","application/json");
+        mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
     @Override
-    public AggregationQueryResults getQueryResults(int accountId,String query) {
+    public AggregationQueryResults getQueryResults(int accountId, String query) {
         this.ELASTIC_URL = ELASTIC_HOST + ":" + ELASTIC_PORT; // #TODO Move this part to constructor
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(query,httpHeaders);
         String url = "http://".concat(ELASTIC_URL).concat("/").concat(String.valueOf(accountId)).concat("_16*/").concat("_search");
         try {
-            ResponseEntity<AggregationQueryResults> response = restTemplate.exchange(
-                    url, HttpMethod.POST,entity,AggregationQueryResults.class);
-            return response.getBody();
+            ResponseEntity<ObjectNode> response = restTemplate.exchange(
+                    url, HttpMethod.POST,entity, ObjectNode.class);
+            return mapper.convertValue(response.getBody(),AggregationQueryResults.class);
         } catch (Exception ex){
             System.out.println(ex.getMessage());
         }

@@ -3,4 +3,5 @@ package org.shaft.administration.reportingmanagement.dao;
 import java.util.Map;
 public interface QueryDao {
     Map<String,Object> getQueryResults(int accountId, Map<String,Object> rawQuery);
+    Map<String, Object> evaluateEncodedQueries(int accountId,Map<String,Object> request);
 }
