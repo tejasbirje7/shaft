@@ -25,29 +25,6 @@ public class JWTUtil {
 
     }
 
-    public String issueToken() {
-        // #TODO Fill this claims map properly
-        Map<String,Object> claims = new HashMap<>();
-        claims.put("user","");
-        claims.put("role","");
-        claims.put("user-agent","");
-        claims.put("publicIP","");
-        claims.put("privateIP","");
-        String token;
-        try {
-            token = this.shaftJWT.generateToken(
-                    "1600_ready_to_cook",
-                    "shaft.org",
-                    claims,
-                    60);
-        } catch (Exception e) {
-            // #TODO Handle this exception if keys are not found
-            System.out.println("Exception while generating token" + e.getMessage());
-            token = "";
-        }
-        return token;
-    }
-
     // #TODO Validate claims by comparing user-agent, publicIP, privateIP - it should match to request
     public Map<String,Object> validateToken(String encryptedToken) {
         try {
