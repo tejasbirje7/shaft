@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AuthRepository extends ElasticsearchRepository<User,String> {
     User findByEAndP(String e, String p);
+    long countByE(String e);
 }

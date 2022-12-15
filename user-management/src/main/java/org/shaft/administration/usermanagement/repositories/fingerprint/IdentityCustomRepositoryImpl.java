@@ -114,10 +114,51 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
         }
         return 0L;
     }
+
+    @Override
+    public Long upsertFpAndIPair(int account,String fp, int i) {
+        String index = account + "_devices";
+        UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
+
+        updateRequest.setConflicts("proceed");
+        updateRequest.setQuery(QueryBuilders
+                .boolQuery()
+                .must(QueryBuilders.termQuery("i",i)));
+        Map<String,Object> fpObject = new HashMap<>();
+        fpObject.put("g",fp);
+        updateRequest.setScript(upsertFpAndIScript(fpObject));
+        updateRequest.setRefresh(true);
+        try {
+            BulkByScrollResponse bulkResponse = esClient.updateByQuery(updateRequest, RequestOptions.DEFAULT);
+            return bulkResponse.getTotal();
+            /*
+            TimeValue timeTaken = bulkResponse.getTook();
+            log.info("[ELASTICSEARCH_SERVICE] [UPDATE_EXPIRATION_DATE] [TOTAL_UPDATED_DOCS: {}] [TOTAL_DURATION: {}]", totalDocs, timeTaken.getMillis()); */
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
+
     private Script prepareFpUpdateScript(Map<String,Object> fp) {
         String scriptStr = "ctx._source.fp.add(params.get(\"object\"))";
         Map<String,Object> params = new HashMap<>();
         params.put("object", fp);
+        return new Script(ScriptType.INLINE, "painless", scriptStr, params);
+    }
+
+    private Script upsertFpAndIScript(Map<String,Object> fpObject) {
+        String scriptStr = "if (ctx._source != null) {boolean e = false; " +
+                "for(int i = 0; i < ctx._source.fp.length ; i++) { " +
+                "if(ctx._source.fp[i].g.equals(params.get(\"fpObject\").g) ){" +
+                "e = true;" +
+                "break;" +
+                "}}" +
+                "if (!e) {" +
+                "ctx._source.fp.add(params.get(\"fpObject\"))" +
+                "}} ";
+        Map<String,Object> params = new HashMap<>();
+        params.put("fpObject", fpObject);
         return new Script(ScriptType.INLINE, "painless", scriptStr, params);
     }
 }

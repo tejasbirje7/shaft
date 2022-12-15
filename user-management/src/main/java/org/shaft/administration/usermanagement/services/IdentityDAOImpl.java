@@ -137,4 +137,9 @@ public class IdentityDAOImpl implements IdentityDAO {
         }
         return i;
     }
+
+    @Override
+    public Map<String, Integer> upsertFpAndIPair(String fp, int i) {
+        return null;
+    }
 }

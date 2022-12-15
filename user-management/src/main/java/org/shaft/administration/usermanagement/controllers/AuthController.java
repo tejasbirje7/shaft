@@ -25,8 +25,8 @@ public class AuthController {
     @RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<Object> checkIdentity(@RequestHeader int account,
                                                 @RequestBody Map<String,Object> details) {
-        authDAO.authenticateUser(details);
+        Map<String,Object> response = authDAO.authenticateUser(details);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
+        return ShaftResponseHandler.generateResponse("Success","S7394",response, headers);
     }
 }

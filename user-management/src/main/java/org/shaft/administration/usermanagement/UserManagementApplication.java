@@ -1,5 +1,7 @@
 package org.shaft.administration.usermanagement;
 
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

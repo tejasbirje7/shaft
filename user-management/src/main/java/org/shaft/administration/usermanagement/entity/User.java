@@ -10,9 +10,10 @@ import org.springframework.data.elasticsearch.annotations.Document;
 public class User {
     @Id
     int i;
+    int c;
+    int a;
     String nm;
     String e;
     String p;
-    String c;
 
 }
