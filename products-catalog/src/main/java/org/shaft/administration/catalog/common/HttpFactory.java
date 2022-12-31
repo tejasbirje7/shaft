@@ -80,7 +80,7 @@ public class HttpFactory {
     public Runnable idleConnectionMonitor() {
         return new Runnable() {
             @Override
-            @Scheduled(fixedDelay = 10000)
+            @Scheduled(fixedDelay = 300000) // #TODO Calculate this accordingly and set
             public void run() {
                 LOGGER.info("Idle Connection Monitor");
                 if(!connectionManagers.isEmpty()) {

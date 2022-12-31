@@ -1,4 +1,4 @@
-package org.shaft.administration.inventory.controllers;
+package org.shaft.administration.inventory.controllers.spring;
 
 import org.shaft.administration.inventory.dao.OrdersDao;
 import org.shaft.administration.inventory.entity.orders.Item;

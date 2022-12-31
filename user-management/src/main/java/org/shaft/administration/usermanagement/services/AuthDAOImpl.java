@@ -7,13 +7,16 @@ import org.shaft.administration.obligatory.auth.transact.ShaftHashing;
 import org.shaft.administration.obligatory.auth.utils.Mode;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.usermanagement.dao.AuthDAO;
+import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.entity.User;
 import org.shaft.administration.usermanagement.repositories.AuthRepository;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -104,7 +107,15 @@ public class AuthDAOImpl implements AuthDAO {
             } else {
                 String hashedPassword = shaftHashing.transactPassword(Mode.ENCRYPT, password);
             }
-
+            List<Map<String,String>> guidDetails = new ArrayList<>();
+            Map<String,String> g = new HashMap<>();
+            g.put("g",fp);
+            guidDetails.add(g);
+            Identity i = new Identity();
+            i.setIdentity(newI);
+            i.setIdentified(true);
+            i.setFingerPrint(guidDetails);
+            identityRepository.save(i);
         } else {
             // #TODO Throw BAD_REQUEST exception
         }

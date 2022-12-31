@@ -53,13 +53,13 @@ public final class ShaftResponseHandler {
         map.put("message", message);
         map.put("code", code);
         map.put("data", data);
-        return new ResponseEntity<Object>(map,headers,HttpStatus.OK);
+        return new ResponseEntity<>(map, headers, HttpStatus.OK);
     }
     public static ResponseEntity<Object> generateResponse(String message, String code, Object data,HttpStatus status) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("message", message);
         map.put("code", code);
         map.put("data", data);
-        return new ResponseEntity<Object>(map,status);
+        return new ResponseEntity<>(map, status);
     }
 }

@@ -8,13 +8,12 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SourceFilter;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public interface ItemsCustomRepository {
-    List<Item> getItemsWithSource(List<String> itemIds, String[] fields) ;
-    List<Item> getItemsWithSource(String[] fields) ;
-
-
+    Flux<Item> getItemsWithSource(List<String> itemIds, String[] fields) ;
+    Flux<Item> getItemsWithSource(String[] fields) ;
 }

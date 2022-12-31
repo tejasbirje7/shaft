@@ -1,47 +1,50 @@
 package org.shaft.administration.catalog.repositories.items;
 
-import org.elasticsearch.client.RequestOptions;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
-import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
 import org.shaft.administration.catalog.entity.item.Item;
-import org.shaft.administration.catalog.services.ItemsDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
+@Slf4j
 @Repository
 public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
-    ElasticsearchOperations elasticOperations;
-    QueryBuilder query;
-    NativeSearchQuery ns;
+    private ElasticsearchOperations elasticOperations;
+    private QueryBuilder query;
+    private NativeSearchQuery ns;
+    private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
 
     @Autowired
-    public ItemsCustomRepositoryImpl(ElasticsearchOperations elasticOperations) {
+    public ItemsCustomRepositoryImpl(ElasticsearchOperations elasticOperations,
+                                     ReactiveElasticsearchOperations reactiveElasticsearchOperations) {
         this.elasticOperations = elasticOperations;
+        this.reactiveElasticsearchOperations = reactiveElasticsearchOperations;
     }
 
     @Override
-    public List<Item> getItemsWithSource(List<String> itemIds, String[] fields) {
+    public Flux<Item> getItemsWithSource(List<String> itemIds, String[] fields) {
         query = QueryBuilders.boolQuery()
                 .must(QueryBuilders.termsQuery("id.keyword",itemIds));
         return queryWithSource(fields);
     }
 
     @Override
-    public List<Item> getItemsWithSource(String[] fields) {
+    public Flux<Item> getItemsWithSource(String[] fields) {
         query = QueryBuilders.matchAllQuery();
         return queryWithSource(fields);
     }
@@ -51,8 +54,8 @@ public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
         return new Script(ScriptType.INLINE, "painless", scriptStr, itemDetails);
     }
 
-    private List<Item> queryWithSource(String[] fields) {
-        //include only specific fields
+    private Flux<Item> queryWithSource(String[] fields) {
+        // include only specific fields
         final SourceFilter filter = new FetchSourceFilter(fields, null);
         ns = new NativeSearchQueryBuilder()
                 .withQuery(query)
@@ -60,8 +63,11 @@ public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
                 .withPageable(PageRequest.of(0,50))
                 .withSourceFilter(filter)
                 .build();
-        SearchHits<Item> hits = elasticOperations.search(ns, Item.class);
-        return hits.getSearchHits().stream().map(SearchHit::getContent).collect(Collectors.toList());
+       return reactiveElasticsearchOperations.search(ns, Item.class)
+               .map(SearchHit::getContent)
+               .filter(Objects::nonNull)
+               .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+        //return hits.getSearchHits().stream().map(SearchHit::getContent).collect(Collectors.toList());
     }
 
 }

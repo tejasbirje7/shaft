@@ -24,7 +24,6 @@ public class GatewayConfig {
 
     @Bean
     public CorsWebFilter corsWebFilter() {
-
         final CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOrigins(Collections.singletonList("*"));
         corsConfig.setMaxAge(3600L);
@@ -32,18 +31,20 @@ public class GatewayConfig {
         corsConfig.addAllowedHeader("*");
 
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
+        source.registerCorsConfiguration("/*", corsConfig);
 
         return new CorsWebFilter(source);
     }
 
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
+        // #TODO Comment out filters once testing is finished
         return builder.routes()
                 .route("product-catalog", r->r.path("/catalog/**")
                         .uri("lb://PRODUCT-CATALOG")) // 8081
-                .route("inventory-management", r->r.path("/inventory/**")
                         //.filters(f -> f.filter(authenticationFilter))
+                .route("inventory-management", r->r.path("/inventory/**")
+                        .filters(f -> f.filter(authenticationFilter))
                         .uri("lb://INVENTORY-MANAGEMENT")) // 8082
                 .route("cart-management", r->r.path("/cart/**")
                         .filters(f -> f.filter(authenticationFilter))

@@ -1,26 +1,31 @@
 package org.shaft.administration.catalog.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.shaft.administration.catalog.dao.ItemsDAO;
 import org.shaft.administration.catalog.entity.item.Item;
-import org.shaft.administration.catalog.repositories.items.ItemsCustomRepositoryImpl;
-import org.shaft.administration.catalog.repositories.ItemsRepository;
+import org.shaft.administration.catalog.repositories.ReactiveItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
+import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class ItemsDAOImpl implements ItemsDAO {
 
-    private final ItemsRepository itemsRepository;
+    private final ReactiveItemsRepository reactiveItemsRepository;
+
+    private final WebClient webClient;
 
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 
@@ -31,8 +36,9 @@ public class ItemsDAOImpl implements ItemsDAO {
     }
 
     @Autowired
-    public ItemsDAOImpl(ItemsRepository itemsRepository) {
-        this.itemsRepository = itemsRepository;
+    public ItemsDAOImpl( ReactiveItemsRepository reactiveItemsRepository, WebClient webClient) {
+        this.reactiveItemsRepository = reactiveItemsRepository;
+        this.webClient = webClient;
     }
 
     /**
@@ -41,77 +47,72 @@ public class ItemsDAOImpl implements ItemsDAO {
      * @return List
      */
     @Override
-    public List<Item> getItems(int accountId, Map<String,Object> body) {
+    public Flux<Item> getItems(int accountId, Map<String,Object> body) {
         ACCOUNT_ID.set(accountId);
         try {
             if (body!=null && body.containsKey("fields")) {
                 String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
                 // #TODO Check if items are inStock and return those for end user. For dashboard users all items will be populated
-                return itemsRepository.getItemsWithSource(fields);
+                return reactiveItemsRepository.getItemsWithSource(fields);
             } else {
-                return Lists.newArrayList(itemsRepository.findAll());
+                return reactiveItemsRepository.findAll();
             }
         } catch (Exception ex) {
             System.out.println("Exception "+ ex.getMessage());
-            return new ArrayList<>();
+            return Flux.empty();
         } finally {
-
             ACCOUNT_ID.remove();
         }
     }
 
     @Override
-    public List<Item> getBulkItems(int accountId, Map<String,Object> body) {
+    public Flux<Item> getBulkItems(int accountId, Map<String,Object> body) {
         ACCOUNT_ID.set(accountId);
         try {
             if(body != null) {
                 List<String> itemIds = (List<String>) body.get("items");
                 if (body.containsKey("fields")) {
                     String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
-                    return itemsRepository.getItemsWithSource(itemIds,fields);
+                    return reactiveItemsRepository.getItemsWithSource(itemIds,fields);
                 } else {
-                    return Lists.newArrayList(itemsRepository.findByIdIn(itemIds));
+                    return reactiveItemsRepository.findByIdIn(itemIds);
                 }
             } else {
                 // #TODO Throw BAD_REQUEST exception
-                return new ArrayList<>();
+                return Flux.empty();
             }
         } catch (Exception ex) {
             System.out.println("Exception "+ex.getMessage());
-            return new ArrayList<>();
+            return Flux.empty();
         }
     }
 
     @Override
-    public Item saveItem(int accountId, Map<String, Object> body) {
+    public Mono<Item> saveItem(int accountId, Map<String, Object> body) {
 
         // #TODO Save the image item files in S3
         ACCOUNT_ID.set(accountId);
-        Item savedItem = new Item();
         try {
             // #TODO Remove createItemPojoFromRequest dependency
-             savedItem = itemsRepository.save(createItemPojoFromRequest(body));
+            return reactiveItemsRepository.save(createItemPojoFromRequest(body));
         } catch (NoSuchIndexException ex) {
             // #TODO Throw internal error exception. Handle NoSuchIndexException exception for all services which is usually raised in case of no index present
             System.out.printf(ex.getMessage());
+        } catch (RestStatusException rst) {
+            // #TODO Check this exception which appears always even if document gets saved properly
+            log.error("RestStatusException {}",rst.getMessage(),rst);
         } catch (Exception ex) {
-            System.out.printf(ex.getMessage());
+            log.error("Exception while saving items {}",ex.getMessage(),ex);
         } finally {
             ACCOUNT_ID.remove();
         }
-        //ACCOUNT_ID.remove();
-        return savedItem;
+        return Mono.empty();
     }
 
-    public Item createItemPojoFromRequest(Map<String,Object> body) {
+
+    public Item createItemPojoFromRequest(Map<String,Object> itemDetails) {
 
         // #TODO Get all these details from UI, don't replicate here and remove this code
-        Map<String,Object> itemDetails = null;
-        try {
-            itemDetails = mapper.readValue((String) body.get("itemDetails"), Map.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         itemDetails.put("detail",itemDetails.get("description"));
         itemDetails.put("gallery",new String[]{(String) itemDetails.get("img")});
         itemDetails.put("onSale",false);
