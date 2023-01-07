@@ -9,6 +9,8 @@ import org.shaft.administration.catalog.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     private CategoryRepository categoryRepository;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 
@@ -30,6 +32,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     @Autowired
     public void setCategoryRepository(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
+        mapper = new ObjectMapper();
     }
 
     /**
@@ -38,25 +41,24 @@ public class CategoryDAOImpl implements CategoryDAO {
      * @return List
      */
     @Override
-    public List<Category> getCategories(int accountId) {
+    public Flux<Category> getCategories(int accountId) {
         ACCOUNT_ID.set(accountId);
         try {
-            return Lists.newArrayList(categoryRepository.findAll());
+            return categoryRepository.findAll();
         } catch (Exception ex) {
             System.out.println("Exception "+ ex.getMessage());
-            return new ArrayList<>();
+            return Flux.empty();
         } finally {
             ACCOUNT_ID.remove();
         }
     }
 
     @Override
-    public Category saveCategory(int accountId, Map<String,Object> category) {
+    public Mono<Category> saveCategory(int accountId, Map<String,Object> category) {
         ACCOUNT_ID.set(accountId);
-        Category c = new Category();
         try {
-            c = mapper.convertValue(category, new TypeReference<Category>() {});
-            categoryRepository.save(c);
+            Category c = mapper.convertValue(category, new TypeReference<Category>() {});
+            return categoryRepository.save(c);
         } catch (NoSuchIndexException ex) {
             // #TODO Throw internal error exception. Handle NoSuchIndexException exception for all services which is usually raised in case of no index present
             System.out.printf(ex.getMessage());
@@ -65,6 +67,6 @@ public class CategoryDAOImpl implements CategoryDAO {
         } finally {
             ACCOUNT_ID.remove();
         }
-        return c;
+        return Mono.empty();
     }
 }

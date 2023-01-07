@@ -27,13 +27,13 @@ import javax.net.ssl.SSLContext;
 @Configuration
 public class ElasticConfig {
 
-    @Value("${elasticsearch.host}")
+    @Value("${spring.elasticsearch.host}")
     private String host;
-    @Value("${elasticsearch.port}")
+    @Value("${spring.elasticsearch.port}")
     private int port;
-    @Value("${elasticsearch.username}")
+    @Value("${spring.elasticsearch.username}")
     private String username;
-    @Value("${elasticsearch.password}")
+    @Value("${spring.elasticsearch.password}")
     private String password;
 
     @Bean

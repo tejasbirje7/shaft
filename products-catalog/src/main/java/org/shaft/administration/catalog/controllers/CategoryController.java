@@ -2,13 +2,16 @@ package org.shaft.administration.catalog.controllers;
 
 import org.shaft.administration.catalog.dao.CategoryDAO;
 import org.shaft.administration.catalog.entity.category.Category;
+import org.shaft.administration.catalog.entity.item.Item;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,27 +24,42 @@ public class CategoryController {
     private CategoryDAO categoryDao;
     HttpHeaders headers = new HttpHeaders();
 
-    @RequestMapping(value = "/categories", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> getCategories(@RequestHeader(value="account") int account) {
-        List<Category> categories = categoryDao.getCategories(account);
+    public CategoryController() {
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S78gsd8v",categories,headers);
+    }
+
+    @RequestMapping(value = "/categories", method = { RequestMethod.GET, RequestMethod.POST })
+    public Mono<ResponseEntity<Object>> getCategories(@RequestHeader(value="account") int account) {
+        Mono<List<Category>> categories = categoryDao.getCategories(account).collectList();
+        return categories.map(response -> ShaftResponseHandler.generateResponse("Success", "S78gsd8v", response, headers));
     }
 
     @RequestMapping(value = "/categories/save", method = { RequestMethod.POST })
-    public ResponseEntity<Object> saveCategory(@RequestHeader(value="account") int account,
-                                               @RequestBody(required = true)Map<String,Object> category) {
-        Category c = categoryDao.saveCategory(account,category);
+    public Mono<ResponseEntity<Object>> saveCategory(@RequestHeader(value="account") int account,
+                                                     @RequestBody(required = true)Map<String,Object> category) {
+        try {
+            return categoryDao.saveCategory(account,category).map(
+                    resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers)
+            );
+        } catch (Exception ex) {
+            // #TODO Throw invalid request [ MAJOR EXCEPTION ] & notify
+        }
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S78gsd8v",c,headers);
+        return Mono.just(ShaftResponseHandler.generateResponse("Success","S12345",new ArrayList<>(),headers));
     }
 
     @RequestMapping(value = "/categories/update", method = { RequestMethod.POST })
-    public ResponseEntity<Object> updateCategory(@RequestHeader(value="account") int account,
+    public Mono<ResponseEntity<Object>> updateCategory(@RequestHeader(value="account") int account,
                                                @RequestBody(required = true)Map<String,Object> category) {
-        Category c = categoryDao.saveCategory(account,category);
+        try {
+            return categoryDao.saveCategory(account,category).map(
+                    resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers)
+            );
+        } catch (Exception ex) {
+            // #TODO Throw invalid request [ MAJOR EXCEPTION ] & notify
+        }
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S78gsd8v",c,headers);
+        return Mono.just(ShaftResponseHandler.generateResponse("Success","S12345",new ArrayList<>(),headers));
     }
 }
 

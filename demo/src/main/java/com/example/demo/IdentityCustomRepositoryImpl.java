@@ -1,4 +1,4 @@
-package org.shaft.administration.usermanagement.repositories.fingerprint;
+package com.example.demo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
@@ -13,16 +13,11 @@ import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.shaft.administration.usermanagement.entity.Identity;
-import org.shaft.administration.usermanagement.services.IdentityDAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SourceFilter;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -97,7 +92,7 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     }
 
     @Override
-    public Mono<Long> updateFp(String fp, int i) {
+    public Long updateFp(String fp,int i) {
         String index = IdentityDAOImpl.getAccount() + "_devices";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 
@@ -110,18 +105,24 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
         fpObject.put("g",fp);
         updateRequest.setScript(prepareFpUpdateScript(fpObject));
         updateRequest.setRefresh(true);
-
-        return reactiveElasticsearchClient.updateBy(updateRequest)
-                .map(response -> {
-                            if(response != null) {
-                                log.info("Total Updated {}",response.getTotal());
-                                //TimeValue timeTaken = bulkResponse.getTook();
-                                return response.getTotal();
-                            }
-                            return 0L;
-                        })
-                .filter(Objects::nonNull)
-                .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+        try {
+            reactiveElasticsearchClient.updateBy(updateRequest).map(
+                    response -> {
+                        if(response != null) {
+                            System.out.println(response.getTotal());
+                        }
+                        log.info("Response is {}",response);
+                        return response;
+                    }).doOnNext( re -> System.out.println(re)).log();
+            BulkByScrollResponse bulkResponse = esClient.updateByQuery(updateRequest, RequestOptions.DEFAULT);
+            return bulkResponse.getTotal();
+            /*
+            TimeValue timeTaken = bulkResponse.getTook();
+            log.info("[ELASTICSEARCH_SERVICE] [UPDATE_EXPIRATION_DATE] [TOTAL_UPDATED_DOCS: {}] [TOTAL_DURATION: {}]", totalDocs, timeTaken.getMillis()); */
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0L;
     }
 
     @Override

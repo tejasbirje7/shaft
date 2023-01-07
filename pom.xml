@@ -65,6 +65,7 @@
 		<module>kafka/kafka-consumer</module>
 		<module>event-ingestion</module>
 		<module>event-processor</module>
+		<module>demo</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>

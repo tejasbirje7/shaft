@@ -1,7 +1,5 @@
-package org.shaft.administration.usermanagement.repositories;
+package com.example.demo;
 
-import org.shaft.administration.usermanagement.entity.Identity;
-import org.shaft.administration.usermanagement.repositories.fingerprint.IdentityCustomRepository;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;

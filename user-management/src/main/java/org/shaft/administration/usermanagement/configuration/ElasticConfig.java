@@ -18,22 +18,26 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.client.ClientConfiguration;
+import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 
 import javax.net.ssl.SSLContext;
 
 @Configuration
 public class ElasticConfig {
 
-    @Value("${elasticsearch.host}")
+    @Value("${spring.elasticsearch.host}")
     private String host;
-    @Value("${elasticsearch.port}")
+    @Value("${spring.elasticsearch.port}")
     private int port;
-    @Value("${elasticsearch.username}")
+    @Value("${spring.elasticsearch.username}")
     private String username;
-    @Value("${elasticsearch.password}")
+    @Value("${spring.elasticsearch.password}")
     private String password;
 
     @Bean
@@ -49,7 +53,7 @@ public class ElasticConfig {
             final SSLContext sslContext = sslBuilder.build();
             RestHighLevelClient client = new RestHighLevelClient(RestClient
                     //.builder(new HttpHost(host, port, "https")) // If elasticsearch is running with https
-                    .builder(new HttpHost(host,port))
+                    .builder(new HttpHost(host, port))
                     .setDefaultHeaders(compatibilityHeaders())
                     .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
                         @Override
@@ -85,22 +89,12 @@ public class ElasticConfig {
         }
     }
 
-    /*
-    @Bean
-    public ConfigurableServletWebServerFactory webServerFactory()
-    {
-        JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
-        factory.setPort(9000);
-        factory.setContextPath("/myapp");
-        factory.
-        factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
-        return factory;
-    }*/
-
     private Header[] compatibilityHeaders() {
         return new Header[]{
                 new BasicHeader(HttpHeaders.ACCEPT, "application/vnd.elasticsearch+json;compatible-with=7"),
                 new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/vnd.elasticsearch+json;compatible-with=7")
         };
     }
+
+
 }

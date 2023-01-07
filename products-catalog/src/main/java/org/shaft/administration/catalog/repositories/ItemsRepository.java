@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 @Repository
-public interface ReactiveItemsRepository extends ReactiveCrudRepository<Item,String>, ItemsCustomRepository {
+public interface ItemsRepository extends ReactiveCrudRepository<Item,String>, ItemsCustomRepository {
     Flux<Item> findByIdIn(List<String> itemIds);
 }
 

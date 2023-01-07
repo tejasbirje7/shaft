@@ -44,39 +44,39 @@ public class QueryGenerator {
 
     private ObjectNode appendRangeQuery(int f,int t) {
         return mapper.createObjectNode().set("range" ,
-                mapper.createObjectNode().set("e.ts",
-                        mapper.createObjectNode().put(GTE,f).put(LTE,t)));
+          mapper.createObjectNode().set("e.ts",
+            mapper.createObjectNode().put(GTE,f).put(LTE,t)));
     }
 
     private ObjectNode getEventQuery(int eventId) {
         return mapper.createObjectNode().set("term",
-                mapper.createObjectNode().set("e.eid",
-                        mapper.createObjectNode()
-                                .put("value", eventId)));
+          mapper.createObjectNode().set("e.eid",
+            mapper.createObjectNode()
+              .put("value", eventId)));
     }
 
     private ObjectNode getRangeQuery(ObjectNode query) {
         return mapper.createObjectNode().set("range",
-                mapper.createObjectNode().set("e.".concat(query.get("f").textValue()),
-                        mapper.createObjectNode().set(query.get("o").textValue().toLowerCase(),query.get(VALUE))));
+          mapper.createObjectNode().set("e.".concat(query.get("f").textValue()),
+            mapper.createObjectNode().set(query.get("o").textValue().toLowerCase(),query.get(VALUE))));
     }
 
     private ObjectNode getDateRangeQuery(int from, int to) {
         return mapper.createObjectNode().set("range",
-                mapper.createObjectNode().set("e.ts",
-                        mapper.createObjectNode().put(GTE,from).put(LTE,to)));
+          mapper.createObjectNode().set("e.ts",
+            mapper.createObjectNode().put(GTE,from).put(LTE,to)));
     }
 
     private ObjectNode getTermsQuery(ObjectNode query) {
         ArrayNode value = mapper.convertValue(query.get(VALUE).textValue().split(","),ArrayNode.class);
         return mapper.createObjectNode().set("terms",
-                mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"), value));
+          mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"), value));
     }
 
     private ObjectNode getTermQuery(ObjectNode query) {
         return mapper.createObjectNode().set("term" ,
-                mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"),
-                        mapper.createObjectNode().set("value",query.get(VALUE))));
+          mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"),
+            mapper.createObjectNode().set("value",query.get(VALUE))));
     }
 
     private boolean isNotOperator(String operator) {

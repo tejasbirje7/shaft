@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.shaft.administration.catalog.dao.ItemsDAO;
 import org.shaft.administration.catalog.entity.item.Item;
-import org.shaft.administration.catalog.repositories.ReactiveItemsRepository;
+import org.shaft.administration.catalog.repositories.ItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.data.elasticsearch.RestStatusException;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 public class ItemsDAOImpl implements ItemsDAO {
 
-    private final ReactiveItemsRepository reactiveItemsRepository;
+    private final ItemsRepository itemsRepository;
 
     private final WebClient webClient;
 
@@ -36,8 +36,8 @@ public class ItemsDAOImpl implements ItemsDAO {
     }
 
     @Autowired
-    public ItemsDAOImpl( ReactiveItemsRepository reactiveItemsRepository, WebClient webClient) {
-        this.reactiveItemsRepository = reactiveItemsRepository;
+    public ItemsDAOImpl(ItemsRepository itemsRepository, WebClient webClient) {
+        this.itemsRepository = itemsRepository;
         this.webClient = webClient;
     }
 
@@ -53,9 +53,9 @@ public class ItemsDAOImpl implements ItemsDAO {
             if (body!=null && body.containsKey("fields")) {
                 String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
                 // #TODO Check if items are inStock and return those for end user. For dashboard users all items will be populated
-                return reactiveItemsRepository.getItemsWithSource(fields);
+                return itemsRepository.getItemsWithSource(fields);
             } else {
-                return reactiveItemsRepository.findAll();
+                return itemsRepository.findAll();
             }
         } catch (Exception ex) {
             System.out.println("Exception "+ ex.getMessage());
@@ -73,9 +73,9 @@ public class ItemsDAOImpl implements ItemsDAO {
                 List<String> itemIds = (List<String>) body.get("items");
                 if (body.containsKey("fields")) {
                     String[] fields = ((ArrayList<String>)body.get("fields")).toArray(new String[0]);
-                    return reactiveItemsRepository.getItemsWithSource(itemIds,fields);
+                    return itemsRepository.getItemsWithSource(itemIds,fields);
                 } else {
-                    return reactiveItemsRepository.findByIdIn(itemIds);
+                    return itemsRepository.findByIdIn(itemIds);
                 }
             } else {
                 // #TODO Throw BAD_REQUEST exception
@@ -94,7 +94,7 @@ public class ItemsDAOImpl implements ItemsDAO {
         ACCOUNT_ID.set(accountId);
         try {
             // #TODO Remove createItemPojoFromRequest dependency
-            return reactiveItemsRepository.save(createItemPojoFromRequest(body));
+            return itemsRepository.save(createItemPojoFromRequest(body));
         } catch (NoSuchIndexException ex) {
             // #TODO Throw internal error exception. Handle NoSuchIndexException exception for all services which is usually raised in case of no index present
             System.out.printf(ex.getMessage());

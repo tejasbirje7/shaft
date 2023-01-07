@@ -1,7 +1,6 @@
-package org.shaft.administration.usermanagement.controllers;
+package com.example.demo;
 
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
-import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

@@ -31,7 +31,7 @@ public class GatewayConfig {
         corsConfig.addAllowedHeader("*");
 
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/*", corsConfig);
+        source.registerCorsConfiguration("/**", corsConfig);
 
         return new CorsWebFilter(source);
     }
@@ -53,7 +53,7 @@ public class GatewayConfig {
                         .filters(f -> f.filter(authenticationFilter))
                         .uri("lb://ACCOUNT-MANAGEMENT")) // 8084
                 .route("user-management", r->r.path("/user/**")
-                        .filters(f -> f.filter(authenticationFilter))
+                        //.filters(f -> f.filter(authenticationFilter))
                         .uri("lb://USER-MANAGEMENT")) // 8085
                 .build();
     }
