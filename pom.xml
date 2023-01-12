@@ -21,6 +21,7 @@
 		<obligatory-service-version>0.0.1-SNAPSHOT</obligatory-service-version>
 		<spring-cloud.version>2021.0.5</spring-cloud.version>
 		<springboot-version>2.7.5</springboot-version>
+		<springboot-dev-tools>2.7.5</springboot-dev-tools>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<app-config-data-version>0.0.1-SNAPSHOT</app-config-data-version>
 		<common-config-data-version>0.0.1-SNAPSHOT</common-config-data-version>
@@ -155,6 +156,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jetty</artifactId>
 				<version>${springboot-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-devtools</artifactId>
+				<version>${springboot-dev-tools}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>

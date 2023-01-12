@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
-import org.shaft.administration.usermanagement.client.AccountRestClient;
+import org.shaft.administration.usermanagement.clients.AccountRestClient;
 import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
@@ -33,8 +33,7 @@ public class IdentityDAOImpl implements IdentityDAO {
   }
 
   @Autowired
-  public IdentityDAOImpl(IdentityRepository identityRepository,
-                         AccountRestClient accountRestClient) throws Exception {
+  public IdentityDAOImpl(IdentityRepository identityRepository, AccountRestClient accountRestClient) throws Exception {
     this.identityRepository = identityRepository;
     this.accountRestClient = accountRestClient;
     this.jwtUtil = new ShaftJWT();
@@ -63,8 +62,8 @@ public class IdentityDAOImpl implements IdentityDAO {
           Map<String,Integer> response = new HashMap<>();
           if (fpDetails.isEmpty()) {
             return ifFpEmptyUpdateFpToI.map(totalUpdated -> {
-              int p = totalUpdated > 0 ? i : -1;
-              response.put("i",p);
+              int success = totalUpdated > 0 ? i : -1;
+              response.put("i",success);
               return response;
             }).block();
           } else {
@@ -80,45 +79,57 @@ public class IdentityDAOImpl implements IdentityDAO {
       return doesIExistsForFp
         .publishOn(Schedulers.boundedElastic())
         .mapNotNull(fpDetails -> {
+            ACCOUNT_ID.set(account);
             Map<String,Integer> response = new HashMap<>();
             if(fpDetails.isEmpty()) {
-              return retrieveAccountMeta.map( data -> {
-                Map<String,Object> meta;
-                String idx = "";
-                try {
-                  meta = mapParser.readValue(data);
-                  if(meta.containsKey("code") && ((String)meta.get("code")).startsWith("S")) {
-                    idx = (String) ((Map<String, Object>) meta.get("data")).get("idx");
+              return retrieveAccountMeta
+                .publishOn(Schedulers.boundedElastic())
+                .map(data -> {
+                  ACCOUNT_ID.set(account);
+                  Map<String,Object> meta;
+                  String idx = "";
+                  try {
+                    meta = mapParser.readValue(data);
+                    if(meta.containsKey("code") && ((String)meta.get("code")).startsWith("S")) {
+                      idx = (String) ((Map<String, Object>) meta.get("data")).get("idx");
+                    }
+                  } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
                   }
-                } catch (JsonProcessingException e) {
-                  throw new RuntimeException(e);
-                }
-                if(!idx.isEmpty()) {
-                  Identity newFpToI = new Identity();
-                  if (details.containsKey("requestTime")) {
-                    int newI = (Integer) details.get("requestTime");
-                    newFpToI.setIdentity(newI);
-                    newFpToI.setIdentified(false);
-                    Map<String,String> fpMapCreation = new HashMap<>();
-                    fpMapCreation.put("g",fp);
-                    List<Map<String,String>> fpArray = new ArrayList<>();
-                    fpArray.add(fpMapCreation);
-                    newFpToI.setFingerPrint(fpArray);
-                    //identityRepository.save(newFpToI);
-                    response.put("i",newI);
-                    // #TODO  Insert the event schema into `idx` index fetched above to track events
+                  if(!idx.isEmpty()) {
+                    Identity newFpToI = new Identity();
+                    if (details.containsKey("requestTime")) {
+                      int newI = (Integer) details.get("requestTime");
+                      newFpToI.setIdentity(newI);
+                      newFpToI.setIdentified(false);
+                      Map<String,String> fpMapCreation = new HashMap<>();
+                      fpMapCreation.put("g",fp);
+                      List<Map<String,String>> fpArray = new ArrayList<>();
+                      fpArray.add(fpMapCreation);
+                      newFpToI.setFingerPrint(fpArray);
+                      ACCOUNT_ID.set(account);
+                      identityRepository.save(newFpToI)
+                        .doOnError(error -> {
+                          // #TODO Return exception here
+                        }).subscribe();
+                      response.put("i",newI);
+                      ACCOUNT_ID.remove();
+                      return response;
+                      // #TODO  Insert the event schema into `idx` index fetched above to track events
+                    } else {
+                      // #TODO Raise Exception BAD REQUEST
+                    }
                   } else {
-                    // #TODO Raise Exception BAD REQUEST
+                    // #TODO Raise Exception ACCOUNT SERVICE DOWN
                   }
-                } else {
-                  // #TODO Raise Exception ACCOUNT SERVICE DOWN
-                }
-                return response;
-              }).block();
+                  ACCOUNT_ID.remove();
+                  return response;
+                }).block();
             } else {
               // `i` exists return `fp`
               response.put("i",fpDetails.get(0).getIdentity());
             }
+            ACCOUNT_ID.remove();
             return response;
           }
         );

@@ -1,13 +1,12 @@
 package org.shaft.administration.usermanagement.repositories;
 
 import org.shaft.administration.usermanagement.entity.User;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @Repository
-public interface AuthRepository extends ElasticsearchRepository<User,String> {
-    User findByEAndP(String e, String p);
-    long countByE(String e);
+public interface AuthRepository extends ReactiveCrudRepository<User,String> {
+    Flux<User> findByEAndP(String e, String p);
+    Flux<Long> countByE(String e);
 }

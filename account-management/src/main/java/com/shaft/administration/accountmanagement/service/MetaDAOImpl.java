@@ -1,23 +1,19 @@
 package com.shaft.administration.accountmanagement.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shaft.administration.accountmanagement.dao.MetaDAO;
 import com.shaft.administration.accountmanagement.entity.Meta;
 import com.shaft.administration.accountmanagement.repositories.MetaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class MetaDAOImpl implements MetaDAO {
     MetaRepository metaRepository;
-    ObjectMapper mapper = new ObjectMapper();
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
-
     public static int getAccount() {
         return ACCOUNT_ID.get();
     }
@@ -28,27 +24,16 @@ public class MetaDAOImpl implements MetaDAO {
     }
 
     @Override
-    public Map<String, Object> getMetaFields(int account,Map<String, Object> fields) {
+    public Mono<Meta> getMetaFields(int account,Map<String, Object> fields) {
         ACCOUNT_ID.set(account);
-        Map<String,Object> response = new HashMap<>();
         String[] f = ((ArrayList<String>)fields.get("fields")).toArray(new String[0]);
         try {
-            Meta m = metaRepository.getMetaFields(account,f);
-            response = mapper.convertValue(m, new TypeReference<Map<String, Object>>() {});
+            return metaRepository.getMetaFields(account, f).doOnSuccess(Mono::just);
         } catch (Exception ex) {
             System.out.println("Error while retrieving meta fields");
+        } finally {
+            ACCOUNT_ID.remove();
         }
-        return response;
+        return Mono.empty();
     }
-
-    /**
-     * ObjectMapper mapper = new ObjectMapper();
-     *
-     * // Convert POJO to Map
-     * Map<String, Object> map =
-     *     mapper.convertValue(foo, new TypeReference<Map<String, Object>>() {});
-     *
-     * // Convert Map to POJO
-     * Foo anotherFoo = mapper.convertValue(map, Foo.class);
-     */
 }

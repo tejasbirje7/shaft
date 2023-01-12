@@ -1,4 +1,4 @@
-package org.shaft.administration.usermanagement.configuration;
+package com.shaft.administration.accountmanagement.configuration;
 
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;

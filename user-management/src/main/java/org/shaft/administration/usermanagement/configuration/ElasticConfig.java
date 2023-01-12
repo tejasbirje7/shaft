@@ -64,19 +64,13 @@ public class ElasticConfig {
                                     .setDefaultCredentialsProvider(credentialsProvider);
                         }
                     })
-                    .setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
-                        @Override
-                        public RequestConfig.Builder customizeRequestConfig(
-                                RequestConfig.Builder requestConfigBuilder) {
-                            return requestConfigBuilder.setConnectTimeout(5000)
-                                    .setSocketTimeout(120000);
-                        }
-                    }));
-            System.out.println("elasticsearch client created");
+                    .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(5000)
+                            .setSocketTimeout(120000)));
+            System.out.println("elasticsearch clients created");
             return client;
         } catch (Exception e) {
             System.out.println(e);
-            throw new Exception("Could not create an elasticsearch client!!");
+            throw new Exception("Could not create an elasticsearch clients!!");
         }
     }
 

@@ -47,6 +47,7 @@ public class ElasticConfig {
             SSLContextBuilder sslBuilder = SSLContexts.custom()
                     .loadTrustMaterial(null, (x509Certificates, s) -> true);
             final SSLContext sslContext = sslBuilder.build();
+
             RestHighLevelClient client = new RestHighLevelClient(RestClient
                     //.builder(new HttpHost(host, port, "https")) // If elasticsearch is running with https
                     .builder(new HttpHost(host, port))
@@ -60,19 +61,13 @@ public class ElasticConfig {
                                     .setDefaultCredentialsProvider(credentialsProvider);
                         }
                     })
-                    .setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
-                        @Override
-                        public RequestConfig.Builder customizeRequestConfig(
-                                RequestConfig.Builder requestConfigBuilder) {
-                            return requestConfigBuilder.setConnectTimeout(5000)
-                                    .setSocketTimeout(120000);
-                        }
-                    }));
-            System.out.println("elasticsearch client created");
+                    .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(5000)
+                            .setSocketTimeout(120000)));
+            System.out.println("elasticsearch clients created");
             return client;
         } catch (Exception e) {
             System.out.println(e);
-            throw new Exception("Could not create an elasticsearch client!!");
+            throw new Exception("Could not create an elasticsearch clients!!");
         }
     }
 

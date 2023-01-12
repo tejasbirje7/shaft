@@ -1,4 +1,4 @@
-package org.shaft.administration.usermanagement.client;
+package org.shaft.administration.usermanagement.clients;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.util.Map;
 @Slf4j
 public class AccountRestClient {
     private final WebClient webClient;
-    private final String ACCOUNT_META_URL = "http://localhost:8084/account/meta/fields";
+    private static final String ACCOUNT_META_URL = "http://localhost:8084/account/meta/fields";
 
     @Autowired
     public AccountRestClient(WebClient webClient) {

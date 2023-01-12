@@ -68,11 +68,11 @@ public class ElasticConfig {
                                     .setSocketTimeout(120000);
                         }
                     }));
-            System.out.println("elasticsearch client created");
+            System.out.println("elasticsearch clients created");
             return client;
         } catch (Exception e) {
             System.out.println(e);
-            throw new Exception("Could not create an elasticsearch client!!");
+            throw new Exception("Could not create an elasticsearch clients!!");
         }
     }
 

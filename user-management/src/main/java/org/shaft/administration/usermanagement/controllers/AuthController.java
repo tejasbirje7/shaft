@@ -7,12 +7,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/user")
 public class AuthController {
     private final AuthDAO authDAO;
     HttpHeaders headers = new HttpHeaders();
@@ -23,10 +24,18 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> checkIdentity(@RequestHeader int account,
-                                                @RequestBody Map<String,Object> details) {
-        Map<String,Object> response = authDAO.authenticateUser(details);
+    public Mono<ResponseEntity<Object>> checkIdentity(@RequestHeader int account,
+                                                      @RequestBody Map<String,Object> details) {
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",response, headers);
+        return authDAO.authenticateUser(details)
+          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+    }
+
+    @RequestMapping(value = "/register", method = { RequestMethod.GET, RequestMethod.POST })
+    public Mono<ResponseEntity<Object>> addIdentity(@RequestHeader int account,
+                                                      @RequestBody Map<String,Object> details) {
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return authDAO.registerUser(account,details)
+          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
     }
 }

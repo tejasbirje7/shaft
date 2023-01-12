@@ -12,5 +12,6 @@ public interface IdentityCustomRepository {
     Flux<Identity> checkIfFpExistsForI(String fp, int i, boolean isIdentified);
     Flux<Identity> checkIfIExistsForFp(String fp);
     Mono<Long> updateFp(String fp, int i);
-    Long upsertFpAndIPair(int account, String fp, int i);
+    Mono<Long>  upsertFpAndIPair(int account, String fp, int i);
+    Mono<Identity> save(int accountId,Identity i);
 }

@@ -1,7 +1,10 @@
 package com.shaft.administration.accountmanagement.dao;
 
+import com.shaft.administration.accountmanagement.entity.Meta;
+import reactor.core.publisher.Mono;
+
 import java.util.Map;
 
 public interface MetaDAO {
-    public Map<String,Object> getMetaFields(int account, Map<String,Object> fields);
+    Mono<Meta> getMetaFields(int account, Map<String,Object> fields);
 }

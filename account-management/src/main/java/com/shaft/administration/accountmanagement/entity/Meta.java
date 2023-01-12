@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Document(indexName = "accounts_meta")
+@Document(indexName = "accounts_meta",createIndex = false)
 public class Meta {
     @Id
     private String _id = UUID.randomUUID().toString();

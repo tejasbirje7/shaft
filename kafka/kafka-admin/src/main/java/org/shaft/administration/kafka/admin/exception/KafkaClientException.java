@@ -1,7 +1,7 @@
 package org.shaft.administration.kafka.admin.exception;
 
 /**
- * Exception class for Kafka client error situations.
+ * Exception class for Kafka clients error situations.
  */
 public class KafkaClientException extends RuntimeException {
 

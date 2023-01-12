@@ -2,12 +2,9 @@ package org.shaft.administration.usermanagement.repositories.fingerprint;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
@@ -19,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -37,17 +34,14 @@ import java.util.Objects;
 public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
     private final ReactiveElasticsearchClient reactiveElasticsearchClient;
-    private final RestHighLevelClient esClient;
     private QueryBuilder query;
     private NativeSearchQuery ns;
 
     @Autowired
     public IdentityCustomRepositoryImpl(ReactiveElasticsearchOperations reactiveElasticsearchOperations,
-                                        ReactiveElasticsearchClient reactiveElasticsearchClient,
-                                        RestHighLevelClient esClient) {
+                                        ReactiveElasticsearchClient reactiveElasticsearchClient) {
         this.reactiveElasticsearchOperations = reactiveElasticsearchOperations;
         this.reactiveElasticsearchClient = reactiveElasticsearchClient;
-        this.esClient = esClient;
     }
 
     @Override
@@ -125,7 +119,7 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     }
 
     @Override
-    public Long upsertFpAndIPair(int account,String fp, int i) {
+    public Mono<Long> upsertFpAndIPair(int account,String fp, int i) {
         String index = account + "_devices";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 
@@ -137,16 +131,24 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
         fpObject.put("g",fp);
         updateRequest.setScript(upsertFpAndIScript(fpObject));
         updateRequest.setRefresh(true);
-        try {
-            BulkByScrollResponse bulkResponse = esClient.updateByQuery(updateRequest, RequestOptions.DEFAULT);
-            return bulkResponse.getTotal();
-            /*
-            TimeValue timeTaken = bulkResponse.getTook();
-            log.info("[ELASTICSEARCH_SERVICE] [UPDATE_EXPIRATION_DATE] [TOTAL_UPDATED_DOCS: {}] [TOTAL_DURATION: {}]", totalDocs, timeTaken.getMillis()); */
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return 0L;
+
+        return  reactiveElasticsearchClient.updateBy(updateRequest).map(response -> {
+              if(response != null) {
+                  log.info("Total Updated {}",response.getTotal());
+                  //TimeValue timeTaken = bulkResponse.getTook();
+                  return response.getTotal();
+              }
+              return 0L;
+          })
+          .filter(Objects::nonNull)
+          .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+    }
+
+    @Override
+    public Mono<Identity> save(int accountId, Identity i) {
+        return reactiveElasticsearchOperations.save(i,
+          IndexCoordinates.of(accountId + "_devices")
+        ).doOnError(throwable -> log.error(throwable.getMessage(), throwable));
     }
 
     private Script prepareFpUpdateScript(Map<String,Object> fp) {
