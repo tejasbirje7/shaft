@@ -12,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 @Setter
 @NoArgsConstructor
 @ToString
-@Document(indexName = "#{T(org.shaft.administration.catalog.services.CategoryDAOImpl).getAccount()}_category")
+@Document(indexName = "#{T(org.shaft.administration.catalog.services.CategoryService).getAccount()}_category")
 public class Category {
     @Id
     private int cid;

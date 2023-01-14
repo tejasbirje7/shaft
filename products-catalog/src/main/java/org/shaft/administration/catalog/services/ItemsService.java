@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class ItemsDAOImpl implements ItemsDAO {
+public class ItemsService implements ItemsDAO {
 
     private final ItemsRepository itemsRepository;
 
@@ -36,7 +36,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     }
 
     @Autowired
-    public ItemsDAOImpl(ItemsRepository itemsRepository, WebClient webClient) {
+    public ItemsService(ItemsRepository itemsRepository, WebClient webClient) {
         this.itemsRepository = itemsRepository;
         this.webClient = webClient;
     }

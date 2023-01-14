@@ -50,7 +50,7 @@ public class GatewayConfig {
                         .filters(f -> f.filter(authenticationFilter))
                         .uri("lb://CART-MANAGEMENT")) // 8083
                 .route("account-management", r->r.path("/account/**")
-                        .filters(f -> f.filter(authenticationFilter))
+                        //.filters(f -> f.filter(authenticationFilter))
                         .uri("lb://ACCOUNT-MANAGEMENT")) // 8084
                 .route("user-management", r->r.path("/user/**")
                         //.filters(f -> f.filter(authenticationFilter))

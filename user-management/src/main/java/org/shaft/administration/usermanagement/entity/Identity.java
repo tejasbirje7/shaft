@@ -11,7 +11,7 @@ import java.util.Map;
 
 @NoArgsConstructor
 @Data
-@Document(indexName = "#{T(org.shaft.administration.usermanagement.services.IdentityDAOImpl).getAccount()}_devices",createIndex = false)
+@Document(indexName = "#{T(org.shaft.administration.usermanagement.services.IdentityService).getAccount()}_devices",createIndex = false)
 public class Identity {
 
 

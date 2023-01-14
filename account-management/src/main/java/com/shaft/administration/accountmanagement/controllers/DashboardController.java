@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
@@ -20,11 +21,11 @@ public class DashboardController {
     }
 
     @RequestMapping(value = "/pin/query", method = { RequestMethod.POST })
-    public ResponseEntity<Object> pinQueryToDashboard(@RequestHeader int account,
-                                                      @RequestBody Map<String,Object> query) {
-        Boolean response = dashboardDAO.pinToDashboard(account, query);
+    public Mono<ResponseEntity<Object>> pinQueryToDashboard(@RequestHeader int account,
+                                                            @RequestBody Map<String,Object> query) {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",response, httpHeaders);
+        return dashboardDAO.pinToDashboard(account,query)
+          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,httpHeaders));
     }
 
 }

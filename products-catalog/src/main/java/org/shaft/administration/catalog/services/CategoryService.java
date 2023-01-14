@@ -2,7 +2,6 @@ package org.shaft.administration.catalog.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.shaft.administration.catalog.dao.CategoryDAO;
 import org.shaft.administration.catalog.entity.category.Category;
 import org.shaft.administration.catalog.repositories.CategoryRepository;
@@ -12,12 +11,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Service
-public class CategoryDAOImpl implements CategoryDAO {
+public class CategoryService implements CategoryDAO {
 
     private CategoryRepository categoryRepository;
 

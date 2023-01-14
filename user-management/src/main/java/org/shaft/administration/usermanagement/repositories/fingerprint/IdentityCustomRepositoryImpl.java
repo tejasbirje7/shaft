@@ -11,7 +11,7 @@ import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.shaft.administration.usermanagement.entity.Identity;
-import org.shaft.administration.usermanagement.services.IdentityDAOImpl;
+import org.shaft.administration.usermanagement.services.IdentityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
@@ -92,7 +92,7 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
 
     @Override
     public Mono<Long> updateFp(String fp, int i) {
-        String index = IdentityDAOImpl.getAccount() + "_devices";
+        String index = IdentityService.getAccount() + "_devices";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 
         updateRequest.setConflicts("proceed");

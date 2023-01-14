@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,10 +25,10 @@ public class MetaController {
     }
 
     @RequestMapping(value = "/meta/fields", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> getMetaFields(@RequestHeader int account,
-                                                @RequestBody Map<String,Object> request) {
-        Map<String,Object> fields = metaDao.getMetaFields(account,request);
+    public Mono<ResponseEntity<Object>> getMetaFields(@RequestHeader int account,
+                                                      @RequestBody Map<String,Object> request) {
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",fields, headers);
+        return metaDao.getMetaFields(account,request)
+          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
     }
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @Service
-public class MetaDAOImpl implements MetaDAO {
+public class MetaService implements MetaDAO {
     MetaRepository metaRepository;
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
     public static int getAccount() {
@@ -19,14 +19,18 @@ public class MetaDAOImpl implements MetaDAO {
     }
 
     @Autowired
-    public MetaDAOImpl(MetaRepository metaRepository) {
+    public MetaService(MetaRepository metaRepository) {
         this.metaRepository = metaRepository;
     }
 
     @Override
     public Mono<Meta> getMetaFields(int account,Map<String, Object> fields) {
         ACCOUNT_ID.set(account);
-        String[] f = ((ArrayList<String>)fields.get("fields")).toArray(new String[0]);
+
+        String[] f = new String[]{};
+        if(!fields.isEmpty()) {
+            f = ((ArrayList<String>)fields.get("fields")).toArray(new String[0]);
+        }
         try {
             return metaRepository.getMetaFields(account, f).doOnSuccess(Mono::just);
         } catch (Exception ex) {

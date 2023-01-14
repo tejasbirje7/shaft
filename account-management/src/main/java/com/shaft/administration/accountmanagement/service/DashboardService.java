@@ -5,17 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.shaft.administration.accountmanagement.dao.DashboardDAO;
 import com.shaft.administration.accountmanagement.repositories.MetaRepository;
-import org.apache.commons.codec.binary.Base64;
 import org.shaft.administration.obligatory.translator.elastic.ShaftQueryTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.commons.codec.binary.Base64;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
 
 @Service
-public class DashboardDAOImpl implements DashboardDAO {
+public class DashboardService implements DashboardDAO {
 
     MetaRepository metaRepository;
     public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
@@ -26,19 +26,20 @@ public class DashboardDAOImpl implements DashboardDAO {
     ShaftQueryTranslator queryTranslator;
 
     @Autowired
-    public DashboardDAOImpl(MetaRepository metaRepository) {
+    public DashboardService(MetaRepository metaRepository) {
         this.metaRepository = metaRepository;
         this.mapper = new ObjectMapper();
         this.queryTranslator = new ShaftQueryTranslator();
     }
 
+    // #TODO Need to check this method. Not checking now since request payload is not available in hand which is complex too
     @Override
     public Mono<Boolean> pinToDashboard(int accountId, Map<String,Object> rawQuery) {
         ACCOUNT_ID.set(accountId);
         return metaRepository.getMetaFields(accountId,new String[]{"dashboardQueries"})
           .mapNotNull(meta -> {
+              // Introduced limit here since on app launch app should not wait to load more query results
               if(meta.getDashboardQueries().size() > 5) {
-                  // Introduced limit here since on app launch app should not wait to load more query results
                   // #TODO Throw limit exceeded exception
                   return null;
               } else {
@@ -63,6 +64,6 @@ public class DashboardDAOImpl implements DashboardDAO {
           })
           .publishOn(Schedulers.boundedElastic())
           .map(updatedCount -> updatedCount.map(y -> y > 0))
-          .hasElement();
+          .hasElement(); // #TODO check if we can remove dependency of .publishOn(Schedulers.boundedElastic()) & .map
     }
 }

@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class AuthDAOImpl implements AuthDAO {
+public class AuthService implements AuthDAO {
 
   ShaftHashing shaftHashing;
   AuthRepository authRepository;
@@ -38,7 +38,7 @@ public class AuthDAOImpl implements AuthDAO {
   }
 
   @Autowired
-  public AuthDAOImpl(AuthRepository authRepository, IdentityRepository identityRepository) throws Exception {
+  public AuthService(AuthRepository authRepository, IdentityRepository identityRepository) throws Exception {
     this.shaftHashing = new ShaftHashing();
     this.shaftJWT = new ShaftJWT();
     this.authRepository = authRepository;

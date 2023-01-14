@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class IdentityDAOImpl implements IdentityDAO {
+public class IdentityService implements IdentityDAO {
   private final IdentityRepository identityRepository;
   private final AccountRestClient accountRestClient;
   private final ObjectReader mapParser;
@@ -33,7 +33,7 @@ public class IdentityDAOImpl implements IdentityDAO {
   }
 
   @Autowired
-  public IdentityDAOImpl(IdentityRepository identityRepository, AccountRestClient accountRestClient) throws Exception {
+  public IdentityService(IdentityRepository identityRepository, AccountRestClient accountRestClient) throws Exception {
     this.identityRepository = identityRepository;
     this.accountRestClient = accountRestClient;
     this.jwtUtil = new ShaftJWT();
