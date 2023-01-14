@@ -1,56 +1,63 @@
 package org.shaft.administration.cartmanagement.repositories.custom;
 
-import org.elasticsearch.action.update.UpdateRequest;
+import co.elastic.clients.elasticsearch.core.DeleteRequest;
+import co.elastic.clients.elasticsearch.core.DeleteResponse;
+import co.elastic.clients.elasticsearch.core.GetResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
-import org.shaft.administration.cartmanagement.entity.Product;
-import org.shaft.administration.cartmanagement.entity.Products;
-import org.shaft.administration.cartmanagement.services.CartDAOImpl;
+import org.shaft.administration.cartmanagement.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.*;
-
+@Slf4j
 @Repository
 public class CartCustomRepositoryImpl implements CartCustomRepository {
-    private final ElasticsearchOperations elasticOperations;
-    private final RestHighLevelClient esClient;
+    private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
+    private final ReactiveElasticsearchClient reactiveElasticsearchClient;
 
     @Autowired
-    public CartCustomRepositoryImpl(ElasticsearchOperations elasticOperations, RestHighLevelClient esClient) {
-        this.elasticOperations = elasticOperations;
-        this.esClient = esClient;
+    public CartCustomRepositoryImpl(ReactiveElasticsearchOperations reactiveElasticsearchOperations,
+                                    ReactiveElasticsearchClient reactiveElasticsearchClient) {
+        this.reactiveElasticsearchOperations = reactiveElasticsearchOperations;
+        this.reactiveElasticsearchClient = reactiveElasticsearchClient;
     }
 
     @Override
-    public Long transactCartProducts(int i,Map<String,Object> product) {
-        String index = CartDAOImpl.getAccount() + "_cart";
+    public Mono<Long> transactCartProducts(int i, Map<String,Object> product) {
+        String index = CartService.getAccount() + "_cart";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 
         updateRequest.setConflicts("proceed");
         updateRequest.setQuery(QueryBuilders
-                .boolQuery()
-                .must(QueryBuilders
-                        .termQuery("i",i)));
+          .boolQuery()
+          .must(QueryBuilders
+            .termQuery("i",i)));
         updateRequest.setScript(prepareProductsUpdateScript(product));
         updateRequest.setRefresh(true);
-        try {
-            BulkByScrollResponse bulkResponse = esClient.updateByQuery(updateRequest, RequestOptions.DEFAULT);
-            return bulkResponse.getTotal();
-            /*
-            TimeValue timeTaken = bulkResponse.getTook();
-            log.info("[ELASTICSEARCH_SERVICE] [UPDATE_EXPIRATION_DATE] [TOTAL_UPDATED_DOCS: {}] [TOTAL_DURATION: {}]", totalDocs, timeTaken.getMillis()); */
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return 0L;
+        return reactiveElasticsearchClient.updateBy(updateRequest).map(response -> {
+              if(response != null) {
+                  log.info("Total Updated {}",response.getTotal());
+                  //TimeValue timeTaken = bulkResponse.getTook();
+                  return response.getTotal();
+              }
+              return 0L;
+          })
+          .filter(Objects::nonNull)
+          .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
     }
 
     private Script prepareProductsUpdateScript(Map<String,Object> params) {
@@ -59,13 +66,23 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
         return new Script(ScriptType.INLINE, "painless", scriptStr, params);
     }
 
-    // https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-document-update.html
-    public Long updateCart(int i, List<Object> products) {
-        String index = CartDAOImpl.getAccount() + "_cart";
-        UpdateRequest req = new UpdateRequest(index,"");
-        Map<String,Object> params = new HashMap<>();
-        params.put("products",products);
-        req.docAsUpsert(true).doc(params);
-        return 0L;
+    @Override
+    public Mono<Long> deleteUsersCart(int i) {
+
+        DeleteByQueryRequest request = new DeleteByQueryRequest();
+        request.setQuery(new BoolQueryBuilder()
+          .must(QueryBuilders.termQuery("i",i)));
+
+        return reactiveElasticsearchClient.deleteBy(request)
+          .map(response -> {
+              if(response != null) {
+                  log.info("Total Updated {}",response.getTotal());
+                  //TimeValue timeTaken = bulkResponse.getTook();
+                  return response.getDeleted();
+              }
+              return 0L;
+          })
+          .filter(Objects::nonNull)
+          .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
     }
 }

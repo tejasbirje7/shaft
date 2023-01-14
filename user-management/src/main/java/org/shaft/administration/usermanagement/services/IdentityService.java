@@ -47,8 +47,7 @@ public class IdentityService implements IdentityDAO {
     // #TODO Handle all exceptions and provide different response code for each exception
     String fp = (String) details.get("fp");
     // Check if `i` exists in request
-    if (details.containsKey("i")) {
-
+    if (details.containsKey("i") && !"".equals(details.get("i"))) {
       int i = Integer.parseInt((String) details.get("i"));
       boolean isIdentified = details.containsKey("isIdentified") && (boolean) details.get("isIdentified");
 

@@ -31,7 +31,7 @@ public class GatewayConfig {
         corsConfig.addAllowedHeader("*");
 
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
+        source.registerCorsConfiguration("/", corsConfig);
 
         return new CorsWebFilter(source);
     }
@@ -47,7 +47,7 @@ public class GatewayConfig {
                         .filters(f -> f.filter(authenticationFilter))
                         .uri("lb://INVENTORY-MANAGEMENT")) // 8082
                 .route("cart-management", r->r.path("/cart/**")
-                        .filters(f -> f.filter(authenticationFilter))
+                        //.filters(f -> f.filter(authenticationFilter))
                         .uri("lb://CART-MANAGEMENT")) // 8083
                 .route("account-management", r->r.path("/account/**")
                         //.filters(f -> f.filter(authenticationFilter))

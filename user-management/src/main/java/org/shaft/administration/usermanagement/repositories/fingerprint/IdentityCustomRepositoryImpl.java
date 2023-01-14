@@ -172,4 +172,19 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
         params.put("fpObject", fpObject);
         return new Script(ScriptType.INLINE, "painless", scriptStr, params);
     }
+
+    /*    public String createOrUpdateDocument(Product product) throws IOException {
+
+        IndexResponse response = elasticsearchClient.index(i -> i
+                .index(indexName)
+                .id(product.getId())
+                .document(product)
+        );
+        if (response.result().name().equals("Created")) {
+            return new StringBuilder("Document has been successfully created.").toString();
+        } else if (response.result().name().equals("Updated")) {
+            return new StringBuilder("Document has been successfully updated.").toString();
+        }
+        return new StringBuilder("Error while performing the operation.").toString();
+    }*/
 }

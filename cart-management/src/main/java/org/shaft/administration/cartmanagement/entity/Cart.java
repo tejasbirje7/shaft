@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString
 @Getter
 @Setter
-@Document(indexName = "#{T(org.shaft.administration.catalog.services.ItemsDAOImpl).getAccount()}_cart")
+@Document(indexName = "#{T(org.shaft.administration.cartmanagement.services.CartService).getAccount()}_cart")
 public class Cart {
     @Id
     private String _id = UUID.randomUUID().toString();

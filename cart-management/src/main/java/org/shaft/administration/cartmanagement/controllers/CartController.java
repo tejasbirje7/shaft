@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,35 +26,36 @@ public class CartController {
     }
 
     @RequestMapping(value = "/get/products", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> getCartProducts(@RequestHeader int account,
-                                                  @RequestHeader int i) {
-        List<Cart> response = cartDao.getCartProductsForI(account,i);
+    public Mono<ResponseEntity<Object>> getCartProducts(@RequestHeader int account,
+                                                        @RequestHeader int i) {
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",response, headers);
+        return cartDao.getCartProductsForI(account,i)
+          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
     }
 
     @RequestMapping(value = "/transact/products", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> transactCartProducts(@RequestHeader int account,
+    public Mono<ResponseEntity<Object>> transactCartProducts(@RequestHeader int account,
                                                       @RequestHeader int i,
                                                       @RequestBody Map<String,Object> productsToUpdate) {
-        cartDao.transactCartProducts(account,i,productsToUpdate);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
+        return cartDao.transactCartProducts(account,i,productsToUpdate)
+          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
     }
 
+    /*
     @RequestMapping(value = "/save/products", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> saveCartProducts(@RequestHeader int account,
+    public Mono<ResponseEntity<Object>> saveCartProducts(@RequestHeader int account,
                                                    @RequestBody Map<String,Object> cart) {
         cartDao.saveCartItems(account,cart);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
-    }
+    }*/
 
     @RequestMapping(value = "/empty", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> emptyCartItems(@RequestHeader int account,
+    public Mono<ResponseEntity<Object>> emptyCartItems(@RequestHeader int account,
                                                  @RequestHeader int i) {
-        cartDao.emptyCartItems(account,i);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
+        return cartDao.emptyCartItems(account,i)
+          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
     }
 }
