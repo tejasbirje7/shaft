@@ -12,6 +12,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.Collections;
 
+// #TODO Implement @EnableWebFluxSecurity here in gateway - https://reflectoring.io/spring-cors/
 @Configuration
 public class GatewayConfig {
 
@@ -31,7 +32,7 @@ public class GatewayConfig {
         corsConfig.addAllowedHeader("*");
 
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/", corsConfig);
+        source.registerCorsConfiguration("/**", corsConfig);
 
         return new CorsWebFilter(source);
     }

@@ -11,6 +11,8 @@ import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.NoSuchIndexException;
+import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -97,8 +99,8 @@ public class IdentityService implements IdentityDAO {
                   }
                   if(!idx.isEmpty()) {
                     Identity newFpToI = new Identity();
-                    if (details.containsKey("requestTime")) {
-                      int newI = (Integer) details.get("requestTime");
+                    if (details.containsKey("rt")) {
+                      int newI = (Integer) details.get("rt");
                       newFpToI.setIdentity(newI);
                       newFpToI.setIdentified(false);
                       Map<String,String> fpMapCreation = new HashMap<>();
@@ -108,6 +110,9 @@ public class IdentityService implements IdentityDAO {
                       newFpToI.setFingerPrint(fpArray);
                       ACCOUNT_ID.set(account);
                       identityRepository.save(newFpToI)
+                        .doOnSuccess(resp -> {
+                          log.info("Saved successfully {}",resp);
+                        })
                         .doOnError(error -> {
                           // #TODO Return exception here
                         }).subscribe();

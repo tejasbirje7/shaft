@@ -24,7 +24,6 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@CrossOrigin(origins = "*") // #TODO Remove this after experimenting service
 @RequestMapping("/catalog")
 public class ItemsController {
     private ItemsDAO itemsDao;

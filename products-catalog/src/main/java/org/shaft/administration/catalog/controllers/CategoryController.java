@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "*") // #TODO Remove this after experimenting service
 @RequestMapping("/catalog")
 public class CategoryController {
 
