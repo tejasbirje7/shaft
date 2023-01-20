@@ -42,14 +42,14 @@ public class CartController {
           .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
     }
 
-    /*
-    @RequestMapping(value = "/save/products", method = { RequestMethod.GET, RequestMethod.POST })
-    public Mono<ResponseEntity<Object>> saveCartProducts(@RequestHeader int account,
-                                                   @RequestBody Map<String,Object> cart) {
-        cartDao.saveCartItems(account,cart);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
-    }*/
+
+//    @RequestMapping(value = "/save/products", method = { RequestMethod.GET, RequestMethod.POST })
+//    public Mono<ResponseEntity<Object>> saveCartProducts(@RequestHeader int account,
+//                                                   @RequestBody Map<String,Object> cart) {
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        return cartDao.saveCartItems(account,cart)
+//          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+//    }
 
     @RequestMapping(value = "/empty", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> emptyCartItems(@RequestHeader int account,

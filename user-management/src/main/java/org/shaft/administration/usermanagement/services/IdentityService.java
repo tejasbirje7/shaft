@@ -11,8 +11,6 @@ import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.NoSuchIndexException;
-import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;

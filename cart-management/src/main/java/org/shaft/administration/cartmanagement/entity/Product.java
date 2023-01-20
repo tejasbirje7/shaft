@@ -1,15 +1,12 @@
 package org.shaft.administration.cartmanagement.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Field;
 
 @NoArgsConstructor
-@ToString
-@Getter
-@Setter
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
     private String id;
     private String name;

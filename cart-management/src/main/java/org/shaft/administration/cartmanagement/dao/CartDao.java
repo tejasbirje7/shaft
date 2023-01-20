@@ -13,5 +13,4 @@ public interface CartDao {
 
     Mono<Map<String, Object>> transactCartProducts(int accountId, int i, Map<String, Object> product);
 
-    boolean saveCartItems(int account, Map<String, Object> cart);
 }

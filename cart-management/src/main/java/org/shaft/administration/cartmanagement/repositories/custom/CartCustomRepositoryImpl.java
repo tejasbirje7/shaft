@@ -1,14 +1,8 @@
 package org.shaft.administration.cartmanagement.repositories.custom;
 
-import co.elastic.clients.elasticsearch.core.DeleteRequest;
-import co.elastic.clients.elasticsearch.core.DeleteResponse;
-import co.elastic.clients.elasticsearch.core.GetResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
@@ -17,12 +11,11 @@ import org.shaft.administration.cartmanagement.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 @Slf4j
 @Repository
 public class CartCustomRepositoryImpl implements CartCustomRepository {
@@ -62,7 +55,7 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
 
     private Script prepareProductsUpdateScript(Map<String,Object> params) {
         // #TODO Remove Map dependency and insert string here
-        String scriptStr = "ctx._source.products = params.get(\"product\")";
+        String scriptStr = "ctx._source.products = params.get(\"products\")";
         return new Script(ScriptType.INLINE, "painless", scriptStr, params);
     }
 

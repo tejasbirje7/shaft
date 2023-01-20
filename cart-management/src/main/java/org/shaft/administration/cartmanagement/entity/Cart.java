@@ -1,9 +1,7 @@
 package org.shaft.administration.cartmanagement.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
@@ -11,13 +9,11 @@ import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
-@ToString
-@Getter
-@Setter
-@Document(indexName = "#{T(org.shaft.administration.cartmanagement.services.CartService).getAccount()}_cart")
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Document(indexName = "#{T(org.shaft.administration.cartmanagement.services.CartService).getAccount()}_cart",createIndex = false)
 public class Cart {
     @Id
-    private String _id = UUID.randomUUID().toString();
     private int i;
     private List<Products> products;
 

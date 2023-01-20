@@ -1,16 +1,13 @@
 package org.shaft.administration.cartmanagement.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import java.util.Map;
 
 @NoArgsConstructor
-@ToString
-@Getter
-@Setter
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Products {
     private Product product;
     private int quantity;
