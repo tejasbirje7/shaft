@@ -2,12 +2,11 @@ package org.shaft.administration.inventory.repositories;
 
 import org.shaft.administration.inventory.entity.orders.Order;
 import org.shaft.administration.inventory.repositories.order.OrdersCustomRepository;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @Repository
-public interface OrdersRepository extends ElasticsearchRepository<Order,String> , OrdersCustomRepository {
-    public List<Order> findByI(int i);
+public interface OrdersRepository extends ReactiveCrudRepository<Order,String>, OrdersCustomRepository {
+    Flux<Order> findByI(int i);
 }

@@ -35,8 +35,8 @@ public class CartController {
 
     @RequestMapping(value = "/transact/products", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> transactCartProducts(@RequestHeader int account,
-                                                      @RequestHeader int i,
-                                                      @RequestBody Map<String,Object> productsToUpdate) {
+                                                             @RequestHeader int i,
+                                                             @RequestBody Map<String,Object> productsToUpdate) {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return cartDao.transactCartProducts(account,i,productsToUpdate)
           .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
@@ -53,7 +53,7 @@ public class CartController {
 
     @RequestMapping(value = "/empty", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> emptyCartItems(@RequestHeader int account,
-                                                 @RequestHeader int i) {
+                                                       @RequestHeader int i) {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return cartDao.emptyCartItems(account,i)
           .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));

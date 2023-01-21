@@ -14,7 +14,6 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-@Document(indexName = "#{T(org.shaft.administration.catalog.services.ItemsDAOImpl).getAccount()}_items")
 public class Item {
     @Id
     private String id;

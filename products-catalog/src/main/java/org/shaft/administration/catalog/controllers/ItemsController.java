@@ -48,7 +48,7 @@ public class ItemsController {
         return items.map(response -> ShaftResponseHandler.generateResponse("Success", "S78gsd8v", response, headers));
     }
 
-    @RequestMapping(value = "/items/bulk", method = { RequestMethod.GET })
+    @RequestMapping(value = "/items/bulk", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getBulkItems(@RequestHeader(value="account") int account,
                                                      @RequestBody(required = false) Map<String,Object> body) {
         Mono<List<Item>> items = itemsDao.getBulkItems(account,body).collectList();
@@ -85,7 +85,7 @@ public class ItemsController {
             try {
                 Map<String,Object> itemDetails = new ObjectMapper().readValue(value, new TypeReference<Map<String, Object>>() {});
                 return itemsDao.saveItem(account,itemDetails).map(
-                        resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers)
+                  resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers)
                 );
             } catch (Exception ex) {
                 // #TODO Throw invalid request [ MAJOR EXCEPTION ] & notify

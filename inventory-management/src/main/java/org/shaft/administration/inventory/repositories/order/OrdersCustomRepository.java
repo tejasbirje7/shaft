@@ -1,6 +1,7 @@
 package org.shaft.administration.inventory.repositories.order;
 
-public interface OrdersCustomRepository {
+import reactor.core.publisher.Mono;
 
-    Long updateOrderStage(int orderId,int status);
+public interface OrdersCustomRepository {
+    Mono<Long> updateOrderStage(int orderId, int status);
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-@Document(indexName = "#{T(org.shaft.administration.inventory.services.OrdersDAOImpl).getAccount()}_orders")
+@Document(indexName = "#{T(org.shaft.administration.inventory.services.OrdersService).getAccount()}_orders")
 public class Order {
     @Id
     private int oid;
