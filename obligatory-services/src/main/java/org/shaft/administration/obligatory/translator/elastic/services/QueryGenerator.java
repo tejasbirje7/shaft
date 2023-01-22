@@ -8,12 +8,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
 public class QueryGenerator {
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private int from = 0;
     private int to = 0;
     private static final String VALUE = "v";
@@ -40,12 +39,6 @@ public class QueryGenerator {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private ObjectNode appendRangeQuery(int f,int t) {
-        return mapper.createObjectNode().set("range" ,
-          mapper.createObjectNode().set("e.ts",
-            mapper.createObjectNode().put(GTE,f).put(LTE,t)));
     }
 
     private ObjectNode getEventQuery(int eventId) {
