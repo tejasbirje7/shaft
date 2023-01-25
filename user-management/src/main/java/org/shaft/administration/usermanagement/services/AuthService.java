@@ -4,20 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.obligatory.auth.transact.ShaftHashing;
-import org.shaft.administration.obligatory.auth.utils.APIConstant;
 import org.shaft.administration.obligatory.auth.utils.Mode;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.usermanagement.constants.API;
-import org.shaft.administration.usermanagement.constants.ResponseCode;
+import org.shaft.administration.usermanagement.constants.Code;
+import org.shaft.administration.usermanagement.constants.Log;
 import org.shaft.administration.usermanagement.dao.AuthDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.entity.User;
 import org.shaft.administration.usermanagement.repositories.AuthRepository;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
-import org.shaft.administration.usermanagement.constants.Log;
 import org.shaft.administration.usermanagement.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -71,33 +69,33 @@ public class AuthService implements AuthDAO {
               token = this.generateToken(user.getE());
             } catch (Exception e) {
               log.error(Log.TOKEN_GENERATION_FAILED + e.getMessage());
-              return ResponseBuilder.buildResponse(ResponseCode.TOKEN_GENERATION_FAILED);
+              return ResponseBuilder.buildResponse(Code.TOKEN_GENERATION_FAILED);
             }
             // #TODO Add retry spec if upsert failed with inbuilt method .retry(RetrySpec retrySpec)
             // Upsert FP to I identity if it's new fp for i
             return identityRepository.upsertFpAndIPair(user.getA(),fp,user.getI())
               .map(totalUpdated -> {
                 ObjectNode response = interceptUserResponse(user,token);
-                return ResponseBuilder.buildResponse(ResponseCode.LOGIN_SUCCESS,response);
+                return ResponseBuilder.buildResponse(Code.LOGIN_SUCCESS,response);
               })
               .onErrorResume(t -> {
                 log.error(Log.FP_TO_I_UPSERT_FAILED + t.getMessage());
-                return Mono.just(ResponseBuilder.buildResponse(ResponseCode.IDENTITY_UPDATE_FAILED));
+                return Mono.just(ResponseBuilder.buildResponse(Code.IDENTITY_UPDATE_FAILED));
               }).block();
           } else {
-            return ResponseBuilder.buildResponse(ResponseCode.USER_NOT_FOUND);
+            return ResponseBuilder.buildResponse(Code.USER_NOT_FOUND);
           }
         })
         .onErrorResume(t-> {
           log.error(Log.FETCHING_USER_EXCEPTION,t);
-          return Mono.just(ResponseBuilder.buildResponse(ResponseCode.UNABLE_TO_FETCH_USER));
+          return Mono.just(ResponseBuilder.buildResponse(Code.UNABLE_TO_FETCH_USER));
         });
     } else {
-      return Mono.just(ResponseBuilder.buildResponse(ResponseCode.BAD_REQUEST));
+      return Mono.just(ResponseBuilder.buildResponse(Code.BAD_LOGIN_REQUEST));
     }
   }
 
-  public Mono<Identity> registerUser(int account, Map<String,Object> request) {
+  public Mono<ObjectNode> registerUser(int account, Map<String,Object> request) {
     if (request.containsKey(API.DETAILS) && request.containsKey(API.FINGER_PRINT)) {
       Map<String, String> details = (Map<String, String>) request.get(API.DETAILS);
       String email = details.get(API.EMAIL);
@@ -106,11 +104,10 @@ public class AuthService implements AuthDAO {
       return authRepository.countByE(email)
         .collectList()
         .publishOn(Schedulers.boundedElastic())
-        .mapNotNull(userList -> {
+        .flatMap(userList -> {
           if(!userList.isEmpty() && userList.get(0) > 0) {
             // User already exists
-            return null;
-            //return Mono.just(ResponseBuilder.buildResponse(ResponseCode.USER_EXISTS));
+            return Mono.just(ResponseBuilder.buildResponse(Code.USER_EXISTS));
           } else {
             User user = new User();
             user.setI(newI);
@@ -119,87 +116,35 @@ public class AuthService implements AuthDAO {
             user.setNm("Tejas Birje");
             user.setE(email);
             user.setP(shaftHashing.transactPassword(Mode.ENCRYPT, details.get(API.PASSWORD)));
-
-
-
-
-            authRepository.save(user)
+            return authRepository.save(user)
               .publishOn(Schedulers.boundedElastic())
-              .map(user2 -> {
+              .flatMap(user2 -> {
                 Identity i = getIdentityObject(fp,newI);
-                identityRepository.save(account,i)
+                return identityRepository.save(account,i)
+                  .map(ide -> ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
                   .onErrorResume(t -> {
-                    if(t instanceof NoSuchIndexException) {
-                      log.error("Exception - {} , No such index {}",t.getMessage(),ACCOUNT_ID.get());
+                    if(isRestStatusException(t)) {
+                      log.error(Log.REST_STATUS_EXCEPTION_IDENTITY,t.getMessage(),t);
+                      return Mono.just(ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(i,ObjectNode.class)));
+                    } else {
+                      log.error(Log.SAVE_IDENTITY_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
+                      return Mono.just(ResponseBuilder.buildResponse(Code.SHAFT_IDENTITY_REGISTRATION_ERROR));
                     }
-                    if (t instanceof RestStatusException) {
-                      // #TODO Check this exception which appears always even if document gets saved properly
-                      log.error("RestStatusException {}",t.getMessage(),t);
-                      return Mono.just(i);
-                    }
-                    return Mono.just(new Identity());
-                  }).block();
+                  });
               })
               .onErrorResume(t -> {
-                if(t instanceof NoSuchIndexException) {
-                  log.error("Exception - {} , No such index {}",t.getMessage(),ACCOUNT_ID.get());
+                if(isRestStatusException(t)) {
+                  log.error(Log.REST_STATUS_EXCEPTION_USER,t.getMessage(),t);
+                  return Mono.just(ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(user,ObjectNode.class)));
+                } else {
+                  log.error(Log.SAVE_USER_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
+                  return Mono.just(ResponseBuilder.buildResponse(Code.SHAFT_REGISTRATION_ERROR));
                 }
-                if (t instanceof RestStatusException) {
-                  // #TODO Check this exception which appears always even if document gets saved properly
-                  log.error("RestStatusException {}",t.getMessage(),t);
-                  return Mono.just(user);
-                }
-                return Mono.just(user);
-              }).block();
-
-
-            return user;
-          }
-        })
-        .mapNotNull(user -> {
-          User userObj = null;
-          try {
-            if(user != null) {
-              userObj = authRepository.save(user)
-                .onErrorResume(t -> {
-                  if(t instanceof NoSuchIndexException) {
-                    log.error("Exception - {} , No such index {}",t.getMessage(),ACCOUNT_ID.get());
-                  }
-                  if (t instanceof RestStatusException) {
-                    // #TODO Check this exception which appears always even if document gets saved properly
-                    log.error("RestStatusException {}",t.getMessage(),t);
-                    return Mono.just(user);
-                  }
-                  return Mono.just(user);
-                }).block();
-            }
-          } catch (RestStatusException rst) {
-            return user;
-          }
-          return userObj;
-        })
-        .mapNotNull(user -> {
-          if(user != null) {
-            Identity i = getIdentityObject(fp,newI);
-            return identityRepository.save(account,i)
-              .onErrorResume(t -> {
-                if(t instanceof NoSuchIndexException) {
-                  log.error("Exception - {} , No such index {}",t.getMessage(),ACCOUNT_ID.get());
-                }
-                if (t instanceof RestStatusException) {
-                  // #TODO Check this exception which appears always even if document gets saved properly
-                  log.error("RestStatusException {}",t.getMessage(),t);
-                  return Mono.just(i);
-                }
-                return Mono.just(new Identity());
-              }).block();
-          } else {
-            return new Identity();
+              });
           }
         });
     }
-    // #TODO Throw BAD_REQUEST exception
-    return Mono.just(new Identity());
+    return Mono.just(ResponseBuilder.buildResponse(Code.BAD_REGISTRATION_REQUEST));
   }
 
   private Identity getIdentityObject(String fp, int newI) {
@@ -238,5 +183,7 @@ public class AuthService implements AuthDAO {
     return response;
   }
 
-
+  private boolean isRestStatusException(Throwable t) {
+    return t instanceof RestStatusException;
+  }
 }

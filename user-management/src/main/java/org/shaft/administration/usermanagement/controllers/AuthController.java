@@ -33,7 +33,7 @@ public class AuthController {
 
     @RequestMapping(value = "/register", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> addIdentity(@RequestHeader int account,
-                                                      @RequestBody Map<String,Object> details) {
+                                                    @RequestBody Map<String,Object> details) {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return authDAO.registerUser(account,details)
           .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));

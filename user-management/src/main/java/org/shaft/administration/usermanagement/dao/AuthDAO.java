@@ -8,5 +8,5 @@ import java.util.Map;
 
 public interface AuthDAO {
     Mono<ObjectNode> authenticateUser(Map<String,Object> request);
-    Mono<Identity> registerUser(int account, Map<String,Object> request);
+    Mono<ObjectNode> registerUser(int account, Map<String,Object> request);
 }
