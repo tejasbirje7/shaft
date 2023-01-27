@@ -4,13 +4,20 @@ package org.shaft.administration.usermanagement.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
+import org.shaft.administration.obligatory.auth.utils.APIConstant;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.usermanagement.clients.AccountRestClient;
+import org.shaft.administration.usermanagement.constants.API;
+import org.shaft.administration.usermanagement.constants.Code;
+import org.shaft.administration.usermanagement.constants.Log;
 import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
+import org.shaft.administration.usermanagement.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -27,6 +34,7 @@ public class IdentityService implements IdentityDAO {
   private final AccountRestClient accountRestClient;
   private final ObjectReader mapParser;
   private final ShaftJWT jwtUtil;
+  private final ObjectMapper mapper;
   public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
   public static int getAccount() {
     return ACCOUNT_ID.get();
@@ -38,50 +46,34 @@ public class IdentityService implements IdentityDAO {
     this.accountRestClient = accountRestClient;
     this.jwtUtil = new ShaftJWT();
     mapParser = new ObjectMapper().readerFor(Map.class);
+    mapper = new ObjectMapper();
   }
 
   // #TODO Handle identity scenario with fingerprint as well as IP, because IP changes is not very frequent
   @Override
-  public Mono<Object> checkIdentity(int account, Map<String,Object> details) {
-    ACCOUNT_ID.set(account);
-    // #TODO Handle all exceptions and provide different response code for each exception
-    String fp = (String) details.get("fp");
+  public Mono<ObjectNode> checkIdentity(int account, Map<String,Object> details) {
+    String fp = (String) details.get(API.FINGER_PRINT);
+
     // Check if `i` exists in request
-    if (details.containsKey("i") && !"".equals(details.get("i"))) {
-      int i = Integer.parseInt((String) details.get("i"));
-      boolean isIdentified = details.containsKey("isIdentified") && (boolean) details.get("isIdentified");
-
-      Mono<List<Identity>> doesFpExists = identityRepository.checkIfFpExistsForI(fp,i,isIdentified).collectList();
-      Mono<Long> ifFpEmptyUpdateFpToI = identityRepository.updateFp(fp,i);
-
-      // #TODO Return Mono<Map<String,Integer>> instead of Mono<Object>. Most probably will require one more .map
-      return Mono.from(doesFpExists)
-        .publishOn(Schedulers.boundedElastic())
-        .mapNotNull(fpDetails -> {
-          Map<String,Integer> response = new HashMap<>();
-          if (fpDetails.isEmpty()) {
-            return ifFpEmptyUpdateFpToI.map(totalUpdated -> {
-              int success = totalUpdated > 0 ? i : -1;
-              response.put("i",success);
-              return response;
-            }).block();
-          } else {
-            response.put("i",i);
-            return response;
-          }
-        });
+    if (details.containsKey(API.IDENTITY) && !API.EMPTY.equals(details.get(API.IDENTITY))) {
+      /*
+       `i` exists in request so check
+       if incoming fp is mapped with incoming `i`,
+       if not then update fp
+       */
+      int i = Integer.parseInt((String) details.get(API.IDENTITY));
+      boolean isIdentified = details.containsKey(API.IS_IDENTIFIED) && (boolean) details.get(API.IS_IDENTIFIED);
+      return checkIfFpExistsForI(fp,i,isIdentified,account);
     } else {
       // `i` doesn't exist in request
-      Mono<List<Identity>> doesIExistsForFp = identityRepository.checkIfIExistsForFp(fp).collectList();
-      Mono<String> retrieveAccountMeta = accountRestClient.retrieveAccountMeta(account);
-
-      return doesIExistsForFp
+      return identityRepository.checkIfIExistsForFp(fp)
+        .collectList()
         .publishOn(Schedulers.boundedElastic())
         .mapNotNull(fpDetails -> {
             ACCOUNT_ID.set(account);
-            Map<String,Integer> response = new HashMap<>();
+            ObjectNode response = mapper.createObjectNode();
             if(fpDetails.isEmpty()) {
-              return retrieveAccountMeta
+              return accountRestClient.retrieveAccountMeta(account)
                 .publishOn(Schedulers.boundedElastic())
                 .map(data -> {
                   ACCOUNT_ID.set(account);
@@ -89,16 +81,16 @@ public class IdentityService implements IdentityDAO {
                   String idx = "";
                   try {
                     meta = mapParser.readValue(data);
-                    if(meta.containsKey("code") && ((String)meta.get("code")).startsWith("S")) {
-                      idx = (String) ((Map<String, Object>) meta.get("data")).get("idx");
+                    if(meta.containsKey(API.RESPONSE_CODE) && ((String)meta.get(API.RESPONSE_CODE)).startsWith(API.RESPONSE_CODE_INITIAL)) {
+                      idx = (String) ((Map<String, Object>) meta.get(API.RESPONSE_DATA)).get(API.ACCOUNT_INDEX);
                     }
                   } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                   }
                   if(!idx.isEmpty()) {
                     Identity newFpToI = new Identity();
-                    if (details.containsKey("rt")) {
-                      int newI = (Integer) details.get("rt");
+                    if (details.containsKey(API.REQUEST_TIME)) {
+                      int newI = (Integer) details.get(API.REQUEST_TIME);
                       newFpToI.setIdentity(newI);
                       newFpToI.setIdentified(false);
                       Map<String,String> fpMapCreation = new HashMap<>();
@@ -114,22 +106,29 @@ public class IdentityService implements IdentityDAO {
                         .doOnError(error -> {
                           // #TODO Return exception here
                         }).subscribe();
-                      response.put("i",newI);
+                      response.put(API.IDENTITY,newI);
                       ACCOUNT_ID.remove();
-                      return response;
+                      return ResponseBuilder.buildResponse(Code.IDENTITY_FETCHED_SUCCESSFULLY,response);
                       // #TODO  Insert the event schema into `idx` index fetched above to track events
                     } else {
-                      // #TODO Raise Exception BAD REQUEST
+                      ACCOUNT_ID.remove();
+                      log.error(Log.BAD_REQUEST_ACC_META);
+                      return ResponseBuilder.buildResponse(Code.BAD_REQUEST_FOR_FETCHING_ACCOUNT_META);
                     }
                   } else {
-                    // #TODO Raise Exception ACCOUNT SERVICE DOWN
+                    ACCOUNT_ID.remove();
+                    log.error(Log.UNABLE_TO_FETCH_ACCOUNT_META);
+                    return ResponseBuilder.buildResponse(Code.SHAFT_UNABLE_TO_RETRIEVE_ACCOUNT_META);
                   }
+                })
+                .onErrorResume(t -> {
                   ACCOUNT_ID.remove();
-                  return response;
+                  log.error(Log.ERROR_IN_FETCHING_ACCOUNT_META,t);
+                  return Mono.just(ResponseBuilder.buildResponse(Code.ERROR_IN_FETCHING_ACCOUNT_META));
                 }).block();
             } else {
               // `i` exists return `fp`
-              response.put("i",fpDetails.get(0).getIdentity());
+              response.put(API.IDENTITY,fpDetails.get(0).getIdentity());
             }
             ACCOUNT_ID.remove();
             return response;
@@ -162,5 +161,54 @@ public class IdentityService implements IdentityDAO {
   @Override
   public Map<String, Integer> upsertFpAndIPair(String fp, int i) {
     return null;
+  }
+  private boolean isRestStatusException(Throwable t) {
+    return t instanceof RestStatusException;
+  }
+
+  private Mono<ObjectNode> checkIfFpExistsForI(String fp,int i,boolean isIdentified,int account) {
+    ACCOUNT_ID.set(account);
+    // Check if fp exists for `i`
+    return identityRepository.checkIfFpExistsForI(fp,i,isIdentified)
+      .collectList()
+      .publishOn(Schedulers.boundedElastic())
+      .mapNotNull(fpDetails -> {
+        ObjectNode response = mapper.createObjectNode();
+        if (fpDetails.isEmpty()) {
+
+          ACCOUNT_ID.set(account);
+          // fp doesn't exist, so update this fp for incoming `i`
+          return identityRepository.updateFp(fp,i)
+            .map(totalUpdated -> {
+              if(totalUpdated > 0) {
+                ACCOUNT_ID.remove();
+                response.put(API.IDENTITY,i);
+                return ResponseBuilder.buildResponse(Code.IDENTITY_FETCHED_SUCCESSFULLY,response);
+              } else {
+                log.error(Log.FAILED_TO_UPDATE_FP);
+                return ResponseBuilder.buildResponse(Code.SHAFT_FP_UPSERT_FAILED);
+              }
+            })
+            .onErrorResume(t -> {
+              if(!isRestStatusException(t)) {
+                return Mono.just(ResponseBuilder.buildResponse(Code.SHAFT_FP_UPSERT_ERROR));
+              } else {
+                log.error(Log.ERROR_WHILE_UPDATE_FP,t);
+                response.put(API.IDENTITY,i);
+                ACCOUNT_ID.remove();
+                return Mono.just(ResponseBuilder.buildResponse(Code.IDENTITY_FETCHED_SUCCESSFULLY,response));
+              }
+            }).block();
+        } else {
+          response.put(API.IDENTITY,i);
+          ACCOUNT_ID.remove();
+          return ResponseBuilder.buildResponse(Code.IDENTITY_FETCHED_SUCCESSFULLY,response);
+        }
+      })
+      .onErrorResume(t -> {
+        log.error(Log.FP_TO_I_MAPPING_FAILED,t);
+        ACCOUNT_ID.remove();
+        return Mono.just(ResponseBuilder.buildResponse(Code.SHAFT_FP_TO_I_MAPPING_FAILED));
+      });
   }
 }

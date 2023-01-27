@@ -124,7 +124,6 @@ public class AuthService implements AuthDAO {
                   .map(ide -> ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
                   .onErrorResume(t -> {
                     if(isRestStatusException(t)) {
-                      log.error(Log.REST_STATUS_EXCEPTION_IDENTITY,t.getMessage(),t);
                       return Mono.just(ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(i,ObjectNode.class)));
                     } else {
                       log.error(Log.SAVE_IDENTITY_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
@@ -134,7 +133,6 @@ public class AuthService implements AuthDAO {
               })
               .onErrorResume(t -> {
                 if(isRestStatusException(t)) {
-                  log.error(Log.REST_STATUS_EXCEPTION_USER,t.getMessage(),t);
                   return Mono.just(ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(user,ObjectNode.class)));
                 } else {
                   log.error(Log.SAVE_USER_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
