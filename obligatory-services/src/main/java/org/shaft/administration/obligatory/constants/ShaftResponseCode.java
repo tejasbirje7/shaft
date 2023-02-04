@@ -13,6 +13,9 @@ public class ShaftResponseCode {
   public static String FETCHED_CART_ITEMS = "S0009";
   public static String TRANSACTED_CART_ITEMS = "S0010";
   public static String ADDED_CART_ITEMS = "S0011";
+  public static String ORDERS_SAVED = "S0013";
+  public static String ORDERS_FETCHED_SUCCESSFULLY = "S0014";
+  public static String ORDERS_FETCHED_SUCCESSFULLY_FOR_I = "S0015";
   public static String TOKEN_GENERATION_FAILED = "F0001";
   public static String IDENTITY_UPDATE_FAILED = "F0002";
   public static String USER_NOT_FOUND = "F0003";
@@ -37,5 +40,16 @@ public class ShaftResponseCode {
   public static String SHAFT_FAILED_TO_EMPTY_CART = "F0021";
   public static String FAILED_TO_FETCH_CART_FOR_I = "F0022";
   public static String FAILED_TO_TRANSACT_CART_ITEMS = "F0023";
-  public static String FAILED_TO_ADD_CART_ITEM = "F0023";
+  public static String FAILED_TO_ADD_CART_ITEM = "F0024";
+  public static String UNABLE_TO_FETCH_ORDERS = "F0025";
+  public static String NO_ITEMS_IN_ORDER = "F0026";
+  public static String INVALID_PRODUCT_API_RESPONSE = "F0027";
+  public static String EXCEPTION_POPULATING_ITEMS_IN_ORDER = "F0028";
+  public static String PRODUCT_API_ERROR = "F0029";
+  public static String UNABLE_TO_FETCH_ORDERS_FOR_I = "F0030";
+  public static String NO_I_TO_FETCH_ORDER = "F0031";
+  public static String FAILED_TO_SAVE_ORDER = "F0032";
+  public static String INVALID_CART_API_RESPONSE = "F0033";
+  public static String PRODUCT_API_FAILED = "F0034";
+  public static String CART_API_FAILED = "F0035";
 }

@@ -2,14 +2,20 @@ package org.shaft.administration.inventory.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.inventory.clients.RestClient;
+import org.shaft.administration.inventory.constants.InventoryConstants;
+import org.shaft.administration.inventory.constants.InventoryLogs;
 import org.shaft.administration.inventory.dao.OrdersDao;
 import org.shaft.administration.inventory.entity.orders.Item;
 import org.shaft.administration.inventory.entity.orders.Order;
 import org.shaft.administration.inventory.repositories.OrdersRepository;
+import org.shaft.administration.obligatory.constants.ShaftResponseCode;
+import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.data.elasticsearch.RestStatusException;
@@ -29,7 +35,7 @@ public class OrdersService implements OrdersDao {
 
   private final OrdersRepository ordersRepository;
   private final RestClient restClient;
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper mapper = new ObjectMapper();
   private final ObjectReader mapParser;
   public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
   public static int getAccount() {
@@ -44,86 +50,118 @@ public class OrdersService implements OrdersDao {
   }
 
   @Override
-  public Mono<List<Order>> getOrders(int accountId) {
+  public Mono<ObjectNode> getOrders(int accountId) {
     ACCOUNT_ID.set(accountId);
-    // #TODO Handle exceptions
-    return ordersRepository.findAll().collectList()
-      .doOnNext( t -> ACCOUNT_ID.remove());
+    return ordersRepository.findAll()
+      .collectList()
+      .map(orders -> {
+        ACCOUNT_ID.remove();
+        return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ORDERS_FETCHED_SUCCESSFULLY,
+          mapper.valueToTree(orders));
+      })
+      .onErrorResume(error -> {
+        ACCOUNT_ID.remove();
+        log.error(InventoryLogs.UNABLE_TO_FETCH_ORDERS,error,accountId);
+        return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.UNABLE_TO_FETCH_ORDERS));
+      });
   }
 
   @Override
-  public Mono<List<Object>> getOrdersForI(int accountId, Map<String,Object> body) {
-    int i;
-    if (body.containsKey("i")) {
-      i = (int) body.get("i");
+  public Mono<ObjectNode> getOrdersForI(int accountId, Map<String,Object> body) {
+    if (body.containsKey(InventoryConstants.I)) {
+      int i = (int) body.get(InventoryConstants.I);
       ACCOUNT_ID.set(accountId);
       return ordersRepository.findByI(i)
         .collectList()
         .publishOn(Schedulers.boundedElastic())
-        .map(orders -> {
-          List<String> itemIds = orders.stream()
-            .flatMap(o -> o.getItems().stream())
-            .collect(Collectors.toList()).stream()
-            .map(Item::getId)
-            .collect(Collectors.toList());
-          List<Object> response = new ArrayList<>();
-          restClient.getProducts(accountId, itemIds)
-            .doOnSuccess(productsResponse -> {
-              List<Item> items = new ArrayList<>();
+        .mapNotNull(orders -> {
+          List<String> itemIds = collectItemsFromOrder(orders);
+          return restClient.getProducts(accountId, itemIds)
+            .map(productsResponse -> {
+              List<Item> items;
               try {
                 Map<String, Object> products = mapParser.readValue(productsResponse);
-                if (products.containsKey("code") && ((String) products.get("code")).startsWith("S")) {
-                  items = (List<Item>) products.get("data");
+                if (products.containsKey(InventoryConstants.CODE)
+                  && ((String) products.get(InventoryConstants.CODE))
+                  .startsWith(InventoryConstants.SUCCESS_PREFIX)) {
+                  items = (List<Item>) products.get(InventoryConstants.DATA);
+                } else {
+                  log.error(InventoryLogs.PRODUCT_API_FAILED_CODE,products.get(InventoryConstants.CODE),accountId);
+                  return ShaftResponseBuilder.buildResponse(ShaftResponseCode.PRODUCT_API_FAILED);
                 }
-              } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-              }
-              // Insert additional information, obtained from items API into specific orders
-              if (!items.isEmpty()) {
-                try {
-                  for (Order order : orders) {
-                    Map<String, Object> perOrder = objectMapper.convertValue(order, new TypeReference<Map<String, Object>>() {
-                    });
-                    List<Item> itemsInOrder = order.getItems();
-                    List<Object> modifyItemsArray = new ArrayList<>();
-                    for (Item perItemInOrder : itemsInOrder) {
-                      for (Item item : items) {
-                        Map<String, Object> itemFromDB = (Map<String, Object>) item;
-                        if ((itemFromDB.get("id").equals(perItemInOrder.getId()))) {
-                          itemFromDB.put("costPrice", perItemInOrder.getCostPrice());
-                          itemFromDB.put("quantity", perItemInOrder.getQuantity());
-                          itemFromDB.put("options", perItemInOrder.getOption());
-                          modifyItemsArray.add(itemFromDB);
-                        }
-                      }
-                      perOrder.put("items", modifyItemsArray);
-                    }
-                    response.add(perOrder);
-                  }
-                } catch (Exception ex) {
-                  System.out.println(ex.getMessage());
-                } finally {
-                  ACCOUNT_ID.remove();
+                // Insert additional information, obtained from items API into specific orders
+                if (!items.isEmpty()) {
+                  List<Object> response = addItemsMetaToOrders(orders, items);
+                  return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ORDERS_FETCHED_SUCCESSFULLY_FOR_I,
+                    mapper.valueToTree(response));
+                } else {
+                  return ShaftResponseBuilder.buildResponse(ShaftResponseCode.NO_ITEMS_IN_ORDER);
                 }
+              } catch (JsonProcessingException ex) {
+                return ShaftResponseBuilder.buildResponse(ShaftResponseCode.INVALID_PRODUCT_API_RESPONSE);
+              } catch (Exception ex) {
+                log.error(InventoryLogs.EXCEPTION_POPULATING_ITEMS_IN_ORDER,ex,accountId);
+                return ShaftResponseBuilder.buildResponse(ShaftResponseCode.EXCEPTION_POPULATING_ITEMS_IN_ORDER);
+              } finally {
+                ACCOUNT_ID.remove();
               }
+            })
+            .onErrorResume(error -> {
+              ACCOUNT_ID.remove();
+              log.error(InventoryLogs.PRODUCT_API_FAILED,error,accountId);
+              return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.PRODUCT_API_ERROR));
             }).block();
+        })
+        .onErrorResume(error -> {
           ACCOUNT_ID.remove();
-          return response;
+          log.error(InventoryLogs.UNABLE_TO_FETCH_ORDERS_FOR_I,error,accountId);
+          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.UNABLE_TO_FETCH_ORDERS_FOR_I));
         });
-    }
-    else {
-      // #TODO Throw exception BAD REQUEST
-      return Mono.empty();
+    } else {
+      return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.NO_I_TO_FETCH_ORDER));
     }
   }
 
   @Override
-  public Mono<Order> saveOrders(int accountId, Map<String,Object> order) {
+  public Mono<ObjectNode> saveOrders(int accountId, Map<String,Object> order) {
     ACCOUNT_ID.set(accountId);
     // #TODO Validate request body by parsing
-    Order o = objectMapper.convertValue(order,Order.class);
+    Order o = mapper.convertValue(order,Order.class);
     return ordersRepository.save(o)
-      .doOnError(t -> {
+      .publishOn(Schedulers.boundedElastic())
+      .mapNotNull(savedOrder -> {
+        // #TODO Add retry mechanism here in case of failure since we have already performed ACID transaction above
+        return restClient.emptyCart(accountId,o.getI())
+          .map(response -> {
+            ObjectNode apiResponse = mapper.createObjectNode();
+            try {
+              Map<String, Object>  cartAPIResponse = mapParser.readValue(response);
+              if (cartAPIResponse.containsKey(InventoryConstants.CODE)
+                && ((String) cartAPIResponse.get(InventoryConstants.CODE))
+                .startsWith(InventoryConstants.SUCCESS_PREFIX)) {
+                JsonNode parsedResponse = mapper.convertValue(cartAPIResponse.get("data"), JsonNode.class);
+                boolean success = parsedResponse.has("deleted") && parsedResponse.get("deleted").asBoolean();
+                apiResponse.put(InventoryConstants.ACTION,InventoryConstants.ADDED);
+                if(success) {
+                  apiResponse.put(InventoryConstants.ADDED , true);
+                  return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ORDERS_SAVED,apiResponse);
+                } else {
+                  log.error(InventoryLogs.CART_API_FAILED_CODE,cartAPIResponse.get(InventoryConstants.CODE),accountId);
+                  apiResponse.put(InventoryConstants.ADDED , false);
+                  return ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_SAVE_ORDER,apiResponse);
+                }
+              } else {
+                return ShaftResponseBuilder.buildResponse(ShaftResponseCode.CART_API_FAILED);
+              }
+            } catch (JsonProcessingException e) {
+              log.error(InventoryLogs.INVALID_CART_API_RESPONSE,e,accountId);
+              return ShaftResponseBuilder.buildResponse(ShaftResponseCode.INVALID_CART_API_RESPONSE);
+            } finally {
+              ACCOUNT_ID.remove();
+            }
+          }).block();
+      })
+      .onErrorResume(t -> {
         if (t instanceof NoSuchIndexException) {
           log.error("Exception - {} , No such index {}", t.getMessage(), ACCOUNT_ID.get());
         }
@@ -132,27 +170,6 @@ public class OrdersService implements OrdersDao {
           log.error("RestStatusException {}", t.getMessage(), t);
         }
         ACCOUNT_ID.remove();
-      })
-      .publishOn(Schedulers.boundedElastic())
-      .doOnSuccess(savedOrder -> {
-        // #TODO Add retry mechanism here in case of failure since we have already performed ACID transaction above
-        restClient.emptyCart(accountId,o.getI())
-          .map(response -> {
-            Order returnOrder = new Order();
-            try {
-              Map<String, Object> checkIfSuccess = mapParser.readValue(response);
-              if (checkIfSuccess.containsKey("code") && ((String) checkIfSuccess.get("code")).startsWith("S")) {
-                boolean success = (boolean) checkIfSuccess.get("data");
-                if(success) {
-                  returnOrder = o;
-                }
-              }
-            } catch (JsonProcessingException e) {
-              throw new RuntimeException(e);
-            }
-            return returnOrder;
-          }).block();
-        ACCOUNT_ID.remove();
       });
   }
 
@@ -160,7 +177,7 @@ public class OrdersService implements OrdersDao {
   public Mono<List<Item>> getBulkItemsInOrder(int accountId, Map<String, Object> itemsInRequest) {
     if (itemsInRequest.containsKey("items")) {
       List<String> itemIds;
-      List<Item> convertedItems = objectMapper.convertValue(itemsInRequest.get("items"), new TypeReference<List<Item>>() {});
+      List<Item> convertedItems = mapper.convertValue(itemsInRequest.get("items"), new TypeReference<List<Item>>() {});
       itemIds = convertedItems.stream()
         .map(Item::getId)
         .collect(Collectors.toList());
@@ -197,6 +214,37 @@ public class OrdersService implements OrdersDao {
       response.put("updated",0L);
     }
     return Mono.just(response);
+  }
+
+  private List<Object> addItemsMetaToOrders(List<Order> orders,List<Item> items) {
+    List<Object> response = new ArrayList<>();
+    for (Order order : orders) {
+      Map<String, Object> perOrder = mapper.convertValue(order, new TypeReference<Map<String, Object>>() {});
+      List<Item> itemsInOrder = order.getItems();
+      List<Object> modifyItemsArray = new ArrayList<>();
+      for (Item perItemInOrder : itemsInOrder) {
+        for (Item item : items) {
+          Map<String, Object> itemFromDB = (Map<String, Object>) item;
+          if ((itemFromDB.get("id").equals(perItemInOrder.getId()))) {
+            itemFromDB.put("costPrice", perItemInOrder.getCostPrice());
+            itemFromDB.put("quantity", perItemInOrder.getQuantity());
+            itemFromDB.put("options", perItemInOrder.getOption());
+            modifyItemsArray.add(itemFromDB);
+          }
+        }
+        perOrder.put("items", modifyItemsArray);
+      }
+      response.add(perOrder);
+    }
+    return response;
+  }
+
+  private static List<String> collectItemsFromOrder(List<Order> orders) {
+    return orders.stream()
+      .flatMap(o -> o.getItems().stream())
+      .collect(Collectors.toList()).stream()
+      .map(Item::getId)
+      .collect(Collectors.toList());
   }
 }
 
