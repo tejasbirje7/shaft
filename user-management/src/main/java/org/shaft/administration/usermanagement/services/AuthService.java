@@ -5,16 +5,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.obligatory.auth.transact.ShaftHashing;
 import org.shaft.administration.obligatory.auth.utils.Mode;
+import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
-import org.shaft.administration.usermanagement.constants.API;
-import org.shaft.administration.usermanagement.constants.Code;
-import org.shaft.administration.usermanagement.constants.Log;
+import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
+import org.shaft.administration.usermanagement.constants.UserManagementConstants;
+import org.shaft.administration.usermanagement.constants.UserManagementLogs;
 import org.shaft.administration.usermanagement.dao.AuthDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.entity.User;
 import org.shaft.administration.usermanagement.repositories.AuthRepository;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
-import org.shaft.administration.usermanagement.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.stereotype.Service;
@@ -52,10 +52,10 @@ public class AuthService implements AuthDAO {
 
   @Override
   public Mono<ObjectNode> authenticateUser(Map<String,Object> request) {
-    if (request.containsKey(API.DETAILS) && request.containsKey(API.FINGER_PRINT)) {
-      String email = ((Map<String,String>)request.get(API.DETAILS)).get(API.EMAIL);
-      String password = ((Map<String,String>)request.get(API.DETAILS)).get(API.PASSWORD);
-      String fp = (String) request.get(API.FINGER_PRINT);
+    if (request.containsKey(UserManagementConstants.DETAILS) && request.containsKey(UserManagementConstants.FINGER_PRINT)) {
+      String email = ((Map<String,String>)request.get(UserManagementConstants.DETAILS)).get(UserManagementConstants.EMAIL);
+      String password = ((Map<String,String>)request.get(UserManagementConstants.DETAILS)).get(UserManagementConstants.PASSWORD);
+      String fp = (String) request.get(UserManagementConstants.FINGER_PRINT);
       String hashedPassword = shaftHashing.transactPassword(Mode.ENCRYPT, password);
       // Check if user is present in system
       return authRepository.findByEAndP(email,hashedPassword)
@@ -68,81 +68,81 @@ public class AuthService implements AuthDAO {
             try {
               token = this.generateToken(user.getE());
             } catch (Exception e) {
-              log.error(Log.TOKEN_GENERATION_FAILED + e.getMessage());
-              return ResponseBuilder.buildResponse(Code.TOKEN_GENERATION_FAILED);
+              log.error(UserManagementLogs.TOKEN_GENERATION_FAILED + e.getMessage());
+              return ShaftResponseBuilder.buildResponse(ShaftResponseCode.TOKEN_GENERATION_FAILED);
             }
             // #TODO Add retry spec if upsert failed with inbuilt method .retry(RetrySpec retrySpec)
             // Upsert FP to I identity if it's new fp for i
             return identityRepository.upsertFpAndIPair(user.getA(),fp,user.getI())
               .map(totalUpdated -> {
                 ObjectNode response = interceptUserResponse(user,token);
-                return ResponseBuilder.buildResponse(Code.LOGIN_SUCCESS,response);
+                return ShaftResponseBuilder.buildResponse(ShaftResponseCode.LOGIN_SUCCESS,response);
               })
               .onErrorResume(t -> {
-                log.error(Log.FP_TO_I_UPSERT_FAILED + t.getMessage());
-                return Mono.just(ResponseBuilder.buildResponse(Code.IDENTITY_UPDATE_FAILED));
+                log.error(UserManagementLogs.FP_TO_I_UPSERT_FAILED + t.getMessage());
+                return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.IDENTITY_UPDATE_FAILED));
               }).block();
           } else {
-            return ResponseBuilder.buildResponse(Code.USER_NOT_FOUND);
+            return ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_NOT_FOUND);
           }
         })
         .onErrorResume(t-> {
-          log.error(Log.FETCHING_USER_EXCEPTION,t);
-          return Mono.just(ResponseBuilder.buildResponse(Code.UNABLE_TO_FETCH_USER));
+          log.error(UserManagementLogs.FETCHING_USER_EXCEPTION,t);
+          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.UNABLE_TO_FETCH_USER));
         });
     } else {
-      return Mono.just(ResponseBuilder.buildResponse(Code.BAD_LOGIN_REQUEST));
+      return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BAD_LOGIN_REQUEST));
     }
   }
 
   public Mono<ObjectNode> registerUser(int account, Map<String,Object> request) {
-    if (request.containsKey(API.DETAILS) && request.containsKey(API.FINGER_PRINT)) {
-      Map<String, String> details = (Map<String, String>) request.get(API.DETAILS);
-      String email = details.get(API.EMAIL);
-      int newI = Integer.parseInt(details.get(API.IDENTITY));
-      String fp = (String) request.get(API.FINGER_PRINT);
+    if (request.containsKey(UserManagementConstants.DETAILS) && request.containsKey(UserManagementConstants.FINGER_PRINT)) {
+      Map<String, String> details = (Map<String, String>) request.get(UserManagementConstants.DETAILS);
+      String email = details.get(UserManagementConstants.EMAIL);
+      int newI = Integer.parseInt(details.get(UserManagementConstants.IDENTITY));
+      String fp = (String) request.get(UserManagementConstants.FINGER_PRINT);
       return authRepository.countByE(email)
         .collectList()
         .publishOn(Schedulers.boundedElastic())
         .flatMap(userList -> {
           if(!userList.isEmpty() && userList.get(0) > 0) {
             // User already exists
-            return Mono.just(ResponseBuilder.buildResponse(Code.USER_EXISTS));
+            return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_EXISTS));
           } else {
             User user = new User();
             user.setI(newI);
-            user.setC(Long.parseLong(details.get(API.CONTACT)));
+            user.setC(Long.parseLong(details.get(UserManagementConstants.CONTACT)));
             user.setA(account);
             user.setNm("Tejas Birje");
             user.setE(email);
-            user.setP(shaftHashing.transactPassword(Mode.ENCRYPT, details.get(API.PASSWORD)));
+            user.setP(shaftHashing.transactPassword(Mode.ENCRYPT, details.get(UserManagementConstants.PASSWORD)));
             return authRepository.save(user)
               .publishOn(Schedulers.boundedElastic())
               .flatMap(user2 -> {
                 Identity i = getIdentityObject(fp,newI);
                 return identityRepository.save(account,i)
-                  .map(ide -> ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
+                  .map(ide -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
                   .onErrorResume(t -> {
                     if(isRestStatusException(t)) {
-                      return Mono.just(ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(i,ObjectNode.class)));
+                      return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(i,ObjectNode.class)));
                     } else {
-                      log.error(Log.SAVE_IDENTITY_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
-                      return Mono.just(ResponseBuilder.buildResponse(Code.SHAFT_IDENTITY_REGISTRATION_ERROR));
+                      log.error(UserManagementLogs.AUTH_SAVE_IDENTITY_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
+                      return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_IDENTITY_REGISTRATION_ERROR));
                     }
                   });
               })
               .onErrorResume(t -> {
                 if(isRestStatusException(t)) {
-                  return Mono.just(ResponseBuilder.buildResponse(Code.USER_REGISTERED,mapper.convertValue(user,ObjectNode.class)));
+                  return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(user,ObjectNode.class)));
                 } else {
-                  log.error(Log.SAVE_USER_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
-                  return Mono.just(ResponseBuilder.buildResponse(Code.SHAFT_REGISTRATION_ERROR));
+                  log.error(UserManagementLogs.SAVE_USER_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
+                  return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_REGISTRATION_ERROR));
                 }
               });
           }
         });
     }
-    return Mono.just(ResponseBuilder.buildResponse(Code.BAD_REGISTRATION_REQUEST));
+    return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BAD_REGISTRATION_REQUEST));
   }
 
   private Identity getIdentityObject(String fp, int newI) {

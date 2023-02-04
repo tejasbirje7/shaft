@@ -1,5 +1,6 @@
 package org.shaft.administration.catalog.dao;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.shaft.administration.catalog.entity.item.Item;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public interface ItemsDAO {
 
-    Flux<Item> getItems(int accountId,Map<String,Object> body);
-    Flux<Item> getBulkItems(int accountId,Map<String,Object> body);
-    Mono<Item> saveItem(int accountId, Map<String,Object> body);
+    Mono<ObjectNode> getItems(int accountId, Map<String,Object> body);
+    Mono<ObjectNode> getBulkItems(int accountId,Map<String,Object> body);
+    Mono<ObjectNode> saveItem(int accountId, Map<String,Object> body);
 }

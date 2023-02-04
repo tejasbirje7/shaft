@@ -1,10 +1,10 @@
-package org.shaft.administration.usermanagement.util;
+package org.shaft.administration.obligatory.transactions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class ResponseBuilder {
+public class ShaftResponseBuilder {
 
   static ObjectMapper mapper = new ObjectMapper();
 

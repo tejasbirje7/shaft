@@ -4,11 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.catalog.dao.ItemsDAO;
-import org.shaft.administration.catalog.entity.item.Item;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -44,15 +41,14 @@ public class ItemsController {
     @RequestMapping(value = "/items", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getItems(@RequestHeader(value="account") int account,
                                                  @RequestBody(required = false) Map<String,Object> body) {
-        Mono<List<Item>> items = itemsDao.getItems(account,body).collectList();
-        return items.map(response -> ShaftResponseHandler.generateResponse("Success", "S78gsd8v", response, headers));
+        return itemsDao.getItems(account,body).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/items/bulk", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getBulkItems(@RequestHeader(value="account") int account,
                                                      @RequestBody(required = false) Map<String,Object> body) {
-        Mono<List<Item>> items = itemsDao.getBulkItems(account,body).collectList();
-        return items.map(response -> ShaftResponseHandler.generateResponse("Success", "S78gsd8v", response, headers));
+        // #TODO Check if this call can be replaced with getItems() above
+        return itemsDao.getBulkItems(account,body).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/items/save", method = { RequestMethod.POST })
@@ -84,12 +80,11 @@ public class ItemsController {
             // Parsing and saving item details
             try {
                 Map<String,Object> itemDetails = new ObjectMapper().readValue(value, new TypeReference<Map<String, Object>>() {});
-                return itemsDao.saveItem(account,itemDetails).map(
-                  resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers)
-                );
+                return itemsDao.saveItem(account,itemDetails).map(ShaftResponseHandler::generateResponse);
             } catch (Exception ex) {
                 // #TODO Throw invalid request [ MAJOR EXCEPTION ] & notify
             }
+            // #TODO Remove this different response handling for this call
             return Mono.just(ShaftResponseHandler.generateResponse("Success","S12345",new ArrayList<>(),headers));
         });
     }

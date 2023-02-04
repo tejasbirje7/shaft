@@ -29,7 +29,7 @@ public class IdentityController {
                                                       @RequestBody Map<String,Object> details) {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return identityDAO.checkIdentity(account,details)
-                .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+          .map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/user/details", method = {RequestMethod.POST})

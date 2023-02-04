@@ -1,5 +1,6 @@
 package org.shaft.administration.catalog.controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.shaft.administration.catalog.dao.CategoryDAO;
 import org.shaft.administration.catalog.entity.category.Category;
 import org.shaft.administration.catalog.entity.item.Item;
@@ -29,36 +30,19 @@ public class CategoryController {
 
     @RequestMapping(value = "/categories", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getCategories(@RequestHeader(value="account") int account) {
-        Mono<List<Category>> categories = categoryDao.getCategories(account).collectList();
-        return categories.map(response -> ShaftResponseHandler.generateResponse("Success", "S78gsd8v", response, headers));
+        return categoryDao.getCategories(account).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/categories/save", method = { RequestMethod.POST })
     public Mono<ResponseEntity<Object>> saveCategory(@RequestHeader(value="account") int account,
-                                                     @RequestBody(required = true)Map<String,Object> category) {
-        try {
-            return categoryDao.saveCategory(account,category).map(
-                    resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers)
-            );
-        } catch (Exception ex) {
-            // #TODO Throw invalid request [ MAJOR EXCEPTION ] & notify
-        }
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return Mono.just(ShaftResponseHandler.generateResponse("Success","S12345",new ArrayList<>(),headers));
+                                                     @RequestBody() Map<String,Object> category) {
+        return categoryDao.saveCategory(account,category).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/categories/update", method = { RequestMethod.POST })
     public Mono<ResponseEntity<Object>> updateCategory(@RequestHeader(value="account") int account,
-                                               @RequestBody(required = true)Map<String,Object> category) {
-        try {
-            return categoryDao.saveCategory(account,category).map(
-                    resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers)
-            );
-        } catch (Exception ex) {
-            // #TODO Throw invalid request [ MAJOR EXCEPTION ] & notify
-        }
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return Mono.just(ShaftResponseHandler.generateResponse("Success","S12345",new ArrayList<>(),headers));
+                                                       @RequestBody()Map<String,Object> category) {
+        return categoryDao.saveCategory(account,category).map(ShaftResponseHandler::generateResponse);
     }
 }
 
