@@ -9,6 +9,10 @@ public class ShaftResponseCode {
   public static String CATEGORY_SAVED_SUCCESSFULLY = "S0005";
   public static String ITEMS_FETCHED_SUCCESSFULLY = "S0006";
   public static String ITEMS_SAVED_SUCCESSFULLY = "S0007";
+  public static String REMOVED_CART_ITEMS = "S0008";
+  public static String FETCHED_CART_ITEMS = "S0009";
+  public static String TRANSACTED_CART_ITEMS = "S0010";
+  public static String ADDED_CART_ITEMS = "S0011";
   public static String TOKEN_GENERATION_FAILED = "F0001";
   public static String IDENTITY_UPDATE_FAILED = "F0002";
   public static String USER_NOT_FOUND = "F0003";
@@ -30,4 +34,8 @@ public class ShaftResponseCode {
   public static String SHAFT_ITEMS_SERVICE_UNAVAILABLE = "F0018";
   public static String BAD_BULK_ITEMS_REQUEST = "F0019";
   public static String SHAFT_ITEMS_SAVE_EXCEPTION = "F0020";
+  public static String SHAFT_FAILED_TO_EMPTY_CART = "F0021";
+  public static String FAILED_TO_FETCH_CART_FOR_I = "F0022";
+  public static String FAILED_TO_TRANSACT_CART_ITEMS = "F0023";
+  public static String FAILED_TO_ADD_CART_ITEM = "F0023";
 }

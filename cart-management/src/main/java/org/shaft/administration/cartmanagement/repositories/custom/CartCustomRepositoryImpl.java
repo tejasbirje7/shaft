@@ -70,7 +70,6 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
           .map(response -> {
               if(response != null) {
                   log.info("Total Updated {}",response.getTotal());
-                  //TimeValue timeTaken = bulkResponse.getTook();
                   return response.getDeleted();
               }
               return 0L;

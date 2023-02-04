@@ -45,9 +45,13 @@ public class CategoryService implements CategoryDAO {
     ACCOUNT_ID.set(accountId);
     return categoryRepository.findAll()
       .collectList()
-      .map(c -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.CATEGORIES_FETCHED_SUCCESSFULLY,
-        mapper.valueToTree(c)))
+      .map(c -> {
+        ACCOUNT_ID.remove();
+        return ShaftResponseBuilder.buildResponse(ShaftResponseCode.CATEGORIES_FETCHED_SUCCESSFULLY,
+          mapper.valueToTree(c));
+      })
       .onErrorResume( t -> {
+        ACCOUNT_ID.remove();
         log.error(ProductCatalogLogs.UNABLE_TO_FETCH_CATEGORIES,t);
         return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_FETCHING_CATEGORIES));
       });
