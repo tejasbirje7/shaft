@@ -1,6 +1,7 @@
 package org.shaft.administration.catalog.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
@@ -91,12 +92,13 @@ public class ItemsService implements ItemsDAO {
         .collectList()
         .map(i -> {
           ACCOUNT_ID.remove();
-          return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ITEMS_FETCHED_SUCCESSFULLY,mapper.valueToTree(i));
+          JsonNode r = mapper.valueToTree(i);
+          return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ITEMS_FETCHED_SUCCESSFULLY,r);
         })
         .onErrorResume(error -> {
           ACCOUNT_ID.remove();
           log.error(ProductCatalogLogs.UNABLE_TO_FETCH_ITEMS,error);
-          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_ITEMS_SERVICE_UNAVAILABLE));
+          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.ERROR_WHILE_FETCHING_BULK_ITEMS));
         });
     } else {
       return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BAD_BULK_ITEMS_REQUEST));

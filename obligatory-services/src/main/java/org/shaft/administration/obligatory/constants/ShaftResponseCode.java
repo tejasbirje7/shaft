@@ -78,4 +78,5 @@ public class ShaftResponseCode {
   public static String EXCEPTION_PINNING_DASHBOARD_QUERY = "F0052";
   public static String EXCEPTION_CONSTRUCTING_PIN_TO_DASHBOARD_QUERY = "F0053";
   public static String ERROR_FETCHING_META_FIELDS = "F0054";
+  public static String ERROR_WHILE_FETCHING_BULK_ITEMS = "F0055";
 }

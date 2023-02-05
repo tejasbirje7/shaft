@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.inventory.clients.RestClient;
@@ -247,14 +248,15 @@ public class OrdersService implements OrdersDao {
 
   private List<Object> addItemsMetaToOrders(List<Order> orders,List<Item> items) {
     List<Object> response = new ArrayList<>();
+    ArrayNode k = mapper.valueToTree(items);
     for (Order order : orders) {
       Map<String, Object> perOrder = mapper.convertValue(order, new TypeReference<Map<String, Object>>() {});
       List<Item> itemsInOrder = order.getItems();
       List<Object> modifyItemsArray = new ArrayList<>();
       for (Item perItemInOrder : itemsInOrder) {
-        for (Item item : items) {
-          Map<String, Object> itemFromDB = (Map<String, Object>) item;
-          if ((itemFromDB.get(InventoryConstants.ID).equals(perItemInOrder.getId()))) {
+        for (JsonNode item : k) {
+          ObjectNode itemFromDB = (ObjectNode) item;
+          if ((itemFromDB.get(InventoryConstants.ID).asText().equals(perItemInOrder.getId()))) {
             itemFromDB.put(InventoryConstants.COST_PRICE, perItemInOrder.getCostPrice());
             itemFromDB.put(InventoryConstants.QUANTITY, perItemInOrder.getQuantity());
             itemFromDB.put(InventoryConstants.OPTIONS, perItemInOrder.getOption());

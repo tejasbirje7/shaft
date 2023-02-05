@@ -45,7 +45,7 @@ public class GatewayConfig {
                         .uri("lb://PRODUCT-CATALOG")) // 8081
                         //.filters(f -> f.filter(authenticationFilter))
                 .route("inventory-management", r->r.path("/inventory/**")
-                        .filters(f -> f.filter(authenticationFilter))
+                        //.filters(f -> f.filter(authenticationFilter))
                         .uri("lb://INVENTORY-MANAGEMENT")) // 8082
                 .route("cart-management", r->r.path("/cart/**")
                         //.filters(f -> f.filter(authenticationFilter))
