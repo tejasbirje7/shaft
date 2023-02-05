@@ -18,7 +18,6 @@ import java.util.Map;
 @RequestMapping("/inventory")
 public class OrdersController {
     OrdersDao ordersDao;
-    HttpHeaders headers = new HttpHeaders();
     @Autowired
     public OrdersController(OrdersDao ordersDao) {
         this.ordersDao = ordersDao;
@@ -27,40 +26,30 @@ public class OrdersController {
     @RequestMapping(value = "/orders", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getOrdersForI(@RequestHeader(value="account") int account,
                                                       @RequestBody Map<String,Object> i) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ordersDao.getOrdersForI(account,i)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+        return ordersDao.getOrdersForI(account,i).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/orders/all", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getOrders(@RequestHeader(value="account") int account) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ordersDao.getOrders(account)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+        return ordersDao.getOrders(account).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/orders/items",method = {RequestMethod.POST})
     public Mono<ResponseEntity<Object>> getBulkItemsInOrder(@RequestHeader(value = "account") int accountId,
                                                             @RequestBody Map<String, Object> itemIds) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ordersDao.getBulkItemsInOrder(accountId,itemIds)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+        return ordersDao.getBulkItemsInOrder(accountId,itemIds).map(ShaftResponseHandler::generateResponse);
     }
 
 
     @RequestMapping(value = "/orders/placed", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> placeOrders(@RequestHeader(value="account") int accountId,
                                                     @RequestBody Map<String,Object> body) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ordersDao.saveOrders(accountId, body)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+        return ordersDao.saveOrders(accountId, body).map(ShaftResponseHandler::generateResponse);
     }
 
     @PostMapping(path= "/orders/stage")
     public Mono<ResponseEntity<Object>> updateOrdersStage(@RequestHeader(value="account") int accountId,
                                                           @RequestBody Map<String,Object> body) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ordersDao.updateOrdersStage(accountId,body)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+        return ordersDao.updateOrdersStage(accountId,body).map(ShaftResponseHandler::generateResponse);
     }
 }

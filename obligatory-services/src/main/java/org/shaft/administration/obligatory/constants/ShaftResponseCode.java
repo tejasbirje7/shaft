@@ -18,6 +18,8 @@ public class ShaftResponseCode {
   public static String ORDERS_FETCHED_SUCCESSFULLY_FOR_I = "S0015";
   public static String FETCHED_BULK_ITEMS_IN_ORDER = "S0016";
   public static String ORDER_STAGE_UPDATED = "S0017";
+  public static String META_FIELDS_FETCHED = "S0018";
+  public static String DASHBOARD_QUERY_PINNED = "S0019";
 
 
 
@@ -67,4 +69,13 @@ public class ShaftResponseCode {
   public static String FAILED_TO_UPDATE_ORDER_STAGE = "F0044";
   public static String EXCEPTION_UPDATING_ORDER_STAGE = "F0045";
   public static String BAD_UPDATE_ORDER_STAGE_REQUEST = "F0046";
+  public static String EXCEPTION_FETCHING_META_FIELDS = "F0047";
+  public static String BAD_META_REQUEST = "F0048";
+  public static String ERROR_CONSTRUCTING_META_FIELDS = "F0049";
+  public static String DASHBOARD_QUERIES_LIMIT_EXCEEDED = "F0050";
+  public static String FAILED_TO_PINNED_DASHBOARD_QUERY = "F0051";
+  public static String INVALID_PIN_TO_DASHBOARD_REQUEST = "F0052";
+  public static String EXCEPTION_PINNING_DASHBOARD_QUERY = "F0052";
+  public static String EXCEPTION_CONSTRUCTING_PIN_TO_DASHBOARD_QUERY = "F0053";
+  public static String ERROR_FETCHING_META_FIELDS = "F0054";
 }

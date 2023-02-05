@@ -27,8 +27,6 @@ public class MetaController {
     @RequestMapping(value = "/meta/fields", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getMetaFields(@RequestHeader int account,
                                                       @RequestBody Map<String,Object> request) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return metaDao.getMetaFields(account,request)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+        return metaDao.getMetaFields(account,request).map(ShaftResponseHandler::generateResponse);
     }
 }
