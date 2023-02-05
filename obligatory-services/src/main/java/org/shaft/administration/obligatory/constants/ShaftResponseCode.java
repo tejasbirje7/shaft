@@ -16,6 +16,11 @@ public class ShaftResponseCode {
   public static String ORDERS_SAVED = "S0013";
   public static String ORDERS_FETCHED_SUCCESSFULLY = "S0014";
   public static String ORDERS_FETCHED_SUCCESSFULLY_FOR_I = "S0015";
+  public static String FETCHED_BULK_ITEMS_IN_ORDER = "S0016";
+  public static String ORDER_STAGE_UPDATED = "S0017";
+
+
+
   public static String TOKEN_GENERATION_FAILED = "F0001";
   public static String IDENTITY_UPDATE_FAILED = "F0002";
   public static String USER_NOT_FOUND = "F0003";
@@ -33,7 +38,6 @@ public class ShaftResponseCode {
   public static String BAD_REQUEST_FOR_FETCHING_ACCOUNT_META = "F0015";
   public static String FAILED_FETCHING_CATEGORIES = "F0016";
   public static String SHAFT_FP_TO_I_FAILED = "F0017";
-  public static String SHAFT_CATEGORY_SAVE_EXCEPTION = "F0017";
   public static String SHAFT_ITEMS_SERVICE_UNAVAILABLE = "F0018";
   public static String BAD_BULK_ITEMS_REQUEST = "F0019";
   public static String SHAFT_ITEMS_SAVE_EXCEPTION = "F0020";
@@ -48,8 +52,19 @@ public class ShaftResponseCode {
   public static String PRODUCT_API_ERROR = "F0029";
   public static String UNABLE_TO_FETCH_ORDERS_FOR_I = "F0030";
   public static String NO_I_TO_FETCH_ORDER = "F0031";
-  public static String FAILED_TO_SAVE_ORDER = "F0032";
+  public static String FAILED_TO_REMOVE_CART_ITEMS = "F0032";
   public static String INVALID_CART_API_RESPONSE = "F0033";
   public static String PRODUCT_API_FAILED = "F0034";
   public static String CART_API_FAILED = "F0035";
+  public static String CART_API_ERROR = "F0036";
+  public static String FAILED_TO_SAVE_ORDER = "F0037";
+  public static String BULK_PRODUCT_API_FAILED = "F0038";
+  public static String BULK_PRODUCT_API_ERROR = "F0039";
+  public static String BULK_PRODUCT_API_INVALID_RESPONSE = "F0040";
+  public static String EXCEPTION_WHILE_FETCHING_BULK_ITEMS = "F0041";
+  public static String BAD_REQUEST_FOR_BULK_ITEMS = "F0042";
+  public static String SHAFT_CATEGORY_SAVE_EXCEPTION = "F0043";
+  public static String FAILED_TO_UPDATE_ORDER_STAGE = "F0044";
+  public static String EXCEPTION_UPDATING_ORDER_STAGE = "F0045";
+  public static String BAD_UPDATE_ORDER_STAGE_REQUEST = "F0046";
 }

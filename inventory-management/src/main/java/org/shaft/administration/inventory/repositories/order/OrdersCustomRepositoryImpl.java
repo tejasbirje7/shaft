@@ -31,14 +31,14 @@ public class OrdersCustomRepositoryImpl implements OrdersCustomRepository{
     }
 
     @Override
-    public Mono<Long> updateOrderStage(int orderId, int status) {
-        String index = OrdersService.getAccount() + "_orders";
+    public Mono<Long> updateOrderStage(int orderId, int status, int accountId) {
+        String index = accountId + "_orders";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
         updateRequest.setConflicts("proceed");
         updateRequest.setQuery(QueryBuilders
-                .boolQuery()
-                .must(QueryBuilders
-                        .termQuery("oid",orderId)));
+          .boolQuery()
+          .must(QueryBuilders
+            .termQuery("oid",orderId)));
         updateRequest.setScript(prepareProductsUpdateScript(status));
         updateRequest.setRefresh(true);
         return reactiveElasticsearchClient.updateBy(updateRequest).map(response -> {
