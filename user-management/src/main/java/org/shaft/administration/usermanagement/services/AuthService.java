@@ -1,5 +1,6 @@
 package org.shaft.administration.usermanagement.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,7 @@ import org.shaft.administration.obligatory.auth.utils.Mode;
 import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
-import org.shaft.administration.usermanagement.constants.UserManagementConstants;
+import org.shaft.administration.usermanagement.constants.UserConstants;
 import org.shaft.administration.usermanagement.constants.UserManagementLogs;
 import org.shaft.administration.usermanagement.dao.AuthDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
@@ -51,11 +52,12 @@ public class AuthService implements AuthDAO {
   }
 
   @Override
-  public Mono<ObjectNode> authenticateUser(Map<String,Object> request) {
-    if (request.containsKey(UserManagementConstants.DETAILS) && request.containsKey(UserManagementConstants.FINGER_PRINT)) {
-      String email = ((Map<String,String>)request.get(UserManagementConstants.DETAILS)).get(UserManagementConstants.EMAIL);
-      String password = ((Map<String,String>)request.get(UserManagementConstants.DETAILS)).get(UserManagementConstants.PASSWORD);
-      String fp = (String) request.get(UserManagementConstants.FINGER_PRINT);
+  public Mono<ObjectNode> authenticateUser(ObjectNode request) {
+    if (request.has(UserConstants.DETAILS) && request.has(UserConstants.FINGER_PRINT)) {
+      JsonNode details = request.get(UserConstants.DETAILS);
+      String email = details.get(UserConstants.EMAIL).asText();
+      String password = details.get(UserConstants.PASSWORD).asText();
+      String fp = request.get(UserConstants.FINGER_PRINT).asText();
       String hashedPassword = shaftHashing.transactPassword(Mode.ENCRYPT, password);
       // Check if user is present in system
       return authRepository.findByEAndP(email,hashedPassword)
@@ -95,12 +97,12 @@ public class AuthService implements AuthDAO {
     }
   }
 
-  public Mono<ObjectNode> registerUser(int account, Map<String,Object> request) {
-    if (request.containsKey(UserManagementConstants.DETAILS) && request.containsKey(UserManagementConstants.FINGER_PRINT)) {
-      Map<String, String> details = (Map<String, String>) request.get(UserManagementConstants.DETAILS);
-      String email = details.get(UserManagementConstants.EMAIL);
-      int newI = Integer.parseInt(details.get(UserManagementConstants.IDENTITY));
-      String fp = (String) request.get(UserManagementConstants.FINGER_PRINT);
+  public Mono<ObjectNode> registerUser(int account, ObjectNode request) {
+    if (request.has(UserConstants.DETAILS) && request.has(UserConstants.FINGER_PRINT)) {
+      JsonNode details = request.get(UserConstants.DETAILS);
+      String email = details.get(UserConstants.EMAIL).asText();
+      int newI = details.get(UserConstants.IDENTITY).asInt();
+      String fp = request.get(UserConstants.FINGER_PRINT).asText();
       return authRepository.countByE(email)
         .collectList()
         .publishOn(Schedulers.boundedElastic())
@@ -111,16 +113,17 @@ public class AuthService implements AuthDAO {
           } else {
             User user = new User();
             user.setI(newI);
-            user.setC(Long.parseLong(details.get(UserManagementConstants.CONTACT)));
+            user.setC(Long.parseLong(details.get(UserConstants.CONTACT).asText()));
             user.setA(account);
             user.setNm("Tejas Birje");
             user.setE(email);
-            user.setP(shaftHashing.transactPassword(Mode.ENCRYPT, details.get(UserManagementConstants.PASSWORD)));
+            user.setP(shaftHashing.transactPassword(Mode.ENCRYPT, details.get(UserConstants.PASSWORD).asText()));
             return authRepository.save(user)
               .publishOn(Schedulers.boundedElastic())
               .flatMap(user2 -> {
                 Identity i = getIdentityObject(fp,newI);
                 return identityRepository.save(account,i)
+                  // #TODO Delete password while responding to request from below `ide` object
                   .map(ide -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
                   .onErrorResume(t -> {
                     if(isRestStatusException(t)) {

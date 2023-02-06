@@ -1,5 +1,6 @@
 package org.shaft.administration.usermanagement.controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.shaft.administration.usermanagement.dao.AuthDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +26,13 @@ public class AuthController {
 
     @RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> checkIdentity(@RequestHeader int account,
-                                                      @RequestBody Map<String,Object> details) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return authDAO.authenticateUser(details)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+                                                      @RequestBody ObjectNode details) {
+        return authDAO.authenticateUser(details).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/register", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> addIdentity(@RequestHeader int account,
-                                                    @RequestBody Map<String,Object> details) {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return authDAO.registerUser(account,details)
-          .map(resource -> ShaftResponseHandler.generateResponse("Success","S12345",resource,headers));
+                                                    @RequestBody ObjectNode details) {
+        return authDAO.registerUser(account,details).map(ShaftResponseHandler::generateResponse);
     }
 }

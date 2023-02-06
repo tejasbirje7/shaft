@@ -10,7 +10,7 @@ import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
 import org.shaft.administration.usermanagement.clients.AccountRestClient;
-import org.shaft.administration.usermanagement.constants.UserManagementConstants;
+import org.shaft.administration.usermanagement.constants.UserConstants;
 import org.shaft.administration.usermanagement.constants.UserManagementLogs;
 import org.shaft.administration.usermanagement.dao.IdentityDAO;
 import org.shaft.administration.usermanagement.entity.Identity;
@@ -52,19 +52,19 @@ public class IdentityService implements IdentityDAO {
   // #TODO Handle identity scenario with fingerprint as well as IP, because IP changes is not very frequent
   @Override
   public Mono<ObjectNode> checkIdentity(int account, Map<String,Object> details) {
-    String fp = (String) details.get(UserManagementConstants.FINGER_PRINT);
+    String fp = (String) details.get(UserConstants.FINGER_PRINT);
 
     // Check if `i` exists in request
-    if (details.containsKey(UserManagementConstants.IDENTITY)
-      && !UserManagementConstants.EMPTY.equals(details.get(UserManagementConstants.IDENTITY))) {
+    if (details.containsKey(UserConstants.IDENTITY)
+      && !UserConstants.EMPTY.equals(details.get(UserConstants.IDENTITY))) {
       /*
        `i` exists in request so check
        if incoming fp is mapped with incoming `i`,
        if not then update fp
        */
-      int i = Integer.parseInt((String) details.get(UserManagementConstants.IDENTITY));
-      boolean isIdentified = details.containsKey(UserManagementConstants.IS_IDENTIFIED)
-        && (boolean) details.get(UserManagementConstants.IS_IDENTIFIED);
+      int i = Integer.parseInt((String) details.get(UserConstants.IDENTITY));
+      boolean isIdentified = details.containsKey(UserConstants.IS_IDENTIFIED)
+        && (boolean) details.get(UserConstants.IS_IDENTIFIED);
       return checkIfFpExistsForI(fp,i,isIdentified,account);
     } else {
       // `i` doesn't exist in request
@@ -83,20 +83,20 @@ public class IdentityService implements IdentityDAO {
                   String idx = "";
                   try {
                     meta = mapParser.readValue(data);
-                    if(meta.containsKey(UserManagementConstants.RESPONSE_CODE)
-                      && ((String)meta.get(UserManagementConstants.RESPONSE_CODE))
-                      .startsWith(UserManagementConstants.RESPONSE_CODE_INITIAL)) {
+                    if(meta.containsKey(UserConstants.RESPONSE_CODE)
+                      && ((String)meta.get(UserConstants.RESPONSE_CODE))
+                      .startsWith(UserConstants.RESPONSE_CODE_INITIAL)) {
                       idx = (String) ((Map<String, Object>) meta
-                        .get(UserManagementConstants.RESPONSE_DATA))
-                        .get(UserManagementConstants.ACCOUNT_INDEX);
+                        .get(UserConstants.RESPONSE_DATA))
+                        .get(UserConstants.ACCOUNT_INDEX);
                     }
                   } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                   }
                   if(!idx.isEmpty()) {
                     Identity newFpToI = new Identity();
-                    if (details.containsKey(UserManagementConstants.REQUEST_TIME)) {
-                      int newI = (Integer) details.get(UserManagementConstants.REQUEST_TIME);
+                    if (details.containsKey(UserConstants.REQUEST_TIME)) {
+                      int newI = (Integer) details.get(UserConstants.REQUEST_TIME);
                       newFpToI.setIdentity(newI);
                       newFpToI.setIdentified(false);
                       Map<String,String> fpMapCreation = new HashMap<>();
@@ -108,14 +108,14 @@ public class IdentityService implements IdentityDAO {
                       return identityRepository.save(newFpToI)
                         .map(resp -> {
                           log.info(UserManagementLogs.IDENTITY_SAVED_SUCCESSFULLY,resp);
-                          response.put(UserManagementConstants.IDENTITY,newI);
+                          response.put(UserConstants.IDENTITY,newI);
                           ACCOUNT_ID.remove();
                           return ShaftResponseBuilder.buildResponse(
                             ShaftResponseCode.IDENTITY_FETCHED_SUCCESSFULLY,response);
                         })
                         .onErrorResume(error -> {
                           if(isRestStatusException(error)) {
-                            response.put(UserManagementConstants.IDENTITY,newI);
+                            response.put(UserConstants.IDENTITY,newI);
                             return Mono.just(ShaftResponseBuilder.buildResponse(
                               ShaftResponseCode.IDENTITY_FETCHED_SUCCESSFULLY, response));
                           }
@@ -146,7 +146,7 @@ public class IdentityService implements IdentityDAO {
                 }).block();
             } else {
               // `i` exists return `fp`
-              response.put(UserManagementConstants.IDENTITY,fpDetails.get(0).getIdentity());
+              response.put(UserConstants.IDENTITY,fpDetails.get(0).getIdentity());
             }
             ACCOUNT_ID.remove();
             return response;
@@ -167,9 +167,9 @@ public class IdentityService implements IdentityDAO {
     Map<String,Integer> i = new HashMap<>();
     try {
       Map<String,Object> tokenDetails = this.jwtUtil.validateToken(token);
-      if(tokenDetails.containsKey(UserManagementConstants.IDENTITY)) {
-        i.put(UserManagementConstants.IDENTITY,
-          (Integer) tokenDetails.get(UserManagementConstants.IDENTITY));
+      if(tokenDetails.containsKey(UserConstants.IDENTITY)) {
+        i.put(UserConstants.IDENTITY,
+          (Integer) tokenDetails.get(UserConstants.IDENTITY));
       }
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -200,7 +200,7 @@ public class IdentityService implements IdentityDAO {
             .map(totalUpdated -> {
               if(totalUpdated > 0) {
                 ACCOUNT_ID.remove();
-                response.put(UserManagementConstants.IDENTITY,i);
+                response.put(UserConstants.IDENTITY,i);
                 return ShaftResponseBuilder.buildResponse(ShaftResponseCode.IDENTITY_FETCHED_SUCCESSFULLY,response);
               } else {
                 log.error(UserManagementLogs.FAILED_TO_UPDATE_FP);
@@ -212,13 +212,13 @@ public class IdentityService implements IdentityDAO {
                 return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_FP_UPSERT_ERROR));
               } else {
                 log.error(UserManagementLogs.ERROR_WHILE_UPDATE_FP,t);
-                response.put(UserManagementConstants.IDENTITY,i);
+                response.put(UserConstants.IDENTITY,i);
                 ACCOUNT_ID.remove();
                 return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.IDENTITY_FETCHED_SUCCESSFULLY,response));
               }
             }).block();
         } else {
-          response.put(UserManagementConstants.IDENTITY,i);
+          response.put(UserConstants.IDENTITY,i);
           ACCOUNT_ID.remove();
           return ShaftResponseBuilder.buildResponse(ShaftResponseCode.IDENTITY_FETCHED_SUCCESSFULLY,response);
         }

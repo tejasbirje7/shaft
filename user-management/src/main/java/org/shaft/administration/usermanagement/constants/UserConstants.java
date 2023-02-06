@@ -1,6 +1,6 @@
 package org.shaft.administration.usermanagement.constants;
 
-public class UserManagementConstants {
+public class UserConstants {
   // #TODO Convert this to enum
   public static String DETAILS = "details";
   public static String FINGER_PRINT = "fp";
