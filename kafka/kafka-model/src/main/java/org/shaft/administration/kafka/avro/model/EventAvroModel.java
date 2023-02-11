@@ -5,17 +5,19 @@
  */
 package org.shaft.administration.kafka.avro.model;
 
+import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
+import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
 import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -5353382515154144454L;
+  private static final long serialVersionUID = -7027633907130722243L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventAvroModel\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"userId\",\"type\":\"long\"},{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"text\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"createdAt\",\"type\":[\"null\",\"long\"],\"logicalType\":[\"null\",\"date\"]}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventAvroModel\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"e\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"EventData\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"fp\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"category\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"costPrice\",\"type\":[\"null\",\"long\"]},{\"name\":\"inStock\",\"type\":[\"null\",\"boolean\"]},{\"name\":\"option\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"quantity\",\"type\":[\"null\",\"long\"]},{\"name\":\"id\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"onSale\",\"type\":[\"null\",\"boolean\"]}]}}},{\"name\":\"i\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -71,10 +73,8 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
     return DECODER.decode(b);
   }
 
-  private long userId;
-  private long id;
-  private java.lang.String text;
-  private java.lang.Long createdAt;
+  private java.util.List<org.shaft.administration.kafka.avro.model.EventData> e;
+  private java.lang.String i;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -85,16 +85,12 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
 
   /**
    * All-args constructor.
-   * @param userId The new value for userId
-   * @param id The new value for id
-   * @param text The new value for text
-   * @param createdAt The new value for createdAt
+   * @param e The new value for e
+   * @param i The new value for i
    */
-  public EventAvroModel(java.lang.Long userId, java.lang.Long id, java.lang.String text, java.lang.Long createdAt) {
-    this.userId = userId;
-    this.id = id;
-    this.text = text;
-    this.createdAt = createdAt;
+  public EventAvroModel(java.util.List<org.shaft.administration.kafka.avro.model.EventData> e, java.lang.String i) {
+    this.e = e;
+    this.i = i;
   }
 
   @Override
@@ -107,10 +103,8 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   @Override
   public java.lang.Object get(int field$) {
     switch (field$) {
-    case 0: return userId;
-    case 1: return id;
-    case 2: return text;
-    case 3: return createdAt;
+    case 0: return e;
+    case 1: return i;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -120,88 +114,52 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: userId = (java.lang.Long)value$; break;
-    case 1: id = (java.lang.Long)value$; break;
-    case 2: text = value$ != null ? value$.toString() : null; break;
-    case 3: createdAt = (java.lang.Long)value$; break;
+    case 0: e = (java.util.List<org.shaft.administration.kafka.avro.model.EventData>)value$; break;
+    case 1: i = value$ != null ? value$.toString() : null; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
   /**
-   * Gets the value of the 'userId' field.
-   * @return The value of the 'userId' field.
+   * Gets the value of the 'e' field.
+   * @return The value of the 'e' field.
    */
-  public long getUserId() {
-    return userId;
+  public java.util.List<org.shaft.administration.kafka.avro.model.EventData> getE() {
+    return e;
   }
 
 
   /**
-   * Sets the value of the 'userId' field.
+   * Sets the value of the 'e' field.
    * @param value the value to set.
    */
-  public void setUserId(long value) {
-    this.userId = value;
+  public void setE(java.util.List<org.shaft.administration.kafka.avro.model.EventData> value) {
+    this.e = value;
   }
 
   /**
-   * Gets the value of the 'id' field.
-   * @return The value of the 'id' field.
+   * Gets the value of the 'i' field.
+   * @return The value of the 'i' field.
    */
-  public long getId() {
-    return id;
+  public java.lang.String getI() {
+    return i;
   }
 
 
   /**
-   * Sets the value of the 'id' field.
+   * Sets the value of the 'i' field.
    * @param value the value to set.
    */
-  public void setId(long value) {
-    this.id = value;
-  }
-
-  /**
-   * Gets the value of the 'text' field.
-   * @return The value of the 'text' field.
-   */
-  public java.lang.String getText() {
-    return text;
-  }
-
-
-  /**
-   * Sets the value of the 'text' field.
-   * @param value the value to set.
-   */
-  public void setText(java.lang.String value) {
-    this.text = value;
-  }
-
-  /**
-   * Gets the value of the 'createdAt' field.
-   * @return The value of the 'createdAt' field.
-   */
-  public java.lang.Long getCreatedAt() {
-    return createdAt;
-  }
-
-
-  /**
-   * Sets the value of the 'createdAt' field.
-   * @param value the value to set.
-   */
-  public void setCreatedAt(java.lang.Long value) {
-    this.createdAt = value;
+  public void setI(java.lang.String value) {
+    this.i = value;
   }
 
   /**
    * Creates a new EventAvroModel RecordBuilder.
    * @return A new EventAvroModel RecordBuilder
    */
-  public static EventAvroModel.Builder newBuilder() {
-    return new EventAvroModel.Builder();
+  public static org.shaft.administration.kafka.avro.model.EventAvroModel.Builder newBuilder() {
+    return new org.shaft.administration.kafka.avro.model.EventAvroModel.Builder();
   }
 
   /**
@@ -209,11 +167,11 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
    * @param other The existing builder to copy.
    * @return A new EventAvroModel RecordBuilder
    */
-  public static EventAvroModel.Builder newBuilder(EventAvroModel.Builder other) {
+  public static org.shaft.administration.kafka.avro.model.EventAvroModel.Builder newBuilder(org.shaft.administration.kafka.avro.model.EventAvroModel.Builder other) {
     if (other == null) {
-      return new EventAvroModel.Builder();
+      return new org.shaft.administration.kafka.avro.model.EventAvroModel.Builder();
     } else {
-      return new EventAvroModel.Builder(other);
+      return new org.shaft.administration.kafka.avro.model.EventAvroModel.Builder(other);
     }
   }
 
@@ -222,11 +180,11 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
    * @param other The existing instance to copy.
    * @return A new EventAvroModel RecordBuilder
    */
-  public static EventAvroModel.Builder newBuilder(EventAvroModel other) {
+  public static org.shaft.administration.kafka.avro.model.EventAvroModel.Builder newBuilder(org.shaft.administration.kafka.avro.model.EventAvroModel other) {
     if (other == null) {
-      return new EventAvroModel.Builder();
+      return new org.shaft.administration.kafka.avro.model.EventAvroModel.Builder();
     } else {
-      return new EventAvroModel.Builder(other);
+      return new org.shaft.administration.kafka.avro.model.EventAvroModel.Builder(other);
     }
   }
 
@@ -237,10 +195,8 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<EventAvroModel>
     implements org.apache.avro.data.RecordBuilder<EventAvroModel> {
 
-    private long userId;
-    private long id;
-    private java.lang.String text;
-    private java.lang.Long createdAt;
+    private java.util.List<org.shaft.administration.kafka.avro.model.EventData> e;
+    private java.lang.String i;
 
     /** Creates a new Builder */
     private Builder() {
@@ -251,23 +207,15 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(EventAvroModel.Builder other) {
+    private Builder(org.shaft.administration.kafka.avro.model.EventAvroModel.Builder other) {
       super(other);
-      if (isValidValue(fields()[0], other.userId)) {
-        this.userId = data().deepCopy(fields()[0].schema(), other.userId);
+      if (isValidValue(fields()[0], other.e)) {
+        this.e = data().deepCopy(fields()[0].schema(), other.e);
         fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
-      if (isValidValue(fields()[1], other.id)) {
-        this.id = data().deepCopy(fields()[1].schema(), other.id);
+      if (isValidValue(fields()[1], other.i)) {
+        this.i = data().deepCopy(fields()[1].schema(), other.i);
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
-      }
-      if (isValidValue(fields()[2], other.text)) {
-        this.text = data().deepCopy(fields()[2].schema(), other.text);
-        fieldSetFlags()[2] = other.fieldSetFlags()[2];
-      }
-      if (isValidValue(fields()[3], other.createdAt)) {
-        this.createdAt = data().deepCopy(fields()[3].schema(), other.createdAt);
-        fieldSetFlags()[3] = other.fieldSetFlags()[3];
       }
     }
 
@@ -275,181 +223,95 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
      * Creates a Builder by copying an existing EventAvroModel instance
      * @param other The existing instance to copy.
      */
-    private Builder(EventAvroModel other) {
+    private Builder(org.shaft.administration.kafka.avro.model.EventAvroModel other) {
       super(SCHEMA$, MODEL$);
-      if (isValidValue(fields()[0], other.userId)) {
-        this.userId = data().deepCopy(fields()[0].schema(), other.userId);
+      if (isValidValue(fields()[0], other.e)) {
+        this.e = data().deepCopy(fields()[0].schema(), other.e);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.id)) {
-        this.id = data().deepCopy(fields()[1].schema(), other.id);
+      if (isValidValue(fields()[1], other.i)) {
+        this.i = data().deepCopy(fields()[1].schema(), other.i);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.text)) {
-        this.text = data().deepCopy(fields()[2].schema(), other.text);
-        fieldSetFlags()[2] = true;
-      }
-      if (isValidValue(fields()[3], other.createdAt)) {
-        this.createdAt = data().deepCopy(fields()[3].schema(), other.createdAt);
-        fieldSetFlags()[3] = true;
-      }
     }
 
     /**
-      * Gets the value of the 'userId' field.
+      * Gets the value of the 'e' field.
       * @return The value.
       */
-    public long getUserId() {
-      return userId;
+    public java.util.List<org.shaft.administration.kafka.avro.model.EventData> getE() {
+      return e;
     }
 
 
     /**
-      * Sets the value of the 'userId' field.
-      * @param value The value of 'userId'.
+      * Sets the value of the 'e' field.
+      * @param value The value of 'e'.
       * @return This builder.
       */
-    public EventAvroModel.Builder setUserId(long value) {
+    public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder setE(java.util.List<org.shaft.administration.kafka.avro.model.EventData> value) {
       validate(fields()[0], value);
-      this.userId = value;
+      this.e = value;
       fieldSetFlags()[0] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'userId' field has been set.
-      * @return True if the 'userId' field has been set, false otherwise.
+      * Checks whether the 'e' field has been set.
+      * @return True if the 'e' field has been set, false otherwise.
       */
-    public boolean hasUserId() {
+    public boolean hasE() {
       return fieldSetFlags()[0];
     }
 
 
     /**
-      * Clears the value of the 'userId' field.
+      * Clears the value of the 'e' field.
       * @return This builder.
       */
-    public EventAvroModel.Builder clearUserId() {
+    public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder clearE() {
+      e = null;
       fieldSetFlags()[0] = false;
       return this;
     }
 
     /**
-      * Gets the value of the 'id' field.
+      * Gets the value of the 'i' field.
       * @return The value.
       */
-    public long getId() {
-      return id;
+    public java.lang.String getI() {
+      return i;
     }
 
 
     /**
-      * Sets the value of the 'id' field.
-      * @param value The value of 'id'.
+      * Sets the value of the 'i' field.
+      * @param value The value of 'i'.
       * @return This builder.
       */
-    public EventAvroModel.Builder setId(long value) {
+    public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder setI(java.lang.String value) {
       validate(fields()[1], value);
-      this.id = value;
+      this.i = value;
       fieldSetFlags()[1] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'id' field has been set.
-      * @return True if the 'id' field has been set, false otherwise.
+      * Checks whether the 'i' field has been set.
+      * @return True if the 'i' field has been set, false otherwise.
       */
-    public boolean hasId() {
+    public boolean hasI() {
       return fieldSetFlags()[1];
     }
 
 
     /**
-      * Clears the value of the 'id' field.
+      * Clears the value of the 'i' field.
       * @return This builder.
       */
-    public EventAvroModel.Builder clearId() {
+    public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder clearI() {
+      i = null;
       fieldSetFlags()[1] = false;
-      return this;
-    }
-
-    /**
-      * Gets the value of the 'text' field.
-      * @return The value.
-      */
-    public java.lang.String getText() {
-      return text;
-    }
-
-
-    /**
-      * Sets the value of the 'text' field.
-      * @param value The value of 'text'.
-      * @return This builder.
-      */
-    public EventAvroModel.Builder setText(java.lang.String value) {
-      validate(fields()[2], value);
-      this.text = value;
-      fieldSetFlags()[2] = true;
-      return this;
-    }
-
-    /**
-      * Checks whether the 'text' field has been set.
-      * @return True if the 'text' field has been set, false otherwise.
-      */
-    public boolean hasText() {
-      return fieldSetFlags()[2];
-    }
-
-
-    /**
-      * Clears the value of the 'text' field.
-      * @return This builder.
-      */
-    public EventAvroModel.Builder clearText() {
-      text = null;
-      fieldSetFlags()[2] = false;
-      return this;
-    }
-
-    /**
-      * Gets the value of the 'createdAt' field.
-      * @return The value.
-      */
-    public java.lang.Long getCreatedAt() {
-      return createdAt;
-    }
-
-
-    /**
-      * Sets the value of the 'createdAt' field.
-      * @param value The value of 'createdAt'.
-      * @return This builder.
-      */
-    public EventAvroModel.Builder setCreatedAt(java.lang.Long value) {
-      validate(fields()[3], value);
-      this.createdAt = value;
-      fieldSetFlags()[3] = true;
-      return this;
-    }
-
-    /**
-      * Checks whether the 'createdAt' field has been set.
-      * @return True if the 'createdAt' field has been set, false otherwise.
-      */
-    public boolean hasCreatedAt() {
-      return fieldSetFlags()[3];
-    }
-
-
-    /**
-      * Clears the value of the 'createdAt' field.
-      * @return This builder.
-      */
-    public EventAvroModel.Builder clearCreatedAt() {
-      createdAt = null;
-      fieldSetFlags()[3] = false;
       return this;
     }
 
@@ -458,10 +320,8 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
     public EventAvroModel build() {
       try {
         EventAvroModel record = new EventAvroModel();
-        record.userId = fieldSetFlags()[0] ? this.userId : (java.lang.Long) defaultValue(fields()[0]);
-        record.id = fieldSetFlags()[1] ? this.id : (java.lang.Long) defaultValue(fields()[1]);
-        record.text = fieldSetFlags()[2] ? this.text : (java.lang.String) defaultValue(fields()[2]);
-        record.createdAt = fieldSetFlags()[3] ? this.createdAt : (java.lang.Long) defaultValue(fields()[3]);
+        record.e = fieldSetFlags()[0] ? this.e : (java.util.List<org.shaft.administration.kafka.avro.model.EventData>) defaultValue(fields()[0]);
+        record.i = fieldSetFlags()[1] ? this.i : (java.lang.String) defaultValue(fields()[1]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -494,25 +354,20 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   @Override public void customEncode(org.apache.avro.io.Encoder out)
     throws java.io.IOException
   {
-    out.writeLong(this.userId);
-
-    out.writeLong(this.id);
-
-    if (this.text == null) {
-      out.writeIndex(0);
-      out.writeNull();
-    } else {
-      out.writeIndex(1);
-      out.writeString(this.text);
+    long size0 = this.e.size();
+    out.writeArrayStart();
+    out.setItemCount(size0);
+    long actualSize0 = 0;
+    for (org.shaft.administration.kafka.avro.model.EventData e0: this.e) {
+      actualSize0++;
+      out.startItem();
+      e0.customEncode(out);
     }
+    out.writeArrayEnd();
+    if (actualSize0 != size0)
+      throw new java.util.ConcurrentModificationException("Array-size written was " + size0 + ", but element count was " + actualSize0 + ".");
 
-    if (this.createdAt == null) {
-      out.writeIndex(0);
-      out.writeNull();
-    } else {
-      out.writeIndex(1);
-      out.writeLong(this.createdAt);
-    }
+    out.writeString(this.i);
 
   }
 
@@ -521,51 +376,51 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   {
     org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
     if (fieldOrder == null) {
-      this.userId = in.readLong();
-
-      this.id = in.readLong();
-
-      if (in.readIndex() != 1) {
-        in.readNull();
-        this.text = null;
-      } else {
-        this.text = in.readString();
+      long size0 = in.readArrayStart();
+      java.util.List<org.shaft.administration.kafka.avro.model.EventData> a0 = this.e;
+      if (a0 == null) {
+        a0 = new SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>((int)size0, SCHEMA$.getField("e").schema());
+        this.e = a0;
+      } else a0.clear();
+      SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData> ga0 = (a0 instanceof SpecificData.Array ? (SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>)a0 : null);
+      for ( ; 0 < size0; size0 = in.arrayNext()) {
+        for ( ; size0 != 0; size0--) {
+          org.shaft.administration.kafka.avro.model.EventData e0 = (ga0 != null ? ga0.peek() : null);
+          if (e0 == null) {
+            e0 = new org.shaft.administration.kafka.avro.model.EventData();
+          }
+          e0.customDecode(in);
+          a0.add(e0);
+        }
       }
 
-      if (in.readIndex() != 1) {
-        in.readNull();
-        this.createdAt = null;
-      } else {
-        this.createdAt = in.readLong();
-      }
+      this.i = in.readString();
 
     } else {
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 2; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
-          this.userId = in.readLong();
+          long size0 = in.readArrayStart();
+          java.util.List<org.shaft.administration.kafka.avro.model.EventData> a0 = this.e;
+          if (a0 == null) {
+            a0 = new SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>((int)size0, SCHEMA$.getField("e").schema());
+            this.e = a0;
+          } else a0.clear();
+          SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData> ga0 = (a0 instanceof SpecificData.Array ? (SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>)a0 : null);
+          for ( ; 0 < size0; size0 = in.arrayNext()) {
+            for ( ; size0 != 0; size0--) {
+              org.shaft.administration.kafka.avro.model.EventData e0 = (ga0 != null ? ga0.peek() : null);
+              if (e0 == null) {
+                e0 = new org.shaft.administration.kafka.avro.model.EventData();
+              }
+              e0.customDecode(in);
+              a0.add(e0);
+            }
+          }
           break;
 
         case 1:
-          this.id = in.readLong();
-          break;
-
-        case 2:
-          if (in.readIndex() != 1) {
-            in.readNull();
-            this.text = null;
-          } else {
-            this.text = in.readString();
-          }
-          break;
-
-        case 3:
-          if (in.readIndex() != 1) {
-            in.readNull();
-            this.createdAt = null;
-          } else {
-            this.createdAt = in.readLong();
-          }
+          this.i = in.readString();
           break;
 
         default:

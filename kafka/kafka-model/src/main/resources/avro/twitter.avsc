@@ -1,6 +1,7 @@
-{"namespace": "org.shaft.administration.kafka.avro.model",
+{
+  "namespace": "org.shaft.administration.kafka.avro.model",
   "type": "record",
-  "name": "EventAvroModel",
+  "name": "EventAvroModel_bak",
   "fields": [
     {"name": "userId", "type": "long"},
     {"name": "id", "type": "long"},

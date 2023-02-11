@@ -1,0 +1,95 @@
+{
+  "namespace": "org.shaft.administration.kafka.avro.model",
+  "type": "record",
+  "name": "EventAvroModel",
+  "fields": [
+    {
+      "name": "e",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "namespace": "org.shaft.administration.kafka.avro.model",
+          "name": "EventData",
+          "fields": [
+            {
+              "name": "eid",
+              "type": "long"
+            },
+            {
+              "name": "fp",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "name": "ts",
+              "type": "long"
+            },
+            {
+              "name": "category",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "name": "name",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "name": "costPrice",
+              "type": [
+                "null",
+                "long"
+              ]
+            },
+            {
+              "name": "inStock",
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            {
+              "name": "option",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "name": "quantity",
+              "type": [
+                "null",
+                "long"
+              ]
+            },
+            {
+              "name": "id",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "name": "onSale",
+              "type": [
+                "null",
+                "boolean"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "i",
+      "type": "string"
+    }
+  ]
+}

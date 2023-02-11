@@ -28,8 +28,8 @@ public class ShaftKafkaEventListener {
     }
 
     public void onStatus(EventAction event) {
-        LOG.info("Received status text {} sending to kafka topic {}", event.getText(), kafkaConfigData.getTopicName());
+        LOG.info("Received status text {} sending to kafka topic {}", event.getE(), kafkaConfigData.getTopicName());
         EventAvroModel eventAvroModel = shaftEventToAvroTransformer.getEventAvroModel(event);
-        kafkaProducer.send(kafkaConfigData.getTopicName(), eventAvroModel.getUserId(), eventAvroModel);
+        kafkaProducer.send(kafkaConfigData.getTopicName(), Long.valueOf(eventAvroModel.getI()), eventAvroModel);
     }
 }

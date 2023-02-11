@@ -10,10 +10,8 @@ public class ShaftEventToAvroTransformer {
     public EventAvroModel getEventAvroModel(EventAction status) {
         return EventAvroModel
           .newBuilder()
-          .setId(status.getId())
-          .setUserId(status.getUserId())
-          .setText(status.getText())
-          .setCreatedAt(status.getCreatedAt())
+          .setI(status.getI())
+          .setE(status.getE())
           .build();
     }
 }
