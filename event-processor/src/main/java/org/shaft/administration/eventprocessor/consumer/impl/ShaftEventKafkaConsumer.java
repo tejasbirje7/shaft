@@ -44,11 +44,11 @@ public class ShaftEventKafkaConsumer implements KafkaConsumer<Long, EventAvroMod
     public void onAppStarted(ApplicationStartedEvent event) {
         kafkaAdminClient.checkTopicsCreated();
         LOG.info("Topics with name {} is ready for operations!", kafkaConfigData.getTopicNamesToCreate().toArray());
-        kafkaListenerEndpointRegistry.getListenerContainer("twitterTopicListener").start();
+        kafkaListenerEndpointRegistry.getListenerContainer("trackEventListener").start();
     }
 
     @Override
-    @KafkaListener(id = "twitterTopicListener", topics = "${kafka-config.topic-name}")
+    @KafkaListener(id = "trackEventListener", topics = "${kafka-config.topic-name}")
     public void receive(@Payload List<EventAvroModel> messages,
                         @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) List<Long> keys,
                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
