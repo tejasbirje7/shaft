@@ -100,6 +100,10 @@
             <artifactId>kafka-streams-avro-serde</artifactId>
             <version>3.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.shaft.administration</groupId>
+            <artifactId>obligatory-services</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

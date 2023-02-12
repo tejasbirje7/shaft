@@ -8,8 +8,8 @@
       "type": {
         "type": "array",
         "items": {
-          "type": "record",
           "namespace": "org.shaft.administration.kafka.avro.model",
+          "type": "record",
           "name": "EventData",
           "fields": [
             {

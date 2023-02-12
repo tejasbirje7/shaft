@@ -1,6 +1,8 @@
 package org.shaft.administration.eventingestion.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.shaft.administration.eventingestion.entity.EventAction;
 import org.shaft.administration.eventingestion.listener.ShaftKafkaEventListener;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
@@ -27,15 +29,9 @@ public class Ingest {
     }
 
     @RequestMapping(value = "/event", method = { RequestMethod.GET, RequestMethod.POST })
-    public ResponseEntity<Object> transactCartProducts(@RequestBody Map<String,Object> productsToUpdate) {
-
-        // #TODO Handle extra keys error present in schema - com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field
-        // #TODO Handle wrong datatype / format in schema - com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize
-        // #TODO create generic object mapper and expose it via obligatory services
-        final EventAction pojo = objectMapper.convertValue(productsToUpdate, EventAction.class);
-        kafkaStatusListener.onStatus(pojo);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S7394",new ArrayList<>(), headers);
+    public ResponseEntity<Object> ingestEvent(@RequestHeader(value="account") int account,
+                                              @RequestBody ObjectNode eventRequest) {
+        return ShaftResponseHandler.generateResponse(kafkaStatusListener.onStatus(account, eventRequest));
     }
 
 }

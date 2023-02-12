@@ -20,6 +20,7 @@ public class ShaftResponseCode {
   public static String ORDER_STAGE_UPDATED = "S0017";
   public static String META_FIELDS_FETCHED = "S0018";
   public static String DASHBOARD_QUERY_PINNED = "S0019";
+  public static String EVENT_PUBLISHED_TO_KAFKA = "S0020";
 
 
 
@@ -79,4 +80,7 @@ public class ShaftResponseCode {
   public static String EXCEPTION_CONSTRUCTING_PIN_TO_DASHBOARD_QUERY = "F0053";
   public static String ERROR_FETCHING_META_FIELDS = "F0054";
   public static String ERROR_WHILE_FETCHING_BULK_ITEMS = "F0055";
+  public static String FAILED_TO_PUBLISH_EVENTS_TO_KAFKA = "F0056";
+  public static String ERROR_PUBLISHING_EVENTS_TO_KAFKA = "F0057";
+  public static String ERROR_PARSING_TRACK_EVENT_REQUEST = "F0058";
 }
