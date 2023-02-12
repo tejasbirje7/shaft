@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -7027633907130722243L;
+  private static final long serialVersionUID = 3519458277842379547L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventAvroModel\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"e\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"EventData\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"fp\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"category\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"costPrice\",\"type\":[\"null\",\"long\"]},{\"name\":\"inStock\",\"type\":[\"null\",\"boolean\"]},{\"name\":\"option\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"quantity\",\"type\":[\"null\",\"long\"]},{\"name\":\"id\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"onSale\",\"type\":[\"null\",\"boolean\"]}]}}},{\"name\":\"i\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventAvroModel\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"e\",\"type\":{\"type\":\"record\",\"name\":\"EventData\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"quantity\",\"type\":\"long\"},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"costPrice\",\"type\":\"long\"},{\"name\":\"onSale\",\"type\":\"boolean\"},{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"category\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"fp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"option\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"ts\",\"type\":\"long\"}]}},{\"name\":\"i\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -73,7 +73,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
     return DECODER.decode(b);
   }
 
-  private java.util.List<org.shaft.administration.kafka.avro.model.EventData> e;
+  private org.shaft.administration.kafka.avro.model.EventData e;
   private java.lang.String i;
 
   /**
@@ -88,7 +88,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
    * @param e The new value for e
    * @param i The new value for i
    */
-  public EventAvroModel(java.util.List<org.shaft.administration.kafka.avro.model.EventData> e, java.lang.String i) {
+  public EventAvroModel(org.shaft.administration.kafka.avro.model.EventData e, java.lang.String i) {
     this.e = e;
     this.i = i;
   }
@@ -114,7 +114,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: e = (java.util.List<org.shaft.administration.kafka.avro.model.EventData>)value$; break;
+    case 0: e = (org.shaft.administration.kafka.avro.model.EventData)value$; break;
     case 1: i = value$ != null ? value$.toString() : null; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
@@ -124,7 +124,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
    * Gets the value of the 'e' field.
    * @return The value of the 'e' field.
    */
-  public java.util.List<org.shaft.administration.kafka.avro.model.EventData> getE() {
+  public org.shaft.administration.kafka.avro.model.EventData getE() {
     return e;
   }
 
@@ -133,7 +133,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
    * Sets the value of the 'e' field.
    * @param value the value to set.
    */
-  public void setE(java.util.List<org.shaft.administration.kafka.avro.model.EventData> value) {
+  public void setE(org.shaft.administration.kafka.avro.model.EventData value) {
     this.e = value;
   }
 
@@ -195,7 +195,8 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<EventAvroModel>
     implements org.apache.avro.data.RecordBuilder<EventAvroModel> {
 
-    private java.util.List<org.shaft.administration.kafka.avro.model.EventData> e;
+    private org.shaft.administration.kafka.avro.model.EventData e;
+    private org.shaft.administration.kafka.avro.model.EventData.Builder eBuilder;
     private java.lang.String i;
 
     /** Creates a new Builder */
@@ -213,6 +214,9 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
         this.e = data().deepCopy(fields()[0].schema(), other.e);
         fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
+      if (other.hasEBuilder()) {
+        this.eBuilder = org.shaft.administration.kafka.avro.model.EventData.newBuilder(other.getEBuilder());
+      }
       if (isValidValue(fields()[1], other.i)) {
         this.i = data().deepCopy(fields()[1].schema(), other.i);
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
@@ -229,6 +233,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
         this.e = data().deepCopy(fields()[0].schema(), other.e);
         fieldSetFlags()[0] = true;
       }
+      this.eBuilder = null;
       if (isValidValue(fields()[1], other.i)) {
         this.i = data().deepCopy(fields()[1].schema(), other.i);
         fieldSetFlags()[1] = true;
@@ -239,7 +244,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
       * Gets the value of the 'e' field.
       * @return The value.
       */
-    public java.util.List<org.shaft.administration.kafka.avro.model.EventData> getE() {
+    public org.shaft.administration.kafka.avro.model.EventData getE() {
       return e;
     }
 
@@ -249,8 +254,9 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
       * @param value The value of 'e'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder setE(java.util.List<org.shaft.administration.kafka.avro.model.EventData> value) {
+    public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder setE(org.shaft.administration.kafka.avro.model.EventData value) {
       validate(fields()[0], value);
+      this.eBuilder = null;
       this.e = value;
       fieldSetFlags()[0] = true;
       return this;
@@ -264,6 +270,40 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
       return fieldSetFlags()[0];
     }
 
+    /**
+     * Gets the Builder instance for the 'e' field and creates one if it doesn't exist yet.
+     * @return This builder.
+     */
+    public org.shaft.administration.kafka.avro.model.EventData.Builder getEBuilder() {
+      if (eBuilder == null) {
+        if (hasE()) {
+          setEBuilder(org.shaft.administration.kafka.avro.model.EventData.newBuilder(e));
+        } else {
+          setEBuilder(org.shaft.administration.kafka.avro.model.EventData.newBuilder());
+        }
+      }
+      return eBuilder;
+    }
+
+    /**
+     * Sets the Builder instance for the 'e' field
+     * @param value The builder instance that must be set.
+     * @return This builder.
+     */
+
+    public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder setEBuilder(org.shaft.administration.kafka.avro.model.EventData.Builder value) {
+      clearE();
+      eBuilder = value;
+      return this;
+    }
+
+    /**
+     * Checks whether the 'e' field has an active Builder instance
+     * @return True if the 'e' field has an active Builder instance
+     */
+    public boolean hasEBuilder() {
+      return eBuilder != null;
+    }
 
     /**
       * Clears the value of the 'e' field.
@@ -271,6 +311,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
       */
     public org.shaft.administration.kafka.avro.model.EventAvroModel.Builder clearE() {
       e = null;
+      eBuilder = null;
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -320,7 +361,16 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
     public EventAvroModel build() {
       try {
         EventAvroModel record = new EventAvroModel();
-        record.e = fieldSetFlags()[0] ? this.e : (java.util.List<org.shaft.administration.kafka.avro.model.EventData>) defaultValue(fields()[0]);
+        if (eBuilder != null) {
+          try {
+            record.e = this.eBuilder.build();
+          } catch (org.apache.avro.AvroMissingFieldException e) {
+            e.addParentField(record.getSchema().getField("e"));
+            throw e;
+          }
+        } else {
+          record.e = fieldSetFlags()[0] ? this.e : (org.shaft.administration.kafka.avro.model.EventData) defaultValue(fields()[0]);
+        }
         record.i = fieldSetFlags()[1] ? this.i : (java.lang.String) defaultValue(fields()[1]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
@@ -354,18 +404,7 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   @Override public void customEncode(org.apache.avro.io.Encoder out)
     throws java.io.IOException
   {
-    long size0 = this.e.size();
-    out.writeArrayStart();
-    out.setItemCount(size0);
-    long actualSize0 = 0;
-    for (org.shaft.administration.kafka.avro.model.EventData e0: this.e) {
-      actualSize0++;
-      out.startItem();
-      e0.customEncode(out);
-    }
-    out.writeArrayEnd();
-    if (actualSize0 != size0)
-      throw new java.util.ConcurrentModificationException("Array-size written was " + size0 + ", but element count was " + actualSize0 + ".");
+    this.e.customEncode(out);
 
     out.writeString(this.i);
 
@@ -376,23 +415,10 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
   {
     org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
     if (fieldOrder == null) {
-      long size0 = in.readArrayStart();
-      java.util.List<org.shaft.administration.kafka.avro.model.EventData> a0 = this.e;
-      if (a0 == null) {
-        a0 = new SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>((int)size0, SCHEMA$.getField("e").schema());
-        this.e = a0;
-      } else a0.clear();
-      SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData> ga0 = (a0 instanceof SpecificData.Array ? (SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>)a0 : null);
-      for ( ; 0 < size0; size0 = in.arrayNext()) {
-        for ( ; size0 != 0; size0--) {
-          org.shaft.administration.kafka.avro.model.EventData e0 = (ga0 != null ? ga0.peek() : null);
-          if (e0 == null) {
-            e0 = new org.shaft.administration.kafka.avro.model.EventData();
-          }
-          e0.customDecode(in);
-          a0.add(e0);
-        }
+      if (this.e == null) {
+        this.e = new org.shaft.administration.kafka.avro.model.EventData();
       }
+      this.e.customDecode(in);
 
       this.i = in.readString();
 
@@ -400,23 +426,10 @@ public class EventAvroModel extends org.apache.avro.specific.SpecificRecordBase 
       for (int i = 0; i < 2; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
-          long size0 = in.readArrayStart();
-          java.util.List<org.shaft.administration.kafka.avro.model.EventData> a0 = this.e;
-          if (a0 == null) {
-            a0 = new SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>((int)size0, SCHEMA$.getField("e").schema());
-            this.e = a0;
-          } else a0.clear();
-          SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData> ga0 = (a0 instanceof SpecificData.Array ? (SpecificData.Array<org.shaft.administration.kafka.avro.model.EventData>)a0 : null);
-          for ( ; 0 < size0; size0 = in.arrayNext()) {
-            for ( ; size0 != 0; size0--) {
-              org.shaft.administration.kafka.avro.model.EventData e0 = (ga0 != null ? ga0.peek() : null);
-              if (e0 == null) {
-                e0 = new org.shaft.administration.kafka.avro.model.EventData();
-              }
-              e0.customDecode(in);
-              a0.add(e0);
-            }
+          if (this.e == null) {
+            this.e = new org.shaft.administration.kafka.avro.model.EventData();
           }
+          this.e.customDecode(in);
           break;
 
         case 1:

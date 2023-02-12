@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.appconfigdata.KafkaConfigData;
-import org.shaft.administration.eventingestion.constants.EventIngestionConstants;
 import org.shaft.administration.eventingestion.constants.EventIngestionLogs;
 import org.shaft.administration.eventingestion.entity.EventAction;
 import org.shaft.administration.eventingestion.transformer.ShaftEventToAvroTransformer;
@@ -36,7 +35,7 @@ public class ShaftKafkaEventListener {
         try {
             // #TODO create generic object mapper and expose it via obligatory services
             final EventAction event = mapper.convertValue(request, EventAction.class);
-            log.debug(EventIngestionLogs.SENDING_PAYLOAD_TO_KAFKA_TOPIC, event.getE(), kafkaConfigData.getTopicName());
+            log.debug(EventIngestionLogs.SENDING_PAYLOAD_TO_KAFKA_TOPIC, event.getI(), kafkaConfigData.getTopicName());
             eventAvroModel = shaftEventToAvroTransformer.getEventAvroModel(event);
         } catch (Exception ex) {
             log.error(EventIngestionLogs.ERROR_PARSING_TRACK_EVENT_REQUEST,ex.getMessage(),ex);

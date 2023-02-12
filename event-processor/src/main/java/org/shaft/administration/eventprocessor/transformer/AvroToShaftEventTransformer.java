@@ -9,13 +9,12 @@ import java.util.stream.Collectors;
 @Component
 public class AvroToShaftEventTransformer {
 
-
   public List<EventModel> getElasticModels(List<EventAvroModel> avroModels) {
     return avroModels.stream()
       .map(avroModel -> EventModel
         .builder()
-        .e(avroModel.getE())
         .i(avroModel.getI())
+        .e(avroModel.getE())
         .build()
       ).collect(Collectors.toList());
   }

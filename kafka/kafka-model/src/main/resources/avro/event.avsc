@@ -6,85 +6,51 @@
     {
       "name": "e",
       "type": {
-        "type": "array",
-        "items": {
-          "namespace": "org.shaft.administration.kafka.avro.model",
-          "type": "record",
-          "name": "EventData",
-          "fields": [
-            {
-              "name": "eid",
-              "type": "long"
-            },
-            {
-              "name": "fp",
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            {
-              "name": "ts",
-              "type": "long"
-            },
-            {
-              "name": "category",
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            {
-              "name": "name",
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            {
-              "name": "costPrice",
-              "type": [
-                "null",
-                "long"
-              ]
-            },
-            {
-              "name": "inStock",
-              "type": [
-                "null",
-                "boolean"
-              ]
-            },
-            {
-              "name": "option",
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            {
-              "name": "quantity",
-              "type": [
-                "null",
-                "long"
-              ]
-            },
-            {
-              "name": "id",
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            {
-              "name": "onSale",
-              "type": [
-                "null",
-                "boolean"
-              ]
-            }
-          ]
-        }
+        "type": "record",
+        "namespace": "org.shaft.administration.kafka.avro.model",
+        "name": "EventData",
+        "fields": [
+          {
+            "name": "eid",
+            "type": "long"
+          },
+          {
+            "name": "quantity",
+            "type": "long"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "costPrice",
+            "type": "long"
+          },
+          {
+            "name": "onSale",
+            "type": "boolean"
+          },
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "fp",
+            "type": "string"
+          },
+          {
+            "name": "option",
+            "type": "string"
+          },
+          {
+            "name": "ts",
+            "type": "long"
+          }
+        ]
       }
     },
     {

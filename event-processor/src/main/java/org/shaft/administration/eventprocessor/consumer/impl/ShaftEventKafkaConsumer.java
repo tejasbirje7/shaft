@@ -20,14 +20,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 public class ShaftEventKafkaConsumer implements KafkaConsumer<Long, EventAvroModel> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ShaftEventKafkaConsumer.class);
-
     private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
-
     private final KafkaAdminClient kafkaAdminClient;
-
     private final KafkaConfigData kafkaConfigData;
-
-
     private final AvroToShaftEventTransformer avroToShaftEventTransformer;
 
 
