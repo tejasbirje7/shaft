@@ -27,7 +27,7 @@ public class ShaftKafkaProducer implements KafkaProducer<Long, EventAvroModel> {
 
     @Override
     public ObjectNode send(String topicName, Long key, EventAvroModel message) {
-        log.debug(KafkaProducerLogs.SENDING_MESSAGE_TO_KAFKA_TOPIC, message, topicName);
+        log.info(KafkaProducerLogs.SENDING_MESSAGE_TO_KAFKA_TOPIC, message, topicName);
         log.debug(KafkaProducerLogs.BOOTSTRAP_SERVERS_INFO,
           kafkaTemplate.getProducerFactory().getConfigurationProperties().get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
         try {

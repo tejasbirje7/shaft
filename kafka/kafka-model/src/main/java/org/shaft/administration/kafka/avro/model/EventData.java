@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventData extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -129437712472629140L;
+  private static final long serialVersionUID = -7450288346303580377L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventData\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"quantity\",\"type\":\"long\"},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"costPrice\",\"type\":\"long\"},{\"name\":\"onSale\",\"type\":\"boolean\"},{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"category\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"fp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"option\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"ts\",\"type\":\"long\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventData\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"quantity\",\"type\":[\"null\",\"long\"]},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"costPrice\",\"type\":[\"null\",\"long\"]},{\"name\":\"onSale\",\"type\":[\"null\",\"boolean\"]},{\"name\":\"inStock\",\"type\":[\"null\",\"boolean\"]},{\"name\":\"id\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"category\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"fp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"option\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"ts\",\"type\":\"long\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -74,10 +74,11 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   private long eid;
-  private long quantity;
+  private java.lang.Long quantity;
   private java.lang.String name;
-  private long costPrice;
-  private boolean onSale;
+  private java.lang.Long costPrice;
+  private java.lang.Boolean onSale;
+  private java.lang.Boolean inStock;
   private java.lang.String id;
   private java.lang.String category;
   private java.lang.String fp;
@@ -98,18 +99,20 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * @param name The new value for name
    * @param costPrice The new value for costPrice
    * @param onSale The new value for onSale
+   * @param inStock The new value for inStock
    * @param id The new value for id
    * @param category The new value for category
    * @param fp The new value for fp
    * @param option The new value for option
    * @param ts The new value for ts
    */
-  public EventData(java.lang.Long eid, java.lang.Long quantity, java.lang.String name, java.lang.Long costPrice, java.lang.Boolean onSale, java.lang.String id, java.lang.String category, java.lang.String fp, java.lang.String option, java.lang.Long ts) {
+  public EventData(java.lang.Long eid, java.lang.Long quantity, java.lang.String name, java.lang.Long costPrice, java.lang.Boolean onSale, java.lang.Boolean inStock, java.lang.String id, java.lang.String category, java.lang.String fp, java.lang.String option, java.lang.Long ts) {
     this.eid = eid;
     this.quantity = quantity;
     this.name = name;
     this.costPrice = costPrice;
     this.onSale = onSale;
+    this.inStock = inStock;
     this.id = id;
     this.category = category;
     this.fp = fp;
@@ -132,11 +135,12 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
     case 2: return name;
     case 3: return costPrice;
     case 4: return onSale;
-    case 5: return id;
-    case 6: return category;
-    case 7: return fp;
-    case 8: return option;
-    case 9: return ts;
+    case 5: return inStock;
+    case 6: return id;
+    case 7: return category;
+    case 8: return fp;
+    case 9: return option;
+    case 10: return ts;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -151,11 +155,12 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
     case 2: name = value$ != null ? value$.toString() : null; break;
     case 3: costPrice = (java.lang.Long)value$; break;
     case 4: onSale = (java.lang.Boolean)value$; break;
-    case 5: id = value$ != null ? value$.toString() : null; break;
-    case 6: category = value$ != null ? value$.toString() : null; break;
-    case 7: fp = value$ != null ? value$.toString() : null; break;
-    case 8: option = value$ != null ? value$.toString() : null; break;
-    case 9: ts = (java.lang.Long)value$; break;
+    case 5: inStock = (java.lang.Boolean)value$; break;
+    case 6: id = value$ != null ? value$.toString() : null; break;
+    case 7: category = value$ != null ? value$.toString() : null; break;
+    case 8: fp = value$ != null ? value$.toString() : null; break;
+    case 9: option = value$ != null ? value$.toString() : null; break;
+    case 10: ts = (java.lang.Long)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -181,7 +186,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'quantity' field.
    * @return The value of the 'quantity' field.
    */
-  public long getQuantity() {
+  public java.lang.Long getQuantity() {
     return quantity;
   }
 
@@ -190,7 +195,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'quantity' field.
    * @param value the value to set.
    */
-  public void setQuantity(long value) {
+  public void setQuantity(java.lang.Long value) {
     this.quantity = value;
   }
 
@@ -215,7 +220,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'costPrice' field.
    * @return The value of the 'costPrice' field.
    */
-  public long getCostPrice() {
+  public java.lang.Long getCostPrice() {
     return costPrice;
   }
 
@@ -224,7 +229,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'costPrice' field.
    * @param value the value to set.
    */
-  public void setCostPrice(long value) {
+  public void setCostPrice(java.lang.Long value) {
     this.costPrice = value;
   }
 
@@ -232,7 +237,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'onSale' field.
    * @return The value of the 'onSale' field.
    */
-  public boolean getOnSale() {
+  public java.lang.Boolean getOnSale() {
     return onSale;
   }
 
@@ -241,8 +246,25 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'onSale' field.
    * @param value the value to set.
    */
-  public void setOnSale(boolean value) {
+  public void setOnSale(java.lang.Boolean value) {
     this.onSale = value;
+  }
+
+  /**
+   * Gets the value of the 'inStock' field.
+   * @return The value of the 'inStock' field.
+   */
+  public java.lang.Boolean getInStock() {
+    return inStock;
+  }
+
+
+  /**
+   * Sets the value of the 'inStock' field.
+   * @param value the value to set.
+   */
+  public void setInStock(java.lang.Boolean value) {
+    this.inStock = value;
   }
 
   /**
@@ -372,10 +394,11 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
     implements org.apache.avro.data.RecordBuilder<EventData> {
 
     private long eid;
-    private long quantity;
+    private java.lang.Long quantity;
     private java.lang.String name;
-    private long costPrice;
-    private boolean onSale;
+    private java.lang.Long costPrice;
+    private java.lang.Boolean onSale;
+    private java.lang.Boolean inStock;
     private java.lang.String id;
     private java.lang.String category;
     private java.lang.String fp;
@@ -413,25 +436,29 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
         this.onSale = data().deepCopy(fields()[4].schema(), other.onSale);
         fieldSetFlags()[4] = other.fieldSetFlags()[4];
       }
-      if (isValidValue(fields()[5], other.id)) {
-        this.id = data().deepCopy(fields()[5].schema(), other.id);
+      if (isValidValue(fields()[5], other.inStock)) {
+        this.inStock = data().deepCopy(fields()[5].schema(), other.inStock);
         fieldSetFlags()[5] = other.fieldSetFlags()[5];
       }
-      if (isValidValue(fields()[6], other.category)) {
-        this.category = data().deepCopy(fields()[6].schema(), other.category);
+      if (isValidValue(fields()[6], other.id)) {
+        this.id = data().deepCopy(fields()[6].schema(), other.id);
         fieldSetFlags()[6] = other.fieldSetFlags()[6];
       }
-      if (isValidValue(fields()[7], other.fp)) {
-        this.fp = data().deepCopy(fields()[7].schema(), other.fp);
+      if (isValidValue(fields()[7], other.category)) {
+        this.category = data().deepCopy(fields()[7].schema(), other.category);
         fieldSetFlags()[7] = other.fieldSetFlags()[7];
       }
-      if (isValidValue(fields()[8], other.option)) {
-        this.option = data().deepCopy(fields()[8].schema(), other.option);
+      if (isValidValue(fields()[8], other.fp)) {
+        this.fp = data().deepCopy(fields()[8].schema(), other.fp);
         fieldSetFlags()[8] = other.fieldSetFlags()[8];
       }
-      if (isValidValue(fields()[9], other.ts)) {
-        this.ts = data().deepCopy(fields()[9].schema(), other.ts);
+      if (isValidValue(fields()[9], other.option)) {
+        this.option = data().deepCopy(fields()[9].schema(), other.option);
         fieldSetFlags()[9] = other.fieldSetFlags()[9];
+      }
+      if (isValidValue(fields()[10], other.ts)) {
+        this.ts = data().deepCopy(fields()[10].schema(), other.ts);
+        fieldSetFlags()[10] = other.fieldSetFlags()[10];
       }
     }
 
@@ -461,25 +488,29 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
         this.onSale = data().deepCopy(fields()[4].schema(), other.onSale);
         fieldSetFlags()[4] = true;
       }
-      if (isValidValue(fields()[5], other.id)) {
-        this.id = data().deepCopy(fields()[5].schema(), other.id);
+      if (isValidValue(fields()[5], other.inStock)) {
+        this.inStock = data().deepCopy(fields()[5].schema(), other.inStock);
         fieldSetFlags()[5] = true;
       }
-      if (isValidValue(fields()[6], other.category)) {
-        this.category = data().deepCopy(fields()[6].schema(), other.category);
+      if (isValidValue(fields()[6], other.id)) {
+        this.id = data().deepCopy(fields()[6].schema(), other.id);
         fieldSetFlags()[6] = true;
       }
-      if (isValidValue(fields()[7], other.fp)) {
-        this.fp = data().deepCopy(fields()[7].schema(), other.fp);
+      if (isValidValue(fields()[7], other.category)) {
+        this.category = data().deepCopy(fields()[7].schema(), other.category);
         fieldSetFlags()[7] = true;
       }
-      if (isValidValue(fields()[8], other.option)) {
-        this.option = data().deepCopy(fields()[8].schema(), other.option);
+      if (isValidValue(fields()[8], other.fp)) {
+        this.fp = data().deepCopy(fields()[8].schema(), other.fp);
         fieldSetFlags()[8] = true;
       }
-      if (isValidValue(fields()[9], other.ts)) {
-        this.ts = data().deepCopy(fields()[9].schema(), other.ts);
+      if (isValidValue(fields()[9], other.option)) {
+        this.option = data().deepCopy(fields()[9].schema(), other.option);
         fieldSetFlags()[9] = true;
+      }
+      if (isValidValue(fields()[10], other.ts)) {
+        this.ts = data().deepCopy(fields()[10].schema(), other.ts);
+        fieldSetFlags()[10] = true;
       }
     }
 
@@ -526,7 +557,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'quantity' field.
       * @return The value.
       */
-    public long getQuantity() {
+    public java.lang.Long getQuantity() {
       return quantity;
     }
 
@@ -536,7 +567,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'quantity'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventData.Builder setQuantity(long value) {
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setQuantity(java.lang.Long value) {
       validate(fields()[1], value);
       this.quantity = value;
       fieldSetFlags()[1] = true;
@@ -557,6 +588,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearQuantity() {
+      quantity = null;
       fieldSetFlags()[1] = false;
       return this;
     }
@@ -605,7 +637,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'costPrice' field.
       * @return The value.
       */
-    public long getCostPrice() {
+    public java.lang.Long getCostPrice() {
       return costPrice;
     }
 
@@ -615,7 +647,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'costPrice'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventData.Builder setCostPrice(long value) {
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setCostPrice(java.lang.Long value) {
       validate(fields()[3], value);
       this.costPrice = value;
       fieldSetFlags()[3] = true;
@@ -636,6 +668,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearCostPrice() {
+      costPrice = null;
       fieldSetFlags()[3] = false;
       return this;
     }
@@ -644,7 +677,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'onSale' field.
       * @return The value.
       */
-    public boolean getOnSale() {
+    public java.lang.Boolean getOnSale() {
       return onSale;
     }
 
@@ -654,7 +687,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'onSale'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventData.Builder setOnSale(boolean value) {
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setOnSale(java.lang.Boolean value) {
       validate(fields()[4], value);
       this.onSale = value;
       fieldSetFlags()[4] = true;
@@ -675,7 +708,48 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearOnSale() {
+      onSale = null;
       fieldSetFlags()[4] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'inStock' field.
+      * @return The value.
+      */
+    public java.lang.Boolean getInStock() {
+      return inStock;
+    }
+
+
+    /**
+      * Sets the value of the 'inStock' field.
+      * @param value The value of 'inStock'.
+      * @return This builder.
+      */
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setInStock(java.lang.Boolean value) {
+      validate(fields()[5], value);
+      this.inStock = value;
+      fieldSetFlags()[5] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'inStock' field has been set.
+      * @return True if the 'inStock' field has been set, false otherwise.
+      */
+    public boolean hasInStock() {
+      return fieldSetFlags()[5];
+    }
+
+
+    /**
+      * Clears the value of the 'inStock' field.
+      * @return This builder.
+      */
+    public org.shaft.administration.kafka.avro.model.EventData.Builder clearInStock() {
+      inStock = null;
+      fieldSetFlags()[5] = false;
       return this;
     }
 
@@ -694,9 +768,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder setId(java.lang.String value) {
-      validate(fields()[5], value);
+      validate(fields()[6], value);
       this.id = value;
-      fieldSetFlags()[5] = true;
+      fieldSetFlags()[6] = true;
       return this;
     }
 
@@ -705,7 +779,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return True if the 'id' field has been set, false otherwise.
       */
     public boolean hasId() {
-      return fieldSetFlags()[5];
+      return fieldSetFlags()[6];
     }
 
 
@@ -715,7 +789,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearId() {
       id = null;
-      fieldSetFlags()[5] = false;
+      fieldSetFlags()[6] = false;
       return this;
     }
 
@@ -734,9 +808,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder setCategory(java.lang.String value) {
-      validate(fields()[6], value);
+      validate(fields()[7], value);
       this.category = value;
-      fieldSetFlags()[6] = true;
+      fieldSetFlags()[7] = true;
       return this;
     }
 
@@ -745,7 +819,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return True if the 'category' field has been set, false otherwise.
       */
     public boolean hasCategory() {
-      return fieldSetFlags()[6];
+      return fieldSetFlags()[7];
     }
 
 
@@ -755,7 +829,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearCategory() {
       category = null;
-      fieldSetFlags()[6] = false;
+      fieldSetFlags()[7] = false;
       return this;
     }
 
@@ -774,9 +848,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder setFp(java.lang.String value) {
-      validate(fields()[7], value);
+      validate(fields()[8], value);
       this.fp = value;
-      fieldSetFlags()[7] = true;
+      fieldSetFlags()[8] = true;
       return this;
     }
 
@@ -785,7 +859,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return True if the 'fp' field has been set, false otherwise.
       */
     public boolean hasFp() {
-      return fieldSetFlags()[7];
+      return fieldSetFlags()[8];
     }
 
 
@@ -795,7 +869,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearFp() {
       fp = null;
-      fieldSetFlags()[7] = false;
+      fieldSetFlags()[8] = false;
       return this;
     }
 
@@ -814,9 +888,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder setOption(java.lang.String value) {
-      validate(fields()[8], value);
+      validate(fields()[9], value);
       this.option = value;
-      fieldSetFlags()[8] = true;
+      fieldSetFlags()[9] = true;
       return this;
     }
 
@@ -825,7 +899,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return True if the 'option' field has been set, false otherwise.
       */
     public boolean hasOption() {
-      return fieldSetFlags()[8];
+      return fieldSetFlags()[9];
     }
 
 
@@ -835,7 +909,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearOption() {
       option = null;
-      fieldSetFlags()[8] = false;
+      fieldSetFlags()[9] = false;
       return this;
     }
 
@@ -854,9 +928,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder setTs(long value) {
-      validate(fields()[9], value);
+      validate(fields()[10], value);
       this.ts = value;
-      fieldSetFlags()[9] = true;
+      fieldSetFlags()[10] = true;
       return this;
     }
 
@@ -865,7 +939,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return True if the 'ts' field has been set, false otherwise.
       */
     public boolean hasTs() {
-      return fieldSetFlags()[9];
+      return fieldSetFlags()[10];
     }
 
 
@@ -874,7 +948,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearTs() {
-      fieldSetFlags()[9] = false;
+      fieldSetFlags()[10] = false;
       return this;
     }
 
@@ -888,11 +962,12 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
         record.name = fieldSetFlags()[2] ? this.name : (java.lang.String) defaultValue(fields()[2]);
         record.costPrice = fieldSetFlags()[3] ? this.costPrice : (java.lang.Long) defaultValue(fields()[3]);
         record.onSale = fieldSetFlags()[4] ? this.onSale : (java.lang.Boolean) defaultValue(fields()[4]);
-        record.id = fieldSetFlags()[5] ? this.id : (java.lang.String) defaultValue(fields()[5]);
-        record.category = fieldSetFlags()[6] ? this.category : (java.lang.String) defaultValue(fields()[6]);
-        record.fp = fieldSetFlags()[7] ? this.fp : (java.lang.String) defaultValue(fields()[7]);
-        record.option = fieldSetFlags()[8] ? this.option : (java.lang.String) defaultValue(fields()[8]);
-        record.ts = fieldSetFlags()[9] ? this.ts : (java.lang.Long) defaultValue(fields()[9]);
+        record.inStock = fieldSetFlags()[5] ? this.inStock : (java.lang.Boolean) defaultValue(fields()[5]);
+        record.id = fieldSetFlags()[6] ? this.id : (java.lang.String) defaultValue(fields()[6]);
+        record.category = fieldSetFlags()[7] ? this.category : (java.lang.String) defaultValue(fields()[7]);
+        record.fp = fieldSetFlags()[8] ? this.fp : (java.lang.String) defaultValue(fields()[8]);
+        record.option = fieldSetFlags()[9] ? this.option : (java.lang.String) defaultValue(fields()[9]);
+        record.ts = fieldSetFlags()[10] ? this.ts : (java.lang.Long) defaultValue(fields()[10]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -927,21 +1002,71 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
   {
     out.writeLong(this.eid);
 
-    out.writeLong(this.quantity);
+    if (this.quantity == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeLong(this.quantity);
+    }
 
-    out.writeString(this.name);
+    if (this.name == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeString(this.name);
+    }
 
-    out.writeLong(this.costPrice);
+    if (this.costPrice == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeLong(this.costPrice);
+    }
 
-    out.writeBoolean(this.onSale);
+    if (this.onSale == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeBoolean(this.onSale);
+    }
 
-    out.writeString(this.id);
+    if (this.inStock == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeBoolean(this.inStock);
+    }
 
-    out.writeString(this.category);
+    if (this.id == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeString(this.id);
+    }
+
+    if (this.category == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeString(this.category);
+    }
 
     out.writeString(this.fp);
 
-    out.writeString(this.option);
+    if (this.option == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeString(this.option);
+    }
 
     out.writeLong(this.ts);
 
@@ -954,64 +1079,150 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
     if (fieldOrder == null) {
       this.eid = in.readLong();
 
-      this.quantity = in.readLong();
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.quantity = null;
+      } else {
+        this.quantity = in.readLong();
+      }
 
-      this.name = in.readString();
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.name = null;
+      } else {
+        this.name = in.readString();
+      }
 
-      this.costPrice = in.readLong();
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.costPrice = null;
+      } else {
+        this.costPrice = in.readLong();
+      }
 
-      this.onSale = in.readBoolean();
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.onSale = null;
+      } else {
+        this.onSale = in.readBoolean();
+      }
 
-      this.id = in.readString();
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.inStock = null;
+      } else {
+        this.inStock = in.readBoolean();
+      }
 
-      this.category = in.readString();
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.id = null;
+      } else {
+        this.id = in.readString();
+      }
+
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.category = null;
+      } else {
+        this.category = in.readString();
+      }
 
       this.fp = in.readString();
 
-      this.option = in.readString();
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.option = null;
+      } else {
+        this.option = in.readString();
+      }
 
       this.ts = in.readLong();
 
     } else {
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < 11; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
           this.eid = in.readLong();
           break;
 
         case 1:
-          this.quantity = in.readLong();
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.quantity = null;
+          } else {
+            this.quantity = in.readLong();
+          }
           break;
 
         case 2:
-          this.name = in.readString();
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.name = null;
+          } else {
+            this.name = in.readString();
+          }
           break;
 
         case 3:
-          this.costPrice = in.readLong();
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.costPrice = null;
+          } else {
+            this.costPrice = in.readLong();
+          }
           break;
 
         case 4:
-          this.onSale = in.readBoolean();
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.onSale = null;
+          } else {
+            this.onSale = in.readBoolean();
+          }
           break;
 
         case 5:
-          this.id = in.readString();
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.inStock = null;
+          } else {
+            this.inStock = in.readBoolean();
+          }
           break;
 
         case 6:
-          this.category = in.readString();
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.id = null;
+          } else {
+            this.id = in.readString();
+          }
           break;
 
         case 7:
-          this.fp = in.readString();
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.category = null;
+          } else {
+            this.category = in.readString();
+          }
           break;
 
         case 8:
-          this.option = in.readString();
+          this.fp = in.readString();
           break;
 
         case 9:
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.option = null;
+          } else {
+            this.option = in.readString();
+          }
+          break;
+
+        case 10:
           this.ts = in.readLong();
           break;
 

@@ -34,7 +34,8 @@ public class KafkaProducerConfig<K extends Serializable, V extends SpecificRecor
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, kafkaProducerConfigData.getKeySerializerClass());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, kafkaProducerConfigData.getValueSerializerClass());
         props.put(ProducerConfig.BATCH_SIZE_CONFIG, kafkaProducerConfigData.getBatchSize() *
-                kafkaProducerConfigData.getBatchSizeBoostFactor());
+          kafkaProducerConfigData.getBatchSizeBoostFactor());
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG,true);
         props.put(ProducerConfig.LINGER_MS_CONFIG, kafkaProducerConfigData.getLingerMs());
         props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, kafkaProducerConfigData.getCompressionType());
         props.put(ProducerConfig.ACKS_CONFIG, kafkaProducerConfigData.getAcks());

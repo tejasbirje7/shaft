@@ -41,6 +41,7 @@ public class ShaftKafkaEventListener {
             log.error(EventIngestionLogs.ERROR_PARSING_TRACK_EVENT_REQUEST,ex.getMessage(),ex);
             return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ERROR_PARSING_TRACK_EVENT_REQUEST);
         }
+        // Account ID is used as a key, which acts as a header from producer to consumer.
         return kafkaProducer.send(kafkaConfigData.getTopicName(), (long) account, eventAvroModel);
     }
 }

@@ -36,6 +36,9 @@ retry-config:
   maxAttempts: 3
   sleep-time-ms: 2000
 
+spring:
+  main:
+    web-application-type: reactive
 
 #spring:
 #  kafka:

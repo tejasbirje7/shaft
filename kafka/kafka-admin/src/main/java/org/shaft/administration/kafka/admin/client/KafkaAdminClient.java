@@ -1,12 +1,11 @@
 package org.shaft.administration.kafka.admin.client;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.common.KafkaFuture;
 import org.shaft.administration.appconfigdata.KafkaConfigData;
 import org.shaft.administration.appconfigdata.RetryConfigData;
 import org.shaft.administration.kafka.admin.exception.KafkaClientException;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.admin.TopicListing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -17,12 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class KafkaAdminClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaAdminClient.class);
@@ -37,6 +36,8 @@ public class KafkaAdminClient {
 
     private final WebClient webClient;
 
+    private Map<String, KafkaFuture<TopicDescription>> topicToPartitionsMap;
+
 
     public KafkaAdminClient(KafkaConfigData config,
                             RetryConfigData retryConfigData,
@@ -48,6 +49,7 @@ public class KafkaAdminClient {
         this.adminClient = client;
         this.retryTemplate = template;
         this.webClient = webClient;
+        topicToPartitionsMap = new HashMap<>();
     }
 
     public void createTopics() {
@@ -68,6 +70,7 @@ public class KafkaAdminClient {
         int multiplier = retryConfigData.getMultiplier().intValue();
         Long sleepTimeMs = retryConfigData.getSleepTimeMs();
         for (String topic : kafkaConfigData.getTopicNamesToCreate()) {
+            log.info("Topic Name : {}",topic);
             while (!isTopicCreated(topics, topic)) {
                 checkMaxRetry(retryCount++, maxRetry);
                 sleep(sleepTimeMs);
@@ -75,6 +78,16 @@ public class KafkaAdminClient {
                 topics = getTopics();
             }
         }
+    }
+
+
+    public int checkNumberOfPartitions(String topic) throws ExecutionException, InterruptedException {
+        if(topicToPartitionsMap.isEmpty()) {
+            DescribeTopicsResult result = adminClient.describeTopics(kafkaConfigData.getTopicNamesToCreate());
+            topicToPartitionsMap = result.topicNameValues();
+        }
+        KafkaFuture<TopicDescription> topicDescription = topicToPartitionsMap.get(topic);
+        return topicDescription.get().partitions().size();
     }
 
     public void checkSchemaRegistry() {

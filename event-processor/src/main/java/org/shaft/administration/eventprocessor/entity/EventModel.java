@@ -1,4 +1,4 @@
-package org.shaft.administration.eventprocessor.consumer.impl;
+package org.shaft.administration.eventprocessor.entity;
 
 import lombok.Builder;
 import lombok.Data;

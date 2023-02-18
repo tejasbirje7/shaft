@@ -6,6 +6,7 @@ import org.shaft.administration.appconfigdata.KafkaConfigData;
 import org.shaft.administration.appconfigdata.KafkaConsumerConfigData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -16,6 +17,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @EnableKafka
 @Configuration
@@ -31,8 +33,9 @@ public class KafkaConsumerConfig<K extends Serializable, V extends SpecificRecor
     }
 
     @Bean
-    public Map<String, Object> consumerConfigs() {
-        Map<String, Object> props = new HashMap<>();
+    @Primary
+    public Properties consumerConfigs() {
+        Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfigData.getBootstrapServers());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaConsumerConfigData.getKeyDeserializer());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, kafkaConsumerConfigData.getValueDeserializer());
@@ -47,14 +50,38 @@ public class KafkaConsumerConfig<K extends Serializable, V extends SpecificRecor
                 kafkaConsumerConfigData.getMaxPartitionFetchBytesDefault() *
                         kafkaConsumerConfigData.getMaxPartitionFetchBytesBoostFactor());
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, kafkaConsumerConfigData.getMaxPollRecords());
-        System.out.printf("Kafka COnfig Values  ");
-        props.entrySet().stream().forEach(System.out::println);
+        System.out.print("Kafka configuration Values");
+        props.entrySet().forEach(System.out::println);
         return props;
     }
 
     @Bean
+    public Map<String,Object> consumerConfig() {
+        Map<String,Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfigData.getBootstrapServers());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaConsumerConfigData.getKeyDeserializer());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, kafkaConsumerConfigData.getValueDeserializer());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConsumerConfigData.getConsumerGroupId());
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaConsumerConfigData.getAutoOffsetReset());
+        props.put(kafkaConfigData.getSchemaRegistryUrlKey(), kafkaConfigData.getSchemaRegistryUrl());
+        props.put(kafkaConsumerConfigData.getSpecificAvroReaderKey(), kafkaConsumerConfigData.getSpecificAvroReader());
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, kafkaConsumerConfigData.getSessionTimeoutMs());
+        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, kafkaConsumerConfigData.getHeartbeatIntervalMs());
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, kafkaConsumerConfigData.getMaxPollIntervalMs());
+        props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG,
+          kafkaConsumerConfigData.getMaxPartitionFetchBytesDefault() *
+            kafkaConsumerConfigData.getMaxPartitionFetchBytesBoostFactor());
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, kafkaConsumerConfigData.getMaxPollRecords());
+        System.out.print("Kafka configuration Values");
+        props.entrySet().forEach(System.out::println);
+        return props;
+    }
+
+
+
+    @Bean
     public ConsumerFactory<K, V> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+        return new DefaultKafkaConsumerFactory<>(consumerConfig());
     }
 
     @Bean
