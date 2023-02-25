@@ -2,6 +2,8 @@ package org.shaft.administration.catalog.utils;
 
 public enum LogUtils {
 
+    // #TODO Implement such type of log utils in every services
+
     REGULAR_CALL_SUCCESS_MESSAGE("%s called w/ success - %s"),
     REGULAR_CALL_ERROR_MESSAGE("%s called w/ error - %s"),
     NO_BOOK_WITH_ID_MESSAGE("No book with id %d"),

@@ -21,17 +21,12 @@ public class QueryCustomRepositoryImpl implements QueryCustomRepository{
 
     HttpHeaders httpHeaders;
     private final RestTemplate restTemplate;
-    private String ELASTIC_URL;
-
     @Value("${elasticsearch.host}")
     private String ELASTIC_HOST;
-
     @Value("${elasticsearch.port}")
     private String ELASTIC_PORT;
-
-    private AggregationQueryResults emptyResults = new AggregationQueryResults();
-
-    private ObjectMapper mapper;
+    private final AggregationQueryResults emptyResults = new AggregationQueryResults();
+    private final ObjectMapper mapper;
 
     @Autowired
     public QueryCustomRepositoryImpl(RestTemplate restTemplate) {
@@ -44,7 +39,7 @@ public class QueryCustomRepositoryImpl implements QueryCustomRepository{
 
     @Override
     public AggregationQueryResults getQueryResults(int accountId, String query) {
-        this.ELASTIC_URL = ELASTIC_HOST + ":" + ELASTIC_PORT; // #TODO Move this part to constructor
+        String ELASTIC_URL = ELASTIC_HOST + ":" + ELASTIC_PORT; // #TODO Move this part to constructor
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(query,httpHeaders);
         String url = "http://".concat(ELASTIC_URL).concat("/").concat(String.valueOf(accountId)).concat("_16*/").concat("_search");
