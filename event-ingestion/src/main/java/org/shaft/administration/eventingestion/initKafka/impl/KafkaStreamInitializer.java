@@ -1,7 +1,7 @@
-package org.shaft.administration.eventingestion.init.impl;
+package org.shaft.administration.eventingestion.initKafka.impl;
 
 import org.shaft.administration.appconfigdata.KafkaConfigData;
-import org.shaft.administration.eventingestion.init.StreamInitializer;
+import org.shaft.administration.eventingestion.initKafka.StreamInitializer;
 import org.shaft.administration.kafka.admin.client.KafkaAdminClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

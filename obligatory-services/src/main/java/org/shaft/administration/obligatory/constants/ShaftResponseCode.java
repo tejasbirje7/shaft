@@ -21,8 +21,12 @@ public class ShaftResponseCode {
   public static String META_FIELDS_FETCHED = "S0018";
   public static String DASHBOARD_QUERY_PINNED = "S0019";
   public static String EVENT_PUBLISHED_TO_KAFKA = "S0020";
+  public static String CAMPAIGNS_TO_RENDER = "S0021";
+  public static String CAMPAIGN_SAVED = "S0022";
 
-
+  /**
+   * FAILURE CODES
+   */
 
   public static String TOKEN_GENERATION_FAILED = "F0001";
   public static String IDENTITY_UPDATE_FAILED = "F0002";
@@ -83,4 +87,6 @@ public class ShaftResponseCode {
   public static String FAILED_TO_PUBLISH_EVENTS_TO_KAFKA = "F0056";
   public static String ERROR_PUBLISHING_EVENTS_TO_KAFKA = "F0057";
   public static String ERROR_PARSING_TRACK_EVENT_REQUEST = "F0058";
+  public static String FAILED_TO_CHECK_CAMPAIGN_QUALIFICATION = "F0059";
+  public static String FAILED_TO_SAVE_CAMPAIGN = "F0060";
 }

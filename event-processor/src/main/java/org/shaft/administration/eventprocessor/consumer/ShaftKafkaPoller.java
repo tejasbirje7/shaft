@@ -93,6 +93,7 @@ public class ShaftKafkaPoller  {
                   ResponseEntity<JsonNode> response = restTemplate.exchange(
                     "http://localhost:8002/track",
                     HttpMethod.POST,entity,JsonNode.class);
+                  log.info("Response {}",response.getStatusCode());
                   log.info("Data : {}",response.getBody().get("i").asText());
                 });
               }

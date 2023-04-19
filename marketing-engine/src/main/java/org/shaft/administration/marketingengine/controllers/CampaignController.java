@@ -1,5 +1,6 @@
 package org.shaft.administration.marketingengine.controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.shaft.administration.marketingengine.dao.CampaignDao;
 import org.shaft.administration.obligatory.transactions.ShaftResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,12 @@ public class CampaignController {
   @RequestMapping(value = "/campaign/qualification", method = { RequestMethod.GET, RequestMethod.POST })
   public Mono<ResponseEntity<Object>> getCategories(@RequestHeader(value="account") int account,
                                                     @RequestBody() Map<String,Object> eventRequest) {
-    campaignDao.checkForCampaignQualification(account,eventRequest);
-    return Mono.empty();
+    return campaignDao.checkForCampaignQualification(account,eventRequest).map(ShaftResponseHandler::generateResponse);
+  }
+
+  @RequestMapping(value = "/save/campaign", method = { RequestMethod.GET, RequestMethod.POST })
+  public Mono<ResponseEntity<Object>> saveCampaign(@RequestHeader(value="account") int account,
+                                                    @RequestBody() ObjectNode eventRequest) {
+    return campaignDao.saveCampaign(account,eventRequest).map(ShaftResponseHandler::generateResponse);
   }
 }

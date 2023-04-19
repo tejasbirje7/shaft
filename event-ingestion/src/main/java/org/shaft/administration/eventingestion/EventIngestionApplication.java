@@ -1,6 +1,6 @@
 package org.shaft.administration.eventingestion;
 
-import org.shaft.administration.eventingestion.init.StreamInitializer;
+import org.shaft.administration.eventingestion.initKafka.StreamInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

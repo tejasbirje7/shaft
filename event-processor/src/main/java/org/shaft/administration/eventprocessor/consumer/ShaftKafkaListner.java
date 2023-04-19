@@ -25,7 +25,7 @@ import java.util.Properties;
 
 /**
  * This class is just for future reference
- * since it has implementation of kafka listener
+ * since it has implementation of kafka services
  * which can be used for streaming messages
  * as soon as producer publishes in brokers
  */

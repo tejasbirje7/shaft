@@ -18,26 +18,28 @@ public class QueryConstructor {
     this.mapper = new ObjectMapper();
   }
 
-  public ObjectNode constructMsearchQuery(List<ObjectNode> campaignCriteria, Map<String,Object> evtInRequest, int i) {
+  public ObjectNode constructMsearchQuery(List<Map<String,Object>> campaignCriteria, Map<String,Object> evtInRequest, int i,String index) {
     ArrayNode cidMap = mapper.createArrayNode();
     ArrayNode campaignWithoutQ = mapper.createArrayNode();
     StringBuilder request = new StringBuilder();
     String lineSeparator = System.getProperty("line.separator");
     campaignCriteria.forEach(eachCriteria -> {
-      if(didTriggerEventMatch(eachCriteria,evtInRequest)) {
-        int cid = eachCriteria.get("cid").asInt();
-        String query = eachCriteria.get("q").asText();
+      System.out.println(eachCriteria.size());
+      ObjectNode eachNode = mapper.convertValue(eachCriteria,ObjectNode.class);
+      if(didTriggerEventMatch(eachNode,evtInRequest)) {
+        int cid = eachNode.get("cid").asInt();
+        String query = eachNode.get("q").asText();
         ObjectNode qToAppend = appendIToMustQuery(query,i);
         ObjectNode m = mapper.createObjectNode();
         m.put("cid",cid);
         m.put("icn","");
-        m.set("te",eachCriteria.get("te"));
+        m.set("te",eachNode.get("te"));
         if(!qToAppend.isEmpty()) {
           if(request.toString().isEmpty()) {
-            request.append(mapper.createObjectNode().put("index", "1600_1*"));
+            request.append(mapper.createObjectNode().put("index", index));
             request.append(lineSeparator).append(qToAppend);
           } else {
-            request.append(lineSeparator).append(mapper.createObjectNode().put("index", "1200_1*"));
+            request.append(lineSeparator).append(mapper.createObjectNode().put("index", index));
             request.append(lineSeparator).append(qToAppend);
           }
           cidMap.add(m);
