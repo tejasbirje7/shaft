@@ -41,7 +41,8 @@ public class SegmentDAOImpl implements SegmentDAO {
     public List<Segment> getSavedSegments(int accountId) {
         ACCOUNT_ID.set(accountId);
         try {
-            return Lists.newArrayList(segmentRepository.findAll());
+            //return Lists.newArrayList(segmentRepository.findAll());
+            return null;
         } catch (Exception ex) {
             // #TODO return exception
             return new ArrayList<>();

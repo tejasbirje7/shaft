@@ -194,6 +194,7 @@ public class QueryGenerator {
                 fromTo.put("from",x);
                 fromTo.put("to",d);
                 ranges.add(fromTo);
+                x = x + diff;
             }
         }
         return ranges;
@@ -211,7 +212,7 @@ public class QueryGenerator {
 
             ObjectNode termsNode = mapper.createObjectNode();
             termsNode.put("size",1);
-            termsNode.put("field","u.keyword");
+            termsNode.put("field","i");
 
             ObjectNode graphPlotNode = mapper.createObjectNode();
             graphPlotNode.set("range",rangeNode);

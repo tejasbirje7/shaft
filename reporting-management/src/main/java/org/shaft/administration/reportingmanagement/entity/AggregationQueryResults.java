@@ -96,7 +96,11 @@ public class AggregationQueryResults {
             ObjectNode eachBucketDetails = mapper.createObjectNode();
             eachBucketDetails.put("from",b.getFrom());
             eachBucketDetails.put("to",b.getTo());
-            eachBucketDetails.put("u",b.getUser().getSum_other_doc_count());
+            if(b.getUser() != null) {
+                eachBucketDetails.put("u",b.getUser().getSum_other_doc_count());
+            } else {
+                eachBucketDetails.put("u",-1);
+            }
             graphCount.add(eachBucketDetails);
         });
         return graphCount;

@@ -1,7 +1,10 @@
 package org.shaft.administration.reportingmanagement.dao;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import reactor.core.publisher.Mono;
+
 import java.util.Map;
 public interface QueryDao {
-    Map<String,Object> getQueryResults(int accountId, Map<String,Object> rawQuery);
-    Map<String, Object> evaluateEncodedQueries(int accountId,Map<String,Object> request);
+    Mono<ObjectNode> getQueryResults(int accountId, Map<String,Object> rawQuery);
+    Mono<ObjectNode> evaluateEncodedQueries(int accountId,Map<String,Object> request);
 }

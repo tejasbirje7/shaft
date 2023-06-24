@@ -76,6 +76,25 @@ public class ItemsService implements ItemsDAO {
       });
   }
 
+  // #TODO Remove account ID dependency from all services
+  @Override
+  public Mono<ObjectNode> getItemsById(int accountId, Map<String,Object> body) {
+    ACCOUNT_ID.set(accountId);
+    String itemId = (String) body.get("id");
+    Mono<Item> itemInfo = itemsRepository.getItemById(itemId);
+    return itemInfo
+      .map(i -> {
+        ACCOUNT_ID.remove();
+        log.info("Item : {}",i);
+        return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ITEMS_FETCHED_SUCCESSFULLY,mapper.valueToTree(i));
+      })
+      .onErrorResume(error -> {
+        ACCOUNT_ID.remove();
+        log.error(ProductCatalogLogs.UNABLE_TO_FETCH_ITEMS,error);
+        return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_ITEMS_SERVICE_UNAVAILABLE));
+      });
+  }
+
   @Override
   public Mono<ObjectNode> getBulkItems(int accountId, Map<String,Object> body) {
     if(body != null) {

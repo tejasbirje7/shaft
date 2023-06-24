@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -24,19 +25,15 @@ public class QueryController {
     }
 
     @RequestMapping(value = "/query/results", method = { RequestMethod.POST })
-    public ResponseEntity<Object> getQueryResults(@RequestHeader(value="account") int account,
-                                                  @RequestBody Map<String,Object> rawQuery) {
-        Map<String,Object> response = queryDao.getQueryResults(account, rawQuery);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S78gsd8v",response,headers);
+    public Mono<ResponseEntity<Object>> getQueryResults(@RequestHeader(value="account") int account,
+                                                        @RequestBody Map<String,Object> rawQuery) {
+        return queryDao.getQueryResults(account,rawQuery).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/query/eval", method = { RequestMethod.POST })
-    public ResponseEntity<Object> evaluateEncodedQueries(@RequestHeader(value="account") int account,
+    public Mono<ResponseEntity<Object>> evaluateEncodedQueries(@RequestHeader(value="account") int account,
                                                          @RequestBody Map<String,Object> rawQuery) {
-        Map<String,Object> response = queryDao.evaluateEncodedQueries(account, rawQuery);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S78gsd8v",response,headers);
+        return queryDao.evaluateEncodedQueries(account,rawQuery).map(ShaftResponseHandler::generateResponse);
     }
 
 }

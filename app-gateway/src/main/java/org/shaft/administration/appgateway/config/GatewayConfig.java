@@ -59,6 +59,9 @@ public class GatewayConfig {
       .route("marketing-engine", r->r.path("/marketing/**")
         //.filters(f -> f.filter(authenticationFilter))
         .uri("lb://MARKETING-ENGINE")) // 8086
+      .route("reporting-engine", r->r.path("/reporting/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("lb://REPORTING-MANAGEMENT")) // 8087
       .build();
   }
 }

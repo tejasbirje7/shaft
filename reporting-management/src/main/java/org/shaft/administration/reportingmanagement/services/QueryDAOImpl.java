@@ -3,19 +3,23 @@ package org.shaft.administration.reportingmanagement.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
 import org.shaft.administration.obligatory.translator.elastic.ShaftQueryTranslator;
 import org.shaft.administration.reportingmanagement.dao.QueryDao;
 import org.shaft.administration.reportingmanagement.entity.AggregationQueryResults;
 import org.shaft.administration.reportingmanagement.repositories.QueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class QueryDAOImpl implements QueryDao {
     ObjectMapper mapper;
     ShaftQueryTranslator queryTranslator;
@@ -33,7 +37,7 @@ public class QueryDAOImpl implements QueryDao {
     }
 
     @Override
-    public Map<String,Object> evaluateEncodedQueries(int accountId, Map<String,Object> request) {
+    public Mono<ObjectNode> evaluateEncodedQueries(int accountId, Map<String,Object> request) {
         ACCOUNT_ID.set(accountId);
         if(request.containsKey("q")) {
             String q = (String) request.get("q");
@@ -55,11 +59,11 @@ public class QueryDAOImpl implements QueryDao {
             ACCOUNT_ID.remove();
             // #TODO Throw Bad request exception
         }
-        return new HashMap<>();
+        return Mono.just(ShaftResponseBuilder.buildResponse(""));
     }
 
     @Override
-    public Map<String, Object> getQueryResults(int accountId, Map<String, Object> rawQuery) {
+    public Mono<ObjectNode> getQueryResults(int accountId, Map<String, Object> rawQuery) {
         ACCOUNT_ID.set(accountId);
         if(rawQuery.containsKey("q")) {
             ObjectNode rawQry = mapper.convertValue(rawQuery.get("q"),ObjectNode.class);
@@ -67,31 +71,36 @@ public class QueryDAOImpl implements QueryDao {
             try {
                 return fireAnalyticsQuery(accountId,elasticQuery);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
+                return Mono.just(ShaftResponseBuilder.buildResponse(""));
             } finally {
                 ACCOUNT_ID.remove();
             }
         } else {
             ACCOUNT_ID.remove();
-            throw new RuntimeException("Query not present in request");
+            //throw new RuntimeException("Query not present in request");
+            return Mono.just(ShaftResponseBuilder.buildResponse(""));
         }
-        return new HashMap<>();
+        return Mono.just(ShaftResponseBuilder.buildResponse(""));
     }
 
-    public Map<String,Object> fireAnalyticsQuery(int accountId,ObjectNode jsonQuery) throws JsonProcessingException {
+    public Mono<ObjectNode> fireAnalyticsQuery(int accountId, ObjectNode jsonQuery) throws JsonProcessingException {
         String query = mapper.writeValueAsString(jsonQuery);
-        AggregationQueryResults results = queryRepository.getQueryResults(accountId,query);
-        if (results.getAggregations() != null) {
-            Map<String,Object> response = new HashMap<>();
-            response.put("u",results.getUserCount());
-            response.put("g",results.getGraphCount());
-            return response;
-        } else {
-            // #TODO return query failed exception
-            throw new RuntimeException("Query Failed");
-
-        }
+        log.info("Query : {}",query);
+        return queryRepository.getQueryResults(accountId,query).map(queryResponse -> {
+            log.info("Query Response : {}",queryResponse);
+            if (queryResponse.getAggregations() != null) {
+                Map<String,Object> response = new HashMap<>();
+                response.put("u",queryResponse.getUserCount());
+                response.put("g",queryResponse.getGraphCount());
+                return ShaftResponseBuilder.buildResponse("",mapper.valueToTree(response));
+            } else {
+                // #TODO return query failed exception
+                //throw new RuntimeException("Query Failed");
+                return ShaftResponseBuilder.buildResponse("");
+            }
+        });
     }
 }

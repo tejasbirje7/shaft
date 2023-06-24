@@ -12,7 +12,6 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-@Document(indexName = "#{T(org.shaft.administration.reportingmanagement.services.QueryDAOImpl).getAccount()}_16*")
 public class UserEvents {
     @Id
     private int i;

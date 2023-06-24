@@ -44,6 +44,12 @@ public class ItemsController {
         return itemsDao.getItems(account,body).map(ShaftResponseHandler::generateResponse);
     }
 
+    @RequestMapping(value = "/items/id", method = { RequestMethod.GET, RequestMethod.POST })
+    public Mono<ResponseEntity<Object>> getItemsById(@RequestHeader(value="account") int account,
+                                                 @RequestBody(required = false) Map<String,Object> body) {
+        return itemsDao.getItemsById(account,body).map(ShaftResponseHandler::generateResponse);
+    }
+
     @RequestMapping(value = "/items/bulk", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getBulkItems(@RequestHeader(value="account") int account,
                                                      @RequestBody(required = false) Map<String,Object> body) {

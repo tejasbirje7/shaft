@@ -16,6 +16,7 @@ import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,21 @@ public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
     public Flux<Item> getItemsWithSource(String[] fields) {
         query = QueryBuilders.matchAllQuery();
         return queryWithSource(fields);
+    }
+
+    @Override
+    public Mono<Item> getItemById(String itemId) {
+        query = QueryBuilders.boolQuery()
+          .must(QueryBuilders.termQuery("id.keyword",itemId));
+        ns = new NativeSearchQueryBuilder()
+          .withQuery(query)
+          .withMaxResults(1)
+          .build();
+        return reactiveElasticsearchOperations.search(ns, Item.class)
+          .map(SearchHit::getContent)
+          .next()
+          .filter(Objects::nonNull)
+          .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
     }
 
     private Script prepareProductsUpdateScript(Map<String,Object> itemDetails) {
