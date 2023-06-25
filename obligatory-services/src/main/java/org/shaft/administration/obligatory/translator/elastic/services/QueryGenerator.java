@@ -192,7 +192,11 @@ public class QueryGenerator {
             } else {
                 fromTo = mapper.createObjectNode();
                 fromTo.put("from",x);
-                fromTo.put("to",d);
+                if(i == noOfBuckets - 1  && d < y) {
+                    fromTo.put("to",y);
+                } else {
+                    fromTo.put("to",d);
+                }
                 ranges.add(fromTo);
                 x = x + diff;
             }

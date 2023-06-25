@@ -128,7 +128,6 @@ public class ItemsService implements ItemsDAO {
   public Mono<ObjectNode> saveItem(int accountId, Map<String, Object> body) {
     // #TODO Save the image item files in S3
     ACCOUNT_ID.set(accountId);
-
     return itemsRepository.save(createItemPojoFromRequest(body))
       .map(i -> {
         ACCOUNT_ID.remove();

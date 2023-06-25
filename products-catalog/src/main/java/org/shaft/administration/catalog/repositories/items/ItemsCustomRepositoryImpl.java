@@ -25,15 +25,12 @@ import java.util.Objects;
 @Slf4j
 @Repository
 public class ItemsCustomRepositoryImpl implements ItemsCustomRepository{
-    private ElasticsearchOperations elasticOperations;
     private QueryBuilder query;
     private NativeSearchQuery ns;
     private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
 
     @Autowired
-    public ItemsCustomRepositoryImpl(ElasticsearchOperations elasticOperations,
-                                     ReactiveElasticsearchOperations reactiveElasticsearchOperations) {
-        this.elasticOperations = elasticOperations;
+    public ItemsCustomRepositoryImpl(ReactiveElasticsearchOperations reactiveElasticsearchOperations) {
         this.reactiveElasticsearchOperations = reactiveElasticsearchOperations;
     }
 

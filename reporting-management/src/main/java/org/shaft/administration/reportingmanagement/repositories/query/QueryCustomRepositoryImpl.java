@@ -30,8 +30,7 @@ public class QueryCustomRepositoryImpl implements QueryCustomRepository{
         try {
             return restClient.getQueryResults(accountId,query);
         } catch (Exception ex){
-            System.out.println(ex.getMessage());
+            throw new RuntimeException("Error fetching query results",ex);
         }
-        return Mono.just(emptyResults);
     }
 }

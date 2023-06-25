@@ -56,7 +56,7 @@ import java.util.List;
 class UserCount {
     int doc_count_error_upper_bound;
     int sum_other_doc_count;
-    List<Object> buckets;
+    List<Buckets> buckets;
 }
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -70,7 +70,7 @@ class Buckets {
     double from;
     double to;
     int doc_count;
-    UserCount user;
+    UserCount users;
 }
 
 @Data
@@ -85,7 +85,7 @@ public class AggregationQueryResults {
     Aggregation aggregations;
 
     public int getUserCount() {
-        return this.aggregations.getUser_count().getSum_other_doc_count();
+        return this.aggregations.getUser_count().getBuckets().get(0).getDoc_count();
     }
 
     public ArrayNode getGraphCount() {
@@ -96,8 +96,8 @@ public class AggregationQueryResults {
             ObjectNode eachBucketDetails = mapper.createObjectNode();
             eachBucketDetails.put("from",b.getFrom());
             eachBucketDetails.put("to",b.getTo());
-            if(b.getUser() != null) {
-                eachBucketDetails.put("u",b.getUser().getSum_other_doc_count());
+            if(b.getUsers() != null) {
+                eachBucketDetails.put("u",b.getDoc_count());
             } else {
                 eachBucketDetails.put("u",-1);
             }

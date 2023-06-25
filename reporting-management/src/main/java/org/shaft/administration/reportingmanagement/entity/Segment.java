@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @ToString
 @Getter
 @Setter
-@Document(indexName = "#{T(org.shaft.administration.reportingmanagement.services.QueryDAOImpl).getAccount()}_savedfilt")
+@Document(indexName = "#{T(org.shaft.administration.reportingmanagement.services.QueryService).getAccount()}_savedfilt")
 public class Segment {
     @Id
     int sid;
