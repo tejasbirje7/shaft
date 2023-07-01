@@ -5,4 +5,6 @@ public class ReportingConstants {
   public static String QUERY = "q";
   public static String USER_COUNT = "u";
   public static String GRAPH_COUNT = "g";
+  public static String FIELDS = "fields";
+  public static String NAME = "name";
 }

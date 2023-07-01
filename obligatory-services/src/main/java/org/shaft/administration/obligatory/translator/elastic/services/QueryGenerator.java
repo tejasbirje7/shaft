@@ -8,11 +8,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class QueryGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
+    private static final int DATE_RANGE_BUCKETS = 12;
     private int from = 0;
     private int to = 0;
     private static final String VALUE = "v";
@@ -24,14 +28,13 @@ public class QueryGenerator {
 
             String t = "Tejas,Tejas2";
             ArrayNode m = qG.mapper.convertValue(t.split(","),ArrayNode.class);
-            System.out.println(m);
 
 
             qG.mapper.configure(JsonWriteFeature.QUOTE_FIELD_NAMES.mappedFeature(), true);
             qG.mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
             qG.mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
             ObjectNode o = qG.mapper.readValue("{\"whoDid\":[[{\"e\":0,\"fe\":false,\"o\":\"\",\"f\":\"\",\"v\":\"\",\"sT\":1635705000,\"eT\":1636137000},{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"nm\",\"v\":[\"Chicken Handi\",\"Veg Pulav\"],\"sT\":1635705000,\"eT\":1636137000},{\"e\":2,\"fe\":true,\"o\":\"GTE\",\"f\":\"p\",\"v\":\"20\",\"sT\":1635705000,\"eT\":1636137000}],[{\"e\":0,\"fe\":false,\"o\":\"\",\"f\":\"\",\"v\":\"\",\"sT\":1635705000,\"eT\":1636137000}]],\"didNot\":[],\"commonProp\":[]}",ObjectNode.class);
-            ObjectNode i = qG.mapper.readValue("{\"whoDid\":[[{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"cg\",\"v\":\"rfsdf\",\"sT\":1670736428,\"eT\":1670736428},{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"cg\",\"v\":\"f676,dfsf,sf,sdfsdf\",\"sT\":1670736440,\"eT\":1670736440}]],\"didNot\":[],\"commonProp\":[]}",ObjectNode.class);
+            ObjectNode i = qG.mapper.readValue("{\"whoDid\":[[{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"cg\",\"v\":\"2343\",\"sT\":1670736428,\"eT\":1670736428,\"dt\":\"Integer\"},{\"e\":1,\"fe\":true,\"o\":\"EQ\",\"f\":\"cg\",\"v\":\"f676,dfsf,sf,sdfsdf\",\"sT\":1670736440,\"eT\":1670736440,\"dt\":\"String\"}]],\"didNot\":[],\"commonProp\":[]}",ObjectNode.class);
             ObjectNode k = qG.prepareAnalyticsQuery(i,true);
 
             String json = qG.mapper.writerWithDefaultPrettyPrinter().writeValueAsString(k);
@@ -45,13 +48,13 @@ public class QueryGenerator {
         return mapper.createObjectNode().set("term",
           mapper.createObjectNode().set("e.eid",
             mapper.createObjectNode()
-              .put("value", eventId)));
+              .put(VALUE, eventId)));
     }
 
     private ObjectNode getRangeQuery(ObjectNode query) {
         return mapper.createObjectNode().set("range",
           mapper.createObjectNode().set("e.".concat(query.get("f").textValue()),
-            mapper.createObjectNode().set(query.get("o").textValue().toLowerCase(),query.get(VALUE))));
+            mapper.createObjectNode().put(query.get("o").textValue().toLowerCase(),query.get(VALUE).asInt())));
     }
 
     private ObjectNode getDateRangeQuery(int from, int to) {
@@ -61,15 +64,34 @@ public class QueryGenerator {
     }
 
     private ObjectNode getTermsQuery(ObjectNode query) {
-        ArrayNode value = mapper.convertValue(query.get(VALUE).textValue().split(","),ArrayNode.class);
-        return mapper.createObjectNode().set("terms",
-          mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"), value));
+        if(isDataTypeInteger(query)) {
+            List<Integer> ints = Arrays.stream(query.get(VALUE).textValue().split(","))
+              .map(Integer::parseInt)
+              .collect(Collectors.toList());
+            ArrayNode value = mapper.convertValue(ints,ArrayNode.class);
+            return mapper.createObjectNode().set("terms",
+              mapper.createObjectNode().set("e.".concat(query.get("f").textValue()), value));
+        } else {
+            ArrayNode value = mapper.convertValue(query.get(VALUE).textValue().split(","),ArrayNode.class);
+            return mapper.createObjectNode().set("terms",
+              mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"), value));
+        }
     }
 
     private ObjectNode getTermQuery(ObjectNode query) {
-        return mapper.createObjectNode().set("term" ,
-          mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"),
-            mapper.createObjectNode().set("value",query.get(VALUE))));
+        if(isDataTypeInteger(query)) {
+            return mapper.createObjectNode().set("term" ,
+              mapper.createObjectNode().set("e.".concat(query.get("f").textValue()),
+                mapper.createObjectNode().put("value",query.get(VALUE).asInt())));
+        } else {
+            return mapper.createObjectNode().set("term" ,
+              mapper.createObjectNode().set("e.".concat(query.get("f").textValue()).concat(".keyword"),
+                mapper.createObjectNode().put("value",query.get(VALUE).asText())));
+        }
+    }
+
+    private boolean isDataTypeInteger(JsonNode query) {
+        return query.has("dt") && query.get("dt").asText().equals("Integer");
     }
 
     private boolean isNotOperator(String operator) {
@@ -178,11 +200,12 @@ public class QueryGenerator {
         return createBoolQuery(mustQuery,mustNotQuery);
     }
 
-    private ArrayNode splitDateRangeInNBuckets(int x, int y, int noOfBuckets) {
+    private ArrayNode splitDateRangeInNBuckets(int x, int y) {
         ArrayNode ranges = mapper.createArrayNode();
-        ObjectNode fromTo = mapper.createObjectNode();
-        int diff = Math.floorDiv(y-x,noOfBuckets + 1);
-        for (int i =0; i < noOfBuckets; i++) {
+        mapper.createObjectNode();
+        ObjectNode fromTo;
+        int diff = Math.floorDiv(y-x,DATE_RANGE_BUCKETS + 1);
+        for (int i =0; i < DATE_RANGE_BUCKETS; i++) {
             int d = x + diff;
             if(d > y) {
                 fromTo = mapper.createObjectNode();
@@ -192,7 +215,7 @@ public class QueryGenerator {
             } else {
                 fromTo = mapper.createObjectNode();
                 fromTo.put("from",x);
-                if(i == noOfBuckets - 1  && d < y) {
+                if(i == DATE_RANGE_BUCKETS - 1  && d < y) {
                     fromTo.put("to",y);
                 } else {
                     fromTo.put("to",d);
@@ -212,7 +235,7 @@ public class QueryGenerator {
         } else {
             ObjectNode rangeNode = mapper.createObjectNode();
             rangeNode.put("field", "e.ts");
-            rangeNode.set("ranges",splitDateRangeInNBuckets(from,to,12));
+            rangeNode.set("ranges",splitDateRangeInNBuckets(from,to));
 
             ObjectNode termsNode = mapper.createObjectNode();
             termsNode.put("size",1);

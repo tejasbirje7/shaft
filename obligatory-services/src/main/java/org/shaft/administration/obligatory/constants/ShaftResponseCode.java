@@ -24,6 +24,10 @@ public class ShaftResponseCode {
   public static String CAMPAIGNS_TO_RENDER = "S0021";
   public static String CAMPAIGN_SAVED = "S0022";
   public static String EVALUATED_ENCODED_QUERIES = "S0023";
+  public static String QUERY_RESULTS_FETCHED = "S0024";
+  public static String QUERY_RESULTS_PROCESSED_SUCCESSFULLY = "S0025";
+  public static String SEGMENTS_FETCHED_SUCCESSFULLY = "S0026";
+  public static String SEGMENT_SAVED_SUCCESSFULLY = "S0027";
 
   /**
    * FAILURE CODES
@@ -93,7 +97,13 @@ public class ShaftResponseCode {
   public static String JSON_PARSING_FAILED = "F0061";
   public static String FAILED_EVALUATING_ENCODED_QUERY = "F0062";
   public static String BAD_REQUEST_FOR_ENCODED_QUERIES = "F0063";
-  public static String FAILED_PROCESSING_QUERY = "F0064";
+  public static String EXCEPTION_PROCESSING_QUERY = "F0064";
   public static String BAD_QUERY_REQUEST = "F0065";
   public static String EXCEPTION_EVALUATING_ENCODED_QUERY = "F0066";
+  public static String FAILED_PROCESSING_QUERY= "F0067";
+  public static String FAILED_PROCESSING_QUERY_RESULTS= "F0068";
+  public static String EXCEPTION_FETCHING_SEGMENTS= "F0069";
+  public static String EXCEPTION_SAVING_SEGMENT= "F0070";
+  public static String JSON_EXCEPTION_PARSING_SAVE_SEGMENT = "F0071";
+  public static String SAVE_SEGMENT_BAD_REQUEST = "F0072";
 }
