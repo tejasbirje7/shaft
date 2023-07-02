@@ -14,16 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class QueryGenerator {
+import static org.shaft.administration.obligatory.translator.elastic.constants.QueryConstants.*;
+
+public class ElasticQueryGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
-    private static final int DATE_RANGE_BUCKETS = 12;
     private int from = 0;
     private int to = 0;
-    private static final String VALUE = "v";
-    private static final String GTE = "gte";
-    private static final String LTE = "lte";
     public static void main(String[] args) {
-        QueryGenerator qG = new QueryGenerator();
+        ElasticQueryGenerator qG = new ElasticQueryGenerator();
         try {
 
             String t = "Tejas,Tejas2";
@@ -91,7 +89,7 @@ public class QueryGenerator {
     }
 
     private boolean isDataTypeInteger(JsonNode query) {
-        return query.has("dt") && query.get("dt").asText().equals("Integer");
+        return query.has("dt") && query.get("dt").asInt() == INTEGER_ORDINAL;
     }
 
     private boolean isNotOperator(String operator) {

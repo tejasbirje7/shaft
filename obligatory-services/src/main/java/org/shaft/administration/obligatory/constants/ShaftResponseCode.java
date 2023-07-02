@@ -28,6 +28,7 @@ public class ShaftResponseCode {
   public static String QUERY_RESULTS_PROCESSED_SUCCESSFULLY = "S0025";
   public static String SEGMENTS_FETCHED_SUCCESSFULLY = "S0026";
   public static String SEGMENT_SAVED_SUCCESSFULLY = "S0027";
+  public static String EVENTS_META_RETRIEVED = "S0028";
 
   /**
    * FAILURE CODES
@@ -106,4 +107,5 @@ public class ShaftResponseCode {
   public static String EXCEPTION_SAVING_SEGMENT= "F0070";
   public static String JSON_EXCEPTION_PARSING_SAVE_SEGMENT = "F0071";
   public static String SAVE_SEGMENT_BAD_REQUEST = "F0072";
+  public static String FAILED_TO_FETCH_EVENTS_META = "F0073";
 }

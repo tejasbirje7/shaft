@@ -1,6 +1,8 @@
 package com.shaft.administration.accountmanagement.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.shaft.administration.accountmanagement.constants.AccountConstants;
 import com.shaft.administration.accountmanagement.constants.AccountLogs;
@@ -57,5 +59,18 @@ public class MetaService implements MetaDAO {
         } finally {
             ACCOUNT_ID.remove();
         }
+    }
+
+    @Override
+    public Mono<ObjectNode> getEventsMeta(int account) {
+        return metaRepository.getEventsMeta(account)
+          .collectList()
+          .map(events -> {
+              log.info("Events : {}",events);
+              return ShaftResponseBuilder.buildResponse(
+                ShaftResponseCode.EVENTS_META_RETRIEVED,mapper.valueToTree(events));
+          })
+          .onErrorResume(error -> Mono.just(ShaftResponseBuilder.buildResponse(
+            ShaftResponseCode.FAILED_TO_FETCH_EVENTS_META)));
     }
 }

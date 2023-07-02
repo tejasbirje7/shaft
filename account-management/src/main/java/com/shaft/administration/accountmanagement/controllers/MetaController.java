@@ -29,4 +29,9 @@ public class MetaController {
                                                       @RequestBody Map<String,Object> request) {
         return metaDao.getMetaFields(account,request).map(ShaftResponseHandler::generateResponse);
     }
+
+    @RequestMapping(value = "/meta/events", method = { RequestMethod.GET, RequestMethod.POST })
+    public Mono<ResponseEntity<Object>> getEventsMeta(@RequestHeader int account) {
+        return metaDao.getEventsMeta(account).map(ShaftResponseHandler::generateResponse);
+    }
 }

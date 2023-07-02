@@ -1,5 +1,7 @@
 package com.shaft.administration.accountmanagement.repositories.meta;
 
+import com.shaft.administration.accountmanagement.entity.EventProps;
+import com.shaft.administration.accountmanagement.entity.EventsMeta;
 import com.shaft.administration.accountmanagement.entity.Meta;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -7,14 +9,17 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SourceFilter;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -84,6 +89,23 @@ public class MetaCustomRepositoryImpl implements MetaCustomRepository{
           .filter(Objects::nonNull)
           .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
     }
+
+    @Override
+    public Flux<EventsMeta> getEventsMeta(int accountId) {
+        query = QueryBuilders.matchAllQuery();
+        ns = new NativeSearchQueryBuilder()
+          .withQuery(query)
+          .withMaxResults(100)
+          .withPageable(PageRequest.of(0,50))
+          .build();
+
+        return reactiveElasticsearchOperations.search(ns, EventsMeta.class,
+            IndexCoordinates.of(accountId + "_event_schema"))
+          .map(SearchHit::getContent)
+          .filter(Objects::nonNull)
+          .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+    }
+
     private Script prepareDashboardQueriesUpdateScript(String query) {
         String scriptStr = "ctx._source.dashboardQueries.put("+ System.currentTimeMillis() / 1000 + "," + query + ")";
         return new Script( scriptStr);

@@ -1,11 +1,8 @@
 package org.shaft.administration.catalog.dao;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.shaft.administration.catalog.entity.item.Item;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Map;
 
 public interface ItemsDAO {

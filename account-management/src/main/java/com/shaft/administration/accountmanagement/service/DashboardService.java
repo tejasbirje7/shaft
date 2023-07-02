@@ -33,6 +33,7 @@ public class DashboardService implements DashboardDAO {
 
     @Autowired
     public DashboardService(MetaRepository metaRepository) {
+        // #TODO Create common object for object mapper and ShaftQueryTranslator and inject the dependency instead of creating new object
         this.mapper = new ObjectMapper();
         this.metaRepository = metaRepository;
         this.queryTranslator = new ShaftQueryTranslator();
