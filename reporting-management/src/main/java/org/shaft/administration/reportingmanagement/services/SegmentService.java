@@ -45,7 +45,6 @@ public class SegmentService implements SegmentDAO {
     } else {
       fields = new String[0];
     }
-
     return segmentRepository.getSegments(fields)
       .collectList()
       .map(i -> ShaftResponseBuilder.buildResponse(

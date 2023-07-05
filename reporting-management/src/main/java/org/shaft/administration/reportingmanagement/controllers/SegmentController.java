@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -25,10 +26,8 @@ public class SegmentController {
     }
 
     @RequestMapping(value="/save", method = { RequestMethod.POST })
-    public ResponseEntity<Object> saveSegment(@RequestHeader(value="account") int accountId,
-                                              @RequestBody Map<String,Object> rawQuery) {
-        segmentDAO.saveSegment(accountId,rawQuery);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return ShaftResponseHandler.generateResponse("Success","S78gsd8v",new ArrayList<>(),headers);
+    public Mono<ResponseEntity<Object>> saveSegment(@RequestHeader(value="account") int accountId,
+                                                    @RequestBody Map<String,Object> rawQuery) {
+        return segmentDAO.saveSegment(accountId,rawQuery).map(ShaftResponseHandler::generateResponse);
     }
 }

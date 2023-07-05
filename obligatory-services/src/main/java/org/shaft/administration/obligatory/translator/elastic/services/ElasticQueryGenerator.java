@@ -46,7 +46,7 @@ public class ElasticQueryGenerator {
         return mapper.createObjectNode().set("term",
           mapper.createObjectNode().set("e.eid",
             mapper.createObjectNode()
-              .put(VALUE, eventId)));
+              .put("value", eventId)));
     }
 
     private ObjectNode getRangeQuery(ObjectNode query) {
