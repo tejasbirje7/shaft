@@ -16,31 +16,38 @@
           },
           {
             "name": "quantity",
-            "type": ["null", "long"]
+            "type": ["null", "long"],
+            "default": null
           },
           {
             "name": "name",
-            "type": ["null", "string"]
+            "type": ["null", "string"],
+            "default": null
           },
           {
             "name": "costPrice",
-            "type": ["null", "long"]
+            "type": ["null", "long"],
+            "default": null
           },
           {
             "name": "onSale",
-            "type": ["null", "boolean"]
+            "type":  "boolean",
+            "default": false
           },
           {
             "name": "inStock",
-            "type": ["null", "boolean"]
+            "type": "boolean",
+            "default": false
           },
           {
             "name": "id",
-            "type": ["null", "string"]
+            "type": ["null", "string"],
+            "default": null
           },
           {
             "name": "category",
-            "type": ["null", "string"]
+            "type": ["null", "string"],
+            "default": null
           },
           {
             "name": "fp",
@@ -48,7 +55,8 @@
           },
           {
             "name": "option",
-            "type": ["null", "string"]
+            "type": ["null", "string"],
+            "default": null
           },
           {
             "name": "ts",

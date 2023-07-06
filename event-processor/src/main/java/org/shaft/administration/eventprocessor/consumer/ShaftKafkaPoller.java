@@ -41,7 +41,7 @@ public class ShaftKafkaPoller  {
   private final RestTemplate restTemplate;
   private final ObjectMapper mapper;
   private final HttpHeaders httpHeaders;
-  private final KafkaConsumer<Long,EventAvroModel> kafkaConsumer;
+  private final KafkaConsumer<Long, EventAvroModel> kafkaConsumer;
 
   public ShaftKafkaPoller(KafkaAdminClient adminClient,
                           KafkaConfigData configData,

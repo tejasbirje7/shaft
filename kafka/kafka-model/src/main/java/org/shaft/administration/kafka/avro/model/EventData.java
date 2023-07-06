@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventData extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -7450288346303580377L;
+  private static final long serialVersionUID = -3970312054092232822L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventData\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"quantity\",\"type\":[\"null\",\"long\"]},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"costPrice\",\"type\":[\"null\",\"long\"]},{\"name\":\"onSale\",\"type\":[\"null\",\"boolean\"]},{\"name\":\"inStock\",\"type\":[\"null\",\"boolean\"]},{\"name\":\"id\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"category\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"fp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"option\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"ts\",\"type\":\"long\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventData\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"quantity\",\"type\":[\"null\",\"long\"],\"default\":null},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"costPrice\",\"type\":[\"null\",\"long\"],\"default\":null},{\"name\":\"onSale\",\"type\":\"boolean\",\"default\":false},{\"name\":\"inStock\",\"type\":\"boolean\",\"default\":false},{\"name\":\"id\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"category\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"fp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"option\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"ts\",\"type\":\"long\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -77,8 +77,8 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
   private java.lang.Long quantity;
   private java.lang.String name;
   private java.lang.Long costPrice;
-  private java.lang.Boolean onSale;
-  private java.lang.Boolean inStock;
+  private boolean onSale;
+  private boolean inStock;
   private java.lang.String id;
   private java.lang.String category;
   private java.lang.String fp;
@@ -237,7 +237,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'onSale' field.
    * @return The value of the 'onSale' field.
    */
-  public java.lang.Boolean getOnSale() {
+  public boolean getOnSale() {
     return onSale;
   }
 
@@ -246,7 +246,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'onSale' field.
    * @param value the value to set.
    */
-  public void setOnSale(java.lang.Boolean value) {
+  public void setOnSale(boolean value) {
     this.onSale = value;
   }
 
@@ -254,7 +254,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'inStock' field.
    * @return The value of the 'inStock' field.
    */
-  public java.lang.Boolean getInStock() {
+  public boolean getInStock() {
     return inStock;
   }
 
@@ -263,7 +263,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'inStock' field.
    * @param value the value to set.
    */
-  public void setInStock(java.lang.Boolean value) {
+  public void setInStock(boolean value) {
     this.inStock = value;
   }
 
@@ -397,8 +397,8 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
     private java.lang.Long quantity;
     private java.lang.String name;
     private java.lang.Long costPrice;
-    private java.lang.Boolean onSale;
-    private java.lang.Boolean inStock;
+    private boolean onSale;
+    private boolean inStock;
     private java.lang.String id;
     private java.lang.String category;
     private java.lang.String fp;
@@ -677,7 +677,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'onSale' field.
       * @return The value.
       */
-    public java.lang.Boolean getOnSale() {
+    public boolean getOnSale() {
       return onSale;
     }
 
@@ -687,7 +687,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'onSale'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventData.Builder setOnSale(java.lang.Boolean value) {
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setOnSale(boolean value) {
       validate(fields()[4], value);
       this.onSale = value;
       fieldSetFlags()[4] = true;
@@ -708,7 +708,6 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearOnSale() {
-      onSale = null;
       fieldSetFlags()[4] = false;
       return this;
     }
@@ -717,7 +716,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'inStock' field.
       * @return The value.
       */
-    public java.lang.Boolean getInStock() {
+    public boolean getInStock() {
       return inStock;
     }
 
@@ -727,7 +726,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'inStock'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventData.Builder setInStock(java.lang.Boolean value) {
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setInStock(boolean value) {
       validate(fields()[5], value);
       this.inStock = value;
       fieldSetFlags()[5] = true;
@@ -748,7 +747,6 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearInStock() {
-      inStock = null;
       fieldSetFlags()[5] = false;
       return this;
     }
@@ -1026,21 +1024,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       out.writeLong(this.costPrice);
     }
 
-    if (this.onSale == null) {
-      out.writeIndex(0);
-      out.writeNull();
-    } else {
-      out.writeIndex(1);
-      out.writeBoolean(this.onSale);
-    }
+    out.writeBoolean(this.onSale);
 
-    if (this.inStock == null) {
-      out.writeIndex(0);
-      out.writeNull();
-    } else {
-      out.writeIndex(1);
-      out.writeBoolean(this.inStock);
-    }
+    out.writeBoolean(this.inStock);
 
     if (this.id == null) {
       out.writeIndex(0);
@@ -1100,19 +1086,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
         this.costPrice = in.readLong();
       }
 
-      if (in.readIndex() != 1) {
-        in.readNull();
-        this.onSale = null;
-      } else {
-        this.onSale = in.readBoolean();
-      }
+      this.onSale = in.readBoolean();
 
-      if (in.readIndex() != 1) {
-        in.readNull();
-        this.inStock = null;
-      } else {
-        this.inStock = in.readBoolean();
-      }
+      this.inStock = in.readBoolean();
 
       if (in.readIndex() != 1) {
         in.readNull();
@@ -1174,21 +1150,11 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
           break;
 
         case 4:
-          if (in.readIndex() != 1) {
-            in.readNull();
-            this.onSale = null;
-          } else {
-            this.onSale = in.readBoolean();
-          }
+          this.onSale = in.readBoolean();
           break;
 
         case 5:
-          if (in.readIndex() != 1) {
-            in.readNull();
-            this.inStock = null;
-          } else {
-            this.inStock = in.readBoolean();
-          }
+          this.inStock = in.readBoolean();
           break;
 
         case 6:

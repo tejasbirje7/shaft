@@ -42,7 +42,7 @@ public class GatewayConfig {
     // #TODO Comment out filters once testing is finished
     return builder.routes()
       .route("product-catalog", r->r.path("/catalog/**")
-        .uri("lb://PRODUCT-CATALOG")) // 8081
+        .uri("lb://PRODUCT-CATALOG")) // 8088
       //.filters(f -> f.filter(authenticationFilter))
       .route("inventory-management", r->r.path("/inventory/**")
         //.filters(f -> f.filter(authenticationFilter))
@@ -62,6 +62,9 @@ public class GatewayConfig {
       .route("reporting-engine", r->r.path("/reporting/**")
         //.filters(f -> f.filter(authenticationFilter))
         .uri("lb://REPORTING-MANAGEMENT")) // 8087
+      .route("event-ingestion", r->r.path("/ingest/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("lb://EVENT-INGESTION")) // 8181
       .build();
   }
 }

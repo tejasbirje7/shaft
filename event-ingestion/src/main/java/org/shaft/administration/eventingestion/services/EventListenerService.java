@@ -1,7 +1,6 @@
 package org.shaft.administration.eventingestion.services;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,16 +13,15 @@ import org.shaft.administration.kafka.avro.model.EventAvroModel;
 import org.shaft.administration.kafka.producer.config.service.KafkaProducer;
 import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class EventListenerService {
   private final KafkaConfigData kafkaConfigData;
+  private final ObjectMapper mapper = new ObjectMapper();
   private final KafkaProducer<Long, EventAvroModel> kafkaProducer;
   private final ShaftEventToAvroTransformer shaftEventToAvroTransformer;
-  private final ObjectMapper mapper = new ObjectMapper();
 
   public EventListenerService(KafkaConfigData configData,
                               KafkaProducer<Long, EventAvroModel> producer,
