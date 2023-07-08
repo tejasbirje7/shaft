@@ -31,12 +31,14 @@ public class CampaignService implements CampaignDao {
   public ObjectMapper mapper;
   private final QueryConstructor queryConstructor;
   private final ShaftQueryTranslator queryTranslator;
+  private ObjectNode EMPTY_OBJECT_NODE;
 
   @Autowired
   public CampaignService(CampaignRepository campaignRepository) {
     this.campaignRepository = campaignRepository;
     this.queryConstructor = new QueryConstructor();
     this.mapper = new ObjectMapper();
+    this.EMPTY_OBJECT_NODE = mapper.createObjectNode();
     this.queryTranslator = new ShaftQueryTranslator();
   }
 
@@ -49,7 +51,7 @@ public class CampaignService implements CampaignDao {
         if(!campaignsForEvent.isEmpty()) {
           List<Map<String,Object>> campaigns = mapper.convertValue(campaignsForEvent,List.class);
           ObjectNode queries = queryConstructor.constructMsearchQuery(campaigns,request, (Integer) request.get(CampaignConstants.IDENTITY),accountId + "_*");
-          ObjectNode queryResponse = campaignRepository.checkEligibleCampaignsForI(12000,queries.get(CampaignConstants.QUERIES).asText());
+          ObjectNode queryResponse = campaignRepository.checkEligibleCampaignsForI(1600,queries.get(CampaignConstants.QUERIES).asText());
           ObjectNode campaignToRender = checkCampaignToRender(queryResponse, (ArrayNode) queries.get(CampaignConstants.CID_MAP));
           if(!campaignToRender.isEmpty()) {
             return ShaftResponseBuilder.buildResponse(ShaftResponseCode.CAMPAIGNS_TO_RENDER,campaignToRender);
@@ -64,7 +66,7 @@ public class CampaignService implements CampaignDao {
   }
 
   private ObjectNode checkCampaignToRender(ObjectNode queryResponse,ArrayNode cidMap) {
-    ObjectNode campaignToRender = mapper.createObjectNode();
+    ObjectNode campaignToRender = EMPTY_OBJECT_NODE;
     int t = 0;
     for (int i = 0; i < cidMap.size(); i++) {
       if(cidMap.get(i).has(CampaignConstants.CAMPAIGN_ID) && cidMap.get(i).get(CampaignConstants.CAMPAIGN_ID).asInt() > t) {
@@ -85,18 +87,23 @@ public class CampaignService implements CampaignDao {
   public Mono<ObjectNode> saveCampaign(int accountId, ObjectNode requestObject) {
     ObjectNode q = (ObjectNode) requestObject.get(CampaignConstants.QUERY);
     ObjectNode te = (ObjectNode) requestObject.get(CampaignConstants.TRIGGERING_EVENT);
-    ObjectNode elasticQuery = translateRawQuery(q);
-    // #TODO Check if campaigns already exists for event `te`
-    String encodedQuery;
-    try {
-      String stringQuery = mapper.writeValueAsString(elasticQuery);
-      byte[] bytesEncoded = Base64.encodeBase64(stringQuery.getBytes());
-      encodedQuery = new String(bytesEncoded);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+    // #TODO Check if campaigns already exists for event `te` above limit
+    if(q.get("whoDid" ).isEmpty() && q.get("didNot").isEmpty() && q.get("commonProp").isEmpty()) {
+      requestObject.put(CampaignConstants.QUERY,"");
+      requestObject.set("fs",EMPTY_OBJECT_NODE);
+    } else {
+      ObjectNode elasticQuery = translateRawQuery(q);
+      String encodedQuery;
+      try {
+        String stringQuery = mapper.writeValueAsString(elasticQuery);
+        byte[] bytesEncoded = Base64.encodeBase64(stringQuery.getBytes());
+        encodedQuery = new String(bytesEncoded);
+        requestObject.put(CampaignConstants.QUERY,encodedQuery);
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
     }
     requestObject.put(CampaignConstants.STATUS,1);
-    requestObject.put(CampaignConstants.QUERY,encodedQuery);
     CampaignCriteria cc = mapper.convertValue(requestObject,CampaignCriteria.class);
     return campaignRepository.save(accountId,cc)
       .flatMap(k -> Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.CAMPAIGN_SAVED)))
@@ -111,7 +118,7 @@ public class CampaignService implements CampaignDao {
   }
 
   private ObjectNode translateRawQuery(ObjectNode rawQuery) {
-    return queryTranslator.translateToElasticQuery(rawQuery,true);
+    return queryTranslator.translateToElasticQuery(rawQuery,false);
   }
 
   private boolean isRestStatusException(Throwable t) {

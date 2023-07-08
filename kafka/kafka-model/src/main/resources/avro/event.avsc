@@ -16,8 +16,8 @@
           },
           {
             "name": "quantity",
-            "type": ["null", "long"],
-            "default": null
+            "type": "long",
+            "default": -1
           },
           {
             "name": "name",
@@ -26,8 +26,8 @@
           },
           {
             "name": "costPrice",
-            "type": ["null", "long"],
-            "default": null
+            "type": "long",
+            "default": -1
           },
           {
             "name": "onSale",

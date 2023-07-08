@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventData extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -3970312054092232822L;
+  private static final long serialVersionUID = 8834501677751410598L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventData\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"quantity\",\"type\":[\"null\",\"long\"],\"default\":null},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"costPrice\",\"type\":[\"null\",\"long\"],\"default\":null},{\"name\":\"onSale\",\"type\":\"boolean\",\"default\":false},{\"name\":\"inStock\",\"type\":\"boolean\",\"default\":false},{\"name\":\"id\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"category\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"fp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"option\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"ts\",\"type\":\"long\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventData\",\"namespace\":\"org.shaft.administration.kafka.avro.model\",\"fields\":[{\"name\":\"eid\",\"type\":\"long\"},{\"name\":\"quantity\",\"type\":\"long\",\"default\":-1},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"costPrice\",\"type\":\"long\",\"default\":-1},{\"name\":\"onSale\",\"type\":\"boolean\",\"default\":false},{\"name\":\"inStock\",\"type\":\"boolean\",\"default\":false},{\"name\":\"id\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"category\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"fp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"option\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"ts\",\"type\":\"long\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -74,9 +74,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   private long eid;
-  private java.lang.Long quantity;
+  private long quantity;
   private java.lang.String name;
-  private java.lang.Long costPrice;
+  private long costPrice;
   private boolean onSale;
   private boolean inStock;
   private java.lang.String id;
@@ -186,7 +186,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'quantity' field.
    * @return The value of the 'quantity' field.
    */
-  public java.lang.Long getQuantity() {
+  public long getQuantity() {
     return quantity;
   }
 
@@ -195,7 +195,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'quantity' field.
    * @param value the value to set.
    */
-  public void setQuantity(java.lang.Long value) {
+  public void setQuantity(long value) {
     this.quantity = value;
   }
 
@@ -220,7 +220,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'costPrice' field.
    * @return The value of the 'costPrice' field.
    */
-  public java.lang.Long getCostPrice() {
+  public long getCostPrice() {
     return costPrice;
   }
 
@@ -229,7 +229,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'costPrice' field.
    * @param value the value to set.
    */
-  public void setCostPrice(java.lang.Long value) {
+  public void setCostPrice(long value) {
     this.costPrice = value;
   }
 
@@ -394,9 +394,9 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
     implements org.apache.avro.data.RecordBuilder<EventData> {
 
     private long eid;
-    private java.lang.Long quantity;
+    private long quantity;
     private java.lang.String name;
-    private java.lang.Long costPrice;
+    private long costPrice;
     private boolean onSale;
     private boolean inStock;
     private java.lang.String id;
@@ -557,7 +557,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'quantity' field.
       * @return The value.
       */
-    public java.lang.Long getQuantity() {
+    public long getQuantity() {
       return quantity;
     }
 
@@ -567,7 +567,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'quantity'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventData.Builder setQuantity(java.lang.Long value) {
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setQuantity(long value) {
       validate(fields()[1], value);
       this.quantity = value;
       fieldSetFlags()[1] = true;
@@ -588,7 +588,6 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearQuantity() {
-      quantity = null;
       fieldSetFlags()[1] = false;
       return this;
     }
@@ -637,7 +636,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'costPrice' field.
       * @return The value.
       */
-    public java.lang.Long getCostPrice() {
+    public long getCostPrice() {
       return costPrice;
     }
 
@@ -647,7 +646,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'costPrice'.
       * @return This builder.
       */
-    public org.shaft.administration.kafka.avro.model.EventData.Builder setCostPrice(java.lang.Long value) {
+    public org.shaft.administration.kafka.avro.model.EventData.Builder setCostPrice(long value) {
       validate(fields()[3], value);
       this.costPrice = value;
       fieldSetFlags()[3] = true;
@@ -668,7 +667,6 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       * @return This builder.
       */
     public org.shaft.administration.kafka.avro.model.EventData.Builder clearCostPrice() {
-      costPrice = null;
       fieldSetFlags()[3] = false;
       return this;
     }
@@ -1000,13 +998,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
   {
     out.writeLong(this.eid);
 
-    if (this.quantity == null) {
-      out.writeIndex(0);
-      out.writeNull();
-    } else {
-      out.writeIndex(1);
-      out.writeLong(this.quantity);
-    }
+    out.writeLong(this.quantity);
 
     if (this.name == null) {
       out.writeIndex(0);
@@ -1016,13 +1008,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
       out.writeString(this.name);
     }
 
-    if (this.costPrice == null) {
-      out.writeIndex(0);
-      out.writeNull();
-    } else {
-      out.writeIndex(1);
-      out.writeLong(this.costPrice);
-    }
+    out.writeLong(this.costPrice);
 
     out.writeBoolean(this.onSale);
 
@@ -1065,12 +1051,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
     if (fieldOrder == null) {
       this.eid = in.readLong();
 
-      if (in.readIndex() != 1) {
-        in.readNull();
-        this.quantity = null;
-      } else {
-        this.quantity = in.readLong();
-      }
+      this.quantity = in.readLong();
 
       if (in.readIndex() != 1) {
         in.readNull();
@@ -1079,12 +1060,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
         this.name = in.readString();
       }
 
-      if (in.readIndex() != 1) {
-        in.readNull();
-        this.costPrice = null;
-      } else {
-        this.costPrice = in.readLong();
-      }
+      this.costPrice = in.readLong();
 
       this.onSale = in.readBoolean();
 
@@ -1123,12 +1099,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
           break;
 
         case 1:
-          if (in.readIndex() != 1) {
-            in.readNull();
-            this.quantity = null;
-          } else {
-            this.quantity = in.readLong();
-          }
+          this.quantity = in.readLong();
           break;
 
         case 2:
@@ -1141,12 +1112,7 @@ public class EventData extends org.apache.avro.specific.SpecificRecordBase imple
           break;
 
         case 3:
-          if (in.readIndex() != 1) {
-            in.readNull();
-            this.costPrice = null;
-          } else {
-            this.costPrice = in.readLong();
-          }
+          this.costPrice = in.readLong();
           break;
 
         case 4:

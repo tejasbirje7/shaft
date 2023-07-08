@@ -12,4 +12,5 @@ public class ShaftQueryTranslator {
         // #TODO Introduce multiple exceptions here
         return elasticQueryGenerator.prepareAnalyticsQuery(rawQuery,aggs);
     }
+
 }

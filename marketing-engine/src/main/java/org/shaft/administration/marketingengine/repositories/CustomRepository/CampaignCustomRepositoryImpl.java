@@ -52,6 +52,7 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
 
   @Override
   public Flux<CampaignCriteria> checkIfCampaignExistsForEvent(int account, int eventId) {
+    // #TODO If te query has addition filter like User who did app launch and have done added to cart, case needs to be handled here
     query = new BoolQueryBuilder().must(QueryBuilders.termQuery("te.e",eventId));
     final SourceFilter filter = new FetchSourceFilter(new String[]{"cid","q","te"}, null);
     ns = new NativeSearchQueryBuilder()

@@ -20,6 +20,7 @@ public class ElasticQueryGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
     private int from = 0;
     private int to = 0;
+    private boolean isCampaignQuery = false;
     public static void main(String[] args) {
         ElasticQueryGenerator qG = new ElasticQueryGenerator();
         try {
@@ -120,6 +121,9 @@ public class ElasticQueryGenerator {
         } else if (mustNotQuery.size() > 0) {
             return boolQuery.set("bool",mapper.createObjectNode().set("must_not",mustNotQuery));
         } else {
+            if(isCampaignQuery) {
+                return mapper.createObjectNode();
+            }
             throw new RuntimeException("Query is empty");
         }
     }
@@ -226,6 +230,9 @@ public class ElasticQueryGenerator {
     }
 
     public ObjectNode prepareAnalyticsQuery(ObjectNode requestQuery,boolean aggs) {
+        if(!aggs) {
+            isCampaignQuery = true;
+        }
         ObjectNode boolQuery = getBoolFilteredQuery(requestQuery);
         if(!aggs) {
             //return mapper.createObjectNode().set("query",boolQuery);

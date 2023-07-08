@@ -23,10 +23,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static java.time.Duration.ofSeconds;
@@ -94,11 +91,15 @@ public class ShaftKafkaPoller  {
                     "http://localhost:8002/track",
                     HttpMethod.POST,entity,JsonNode.class);
                   log.info("Response {}",response.getStatusCode());
-                  log.info("Data : {}",response.getBody().get("i").asText());
+                  log.info("Data : {}", Objects.requireNonNull(response.getBody()).get("i").asText());
+                  // Handle failure case
                 });
               }
             }
           } catch (ExecutionException | InterruptedException e) {
+            // Handle failure case since in case of exception for some reason message is not cleared from broker and then all 3 consumers polls 3 times4
+            // Save message in log file somewhere
+            // Avoid throwing exception here
             throw new RuntimeException(e);
           }
         });
