@@ -26,17 +26,17 @@ public class ShaftKafkaProducer implements KafkaProducer<Long, EventAvroModel> {
     }
 
     @Override
-    public ObjectNode send(String topicName, Long key, EventAvroModel message) {
+    public String send(String topicName, Long key, EventAvroModel message) {
         log.info(KafkaProducerLogs.SENDING_MESSAGE_TO_KAFKA_TOPIC, message, topicName);
         log.debug(KafkaProducerLogs.BOOTSTRAP_SERVERS_INFO,
           kafkaTemplate.getProducerFactory().getConfigurationProperties().get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
         try {
             ListenableFuture<SendResult<Long, EventAvroModel>> kafkaResultFuture = kafkaTemplate.send(topicName, key, message);
-            return ShaftResponseBuilder.buildResponse(ShaftResponseCode.EVENT_PUBLISHED_TO_KAFKA);
+            return ShaftResponseCode.EVENT_PUBLISHED_TO_KAFKA;
             //return addCallback(topicName, message, kafkaResultFuture);
         } catch (Exception ex) {
             log.error(KafkaProducerLogs.ERROR_PUBLISHING_EVENTS_KAFKA,ex);
-            return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ERROR_PUBLISHING_EVENTS_TO_KAFKA);
+            return ShaftResponseCode.ERROR_PUBLISHING_EVENTS_TO_KAFKA;
         }
     }
 

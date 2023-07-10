@@ -31,7 +31,7 @@ public class CampaignService implements CampaignDao {
   public ObjectMapper mapper;
   private final QueryConstructor queryConstructor;
   private final ShaftQueryTranslator queryTranslator;
-  private ObjectNode EMPTY_OBJECT_NODE;
+  private final ObjectNode EMPTY_OBJECT_NODE;
 
   @Autowired
   public CampaignService(CampaignRepository campaignRepository) {
@@ -60,7 +60,7 @@ public class CampaignService implements CampaignDao {
         return ShaftResponseBuilder.buildResponse(ShaftResponseCode.CAMPAIGNS_TO_RENDER);
       })
       .onErrorResume(t -> {
-        log.error(CampaignLogs.CAMPAIGN_QUALIFICATION_EXCEPTION,t.getMessage(),accountId);
+        log.error("Campaign Qualification Exception{} for account {}",t,accountId);
         return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_CHECK_CAMPAIGN_QUALIFICATION));
       });
   }

@@ -26,9 +26,9 @@ public class QueryConstructor {
     campaignCriteria.forEach(eachCriteria -> {
       System.out.println(eachCriteria.size());
       ObjectNode eachNode = mapper.convertValue(eachCriteria,ObjectNode.class);
+      String query = eachNode.get("q").asText();
       if(didTriggerEventMatch(eachNode,evtInRequest)) {
         int cid = eachNode.get("cid").asInt();
-        String query = eachNode.get("q").asText();
         ObjectNode qToAppend = appendIToMustQuery(query,i);
         ObjectNode m = mapper.createObjectNode();
         m.put("cid",cid);
@@ -85,8 +85,10 @@ public class QueryConstructor {
     return false;
   }
 
-
   private ObjectNode appendIToMustQuery(String query, int i) {
+    if(query.isEmpty()) {
+      return mapper.createObjectNode();
+    }
     byte[] bytesEncoded = Base64.decodeBase64(query.getBytes());
     JsonNode jsonQuery;
     try {
@@ -95,9 +97,6 @@ public class QueryConstructor {
       throw new RuntimeException(e);
     }
     JsonNode q = jsonQuery.get("query");
-    if(!q.has("bool")) {
-      return mapper.createObjectNode();
-    }
     ObjectNode boolQuery = (ObjectNode) q.get("bool");
     JsonNode qToAppend = mapper.createObjectNode().set("bool",
       mapper.createObjectNode().set("must",
