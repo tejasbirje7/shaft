@@ -117,6 +117,19 @@ public class CampaignService implements CampaignDao {
       });
   }
 
+  @Override
+  public Mono<ObjectNode> getCampaigns(int accountId, ObjectNode requestObject) {
+    return campaignRepository.getSavedCampaigns(accountId)
+      .collectList()
+      .map(campaigns -> {
+        log.info("Campaigns : {}",campaigns);
+        return ShaftResponseBuilder.buildResponse(
+          ShaftResponseCode.CAMPAIGNS_RETRIEVED,mapper.valueToTree(campaigns));
+      })
+      .onErrorResume(error -> Mono.just(ShaftResponseBuilder.buildResponse(
+        ShaftResponseCode.FAILED_TO_FETCH_SAVED_CAMPAIGNS)));
+  }
+
   private ObjectNode translateRawQuery(ObjectNode rawQuery) {
     return queryTranslator.translateToElasticQuery(rawQuery,false);
   }

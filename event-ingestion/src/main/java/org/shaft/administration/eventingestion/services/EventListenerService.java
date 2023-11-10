@@ -45,7 +45,7 @@ public class EventListenerService {
       .publishOn(Schedulers.boundedElastic())
       .mapNotNull(campaignResponse -> {
         ObjectNode responseToSend = mapper.createObjectNode();
-        ObjectNode campaignToRender = mapper.createObjectNode();
+        ObjectNode campaignToRender;
         try {
           campaignToRender = objectNodeParser.readValue(campaignResponse);
         } catch (JsonProcessingException e) {

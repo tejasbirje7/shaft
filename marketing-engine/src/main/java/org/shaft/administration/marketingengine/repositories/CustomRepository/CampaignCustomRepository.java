@@ -9,4 +9,5 @@ public interface CampaignCustomRepository {
   Flux<CampaignCriteria> checkIfCampaignExistsForEvent(int account, int eventId);
   ObjectNode checkEligibleCampaignsForI(int accountId, String query);
   Mono<CampaignCriteria> save(int accountId, CampaignCriteria cc);
+  Flux<CampaignCriteria> getSavedCampaigns(int accountId);
 }

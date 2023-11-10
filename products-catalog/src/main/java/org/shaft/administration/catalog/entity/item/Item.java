@@ -41,7 +41,7 @@ public class Item {
     @Field("inStock")
     private boolean inStock;
     @Field("options")
-    private List<ItemOptions> options;
+    private List<String> options;
     @Field("qt")
     private int qt;
 

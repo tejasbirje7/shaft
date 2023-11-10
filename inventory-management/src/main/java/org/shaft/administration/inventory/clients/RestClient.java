@@ -14,7 +14,7 @@ import java.util.Map;
 public class RestClient {
 
   private final WebClient webClient;
-  private static final String PRODUCT_CATALOG_URL = "http://localhost:8081/catalog/items/bulk";
+  private static final String PRODUCT_CATALOG_URL = "http://localhost:8088/catalog/items/bulk";
   private static final String CART_URL = "http://localhost:8083/cart/empty";
 
   public RestClient(WebClient webClient) {

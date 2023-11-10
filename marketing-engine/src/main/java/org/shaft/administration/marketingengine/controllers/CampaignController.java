@@ -35,4 +35,11 @@ public class CampaignController {
                                                     @RequestBody() ObjectNode eventRequest) {
     return campaignDao.saveCampaign(account,eventRequest).map(ShaftResponseHandler::generateResponse);
   }
+
+
+  @RequestMapping(value = "/get/campaigns", method = { RequestMethod.GET, RequestMethod.POST })
+  public Mono<ResponseEntity<Object>> getCampaigns(@RequestHeader(value="account") int account,
+                                                   @RequestBody() ObjectNode eventRequest) {
+    return campaignDao.getCampaigns(account,eventRequest).map(ShaftResponseHandler::generateResponse);
+  }
 }

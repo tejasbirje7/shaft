@@ -10,6 +10,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.shaft.administration.marketingengine.entity.CampaignCriteria.CampaignCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -90,5 +91,21 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
     return reactiveElasticsearchOperations.save(cc,
       IndexCoordinates.of(accountId + "_camp")
     ).doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+  }
+
+  @Override
+  public Flux<CampaignCriteria> getSavedCampaigns(int accountId) {
+    query = QueryBuilders.matchAllQuery();
+    ns = new NativeSearchQueryBuilder()
+      .withQuery(query)
+      .withMaxResults(100)
+      .withPageable(PageRequest.of(0,50))
+      .build();
+
+    return reactiveElasticsearchOperations.search(ns, CampaignCriteria.class,
+        IndexCoordinates.of(accountId + "_camp"))
+      .map(SearchHit::getContent)
+      .filter(Objects::nonNull)
+      .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
   }
 }

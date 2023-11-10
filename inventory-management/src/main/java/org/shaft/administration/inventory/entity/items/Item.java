@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class Item {
     @Field("inStock")
     private boolean inStock;
     @Field("options")
-    private List<ItemOptions> options;
+    private List<String> options;
     @Field("qt")
     private int quantity;
 

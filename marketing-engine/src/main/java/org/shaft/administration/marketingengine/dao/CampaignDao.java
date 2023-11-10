@@ -8,4 +8,5 @@ import java.util.Map;
 public interface CampaignDao {
   Mono<ObjectNode> checkForCampaignQualification(int accountId, Map<String,Object> request);
   Mono<ObjectNode> saveCampaign(int accountId, ObjectNode requestObject);
+  Mono<ObjectNode> getCampaigns(int accountId, ObjectNode requestObject);
 }
