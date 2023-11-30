@@ -1,7 +1,7 @@
 spring:
   elasticsearch:
-    uris: http://localhost:9200
-    host: localhost
+    uris: ${ELASTIC_HOST:localhost}:9200
+    host: ${ELASTIC_HOST:localhost}
     port: 9200
     username: elastic
     password: 5o1NwRcarr=bpvh*kaX8
@@ -17,7 +17,8 @@ spring:
 
 eureka:
   client:
-    service-url: { defaultZone : http://localhost:8761/eureka/ }
+    service-url: { defaultZone : http://discovery-server:8761/eureka/ }
+    # TODO service-url: { defaultZone : 'http://' + ${DISCOVERY_SERVER_HOST:localhost} + ":8761/eureka/" }
     register-with-eureka: true
     fetch-registry: true
   instance:

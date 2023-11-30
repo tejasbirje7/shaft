@@ -1,0 +1,20 @@
+version: '1.0'
+
+services:
+  user-management:
+    build:
+      context: ../user-management
+      dockerfile: ../user-management/Dockerfile
+    image: user-management-image:latest
+    environment:
+      - ELASTIC_HOST=elastic
+      - DISCOVERY_SERVER_HOST=discovery-server
+    restart: always
+    depends_on:
+      - elasticsearch
+      - discovery-server
+      - app-gateway
+    ports:
+      - "8085:8085"
+    networks:
+      - ${GLOBAL_NETWORK}

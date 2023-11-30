@@ -43,10 +43,11 @@ public class AuthService implements AuthDAO {
 
   @Autowired
   public AuthService(AuthRepository authRepository,
+                     ShaftHashing shaftHashing,
                      IdentityRepository identityRepository) throws Exception {
     this.shaftJWT = new ShaftJWT();
     this.mapper = new ObjectMapper();
-    this.shaftHashing = new ShaftHashing();
+    this.shaftHashing = shaftHashing;
     this.authRepository = authRepository;
     this.identityRepository = identityRepository;
   }

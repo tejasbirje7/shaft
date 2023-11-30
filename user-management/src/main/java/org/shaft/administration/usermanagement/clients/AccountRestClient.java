@@ -2,6 +2,7 @@ package org.shaft.administration.usermanagement.clients;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,8 +14,10 @@ import java.util.Map;
 @Component
 @Slf4j
 public class AccountRestClient {
+    @Value("${spring.elasticsearch.host}")
+    private String host;
     private final WebClient webClient;
-    private static final String ACCOUNT_META_URL = "http://localhost:8084/account/meta/fields";
+    private final String ACCOUNT_META_URL = "http://" + host + " :8084/account/meta/fields";
 
     @Autowired
     public AccountRestClient(WebClient webClient) {
@@ -26,12 +29,12 @@ public class AccountRestClient {
         Map<String,Object> requestBody = new HashMap<>();
         requestBody.put("fields",new String[]{"idx"});
         return webClient
-                .post()
-                .uri(ACCOUNT_META_URL)
-                .header("account",String.valueOf(accountId))
-                .body(BodyInserters.fromValue(requestBody))
-                .retrieve()
-                .bodyToMono(String.class);
-                //.retryWhen(RetryUtil.retrySpec())
+          .post()
+          .uri(ACCOUNT_META_URL)
+          .header("account",String.valueOf(accountId))
+          .body(BodyInserters.fromValue(requestBody))
+          .retrieve()
+          .bodyToMono(String.class);
+        //.retryWhen(RetryUtil.retrySpec())
     }
 }

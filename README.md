@@ -46,3 +46,19 @@ PUT _cluster/settings
 "action.auto_create_index": "false"
 }
 }
+
+**GENERATE DOCKER IMAGES FOR NEW SERVICES**
+- Create new file <service-name>.yml in shaft-docker directory
+- Copy configuration from one of the yml file from shaft-docker directory to newly created yml file
+- Change service name property in yml file
+- Change service context property in yml file
+- Change service dockerfile property in yml file
+- Change service image name property in yml file
+- Change ports property in yml file and keep the port as per configured in application.yml file
+- Change <build> configuration in pom.xml and replace <mainClass> and <finalName>
+- Change elasticsearch host, uris & discovery server details in application.yml file of service
+- Add Dockerfile to copy files, dependent jars to docker container from local machine
+- Add service to .env file under compose file
+- Run mvn clean - mvn compile - mvn install to refresh jars
+- Route to shat-docker directory and execute docker compose build
+- TO start service execute docker compose up

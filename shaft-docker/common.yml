@@ -1,0 +1,11 @@
+version: '1.0'
+
+volumes:
+  data01:
+    driver: local
+
+networks:
+  shaft-docker_shaft:
+    external: true
+  shaft:
+    driver: bridge

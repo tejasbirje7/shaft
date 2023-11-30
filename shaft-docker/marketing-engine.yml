@@ -1,0 +1,20 @@
+version: '1.0'
+
+services:
+  marketing-engine:
+    build:
+      context: ../marketing-engine
+      dockerfile: ../marketing-engine/Dockerfile
+    image: marketing-engine-image:latest
+    environment:
+      - ELASTIC_HOST=elastic
+      - DISCOVERY_SERVER_HOST=discovery-server
+    restart: always
+    depends_on:
+      - elasticsearch
+      - discovery-server
+    #      - app-gateway
+    ports:
+      - "8086:8086"
+    networks:
+      - ${GLOBAL_NETWORK}

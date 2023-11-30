@@ -1,5 +1,6 @@
 package org.shaft.administration.obligatory.tokens.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.obligatory.tokens.utils.APILog;
 import org.shaft.administration.obligatory.tokens.utils.AppLogger;
 
@@ -14,6 +15,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+
+@Slf4j // #TODO Use AppLogger and remove this annotation
 public class PKCSKeyLoader {
     private RSAPublicKey publickey;
 
@@ -23,13 +26,14 @@ public class PKCSKeyLoader {
 
     public PKCSKeyLoader(String keysPath) {
         this.keysPath = keysPath;
+        log.info("KEYS PATH : {}",keysPath);
     }
 
     public void load() throws IOException, InvalidKeySpecException {
         AppLogger.debug(APILog.LOG_045);
         if (this.publickey == null && this.privateKey == null) {
-            byte[] encodedPublicKey = loadKeysFromSource(String.valueOf(this.keysPath) + File.separator + "public.key");
-            byte[] encodedPrivateKey = loadKeysFromSource(String.valueOf(this.keysPath) + File.separator + "private.key");
+            byte[] encodedPublicKey = loadKeysFromSource(this.keysPath + File.separator + "public.key");
+            byte[] encodedPrivateKey = loadKeysFromSource(this.keysPath + File.separator + "private.key");
             AppLogger.debug(APILog.LOG_048);
             KeyFactory keyFactory = null;
             try {
@@ -61,6 +65,7 @@ public class PKCSKeyLoader {
         File filePublicKey = new File(filePath);
         FileInputStream fis = new FileInputStream(filePath);
         byte[] encodedPublicKey = new byte[(int)filePublicKey.length()];
+        // #TODO Remove below unnecessary reading of file
         fis.read(encodedPublicKey);
         fis.close();
         return encodedPublicKey;

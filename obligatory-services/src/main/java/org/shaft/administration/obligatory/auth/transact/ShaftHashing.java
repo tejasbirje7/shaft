@@ -6,7 +6,9 @@ import org.shaft.administration.obligatory.auth.utils.APIConstant;
 import org.shaft.administration.obligatory.auth.utils.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ShaftHashing {
     Logger logger = LoggerFactory.getLogger(ShaftHashing.class);
     private Encryption enc;

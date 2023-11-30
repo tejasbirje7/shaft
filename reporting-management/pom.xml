@@ -6,7 +6,7 @@
 		<groupId>com.monorepo</groupId>
 		<artifactId>unified</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repositories -->
+
 	</parent>
 	<groupId>org.shaft.administration</groupId>
 	<artifactId>reporting-management</artifactId>

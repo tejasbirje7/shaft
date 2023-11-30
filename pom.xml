@@ -9,6 +9,13 @@
 	<name>Unified</name>
 	<description>Monorepo setup</description>
 
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
 	<properties>
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -98,7 +105,6 @@
 				<groupId>org.shaft.administration</groupId>
 				<artifactId>obligatory-services</artifactId>
 				<version>${obligatory-service-version}</version>
-				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.shaft.administration</groupId>

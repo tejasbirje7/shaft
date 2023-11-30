@@ -1,0 +1,20 @@
+version: '1.0'
+
+services:
+  inventory-management:
+    build:
+      context: ../inventory-management
+      dockerfile: ../inventory-management/Dockerfile
+    image: inventory-management-image:latest
+    environment:
+      - ELASTIC_HOST=elastic
+      - DISCOVERY_SERVER_HOST=discovery-server
+    restart: always
+    depends_on:
+      - elasticsearch
+      - discovery-server
+      - app-gateway
+    ports:
+      - "8082:8082"
+    networks:
+      - ${GLOBAL_NETWORK}

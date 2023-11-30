@@ -1,0 +1,31 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+  application:
+    name: APP-GATEWAY
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+  main:
+    web-application-type: reactive
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url: { defaultZone : http://discovery-server:8761/eureka/ }
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    lease-expiration-duration-in-seconds: 5
+    lease-renewal-interval-in-seconds: 5
+    instance-id: ${spring.application.name}:${random.value}
+
+logging:
+  level:
+    root: debug

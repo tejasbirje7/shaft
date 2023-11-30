@@ -41,9 +41,10 @@ public class IdentityService implements IdentityDAO {
 
   @Autowired
   public IdentityService(IdentityRepository identityRepository,
+                         ShaftJWT shaftJWT,
                          AccountRestClient accountRestClient) throws Exception {
     this.mapper = new ObjectMapper();
-    this.jwtUtil = new ShaftJWT();
+    this.jwtUtil = shaftJWT;
     this.accountRestClient = accountRestClient;
     this.identityRepository = identityRepository;
     this.mapParser = new ObjectMapper().readerFor(Map.class);

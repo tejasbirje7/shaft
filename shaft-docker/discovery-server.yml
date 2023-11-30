@@ -1,0 +1,13 @@
+version: '1.0'
+
+services:
+  discovery-server:
+    build:
+      context: ../discovery-server
+      dockerfile: ../discovery-server/Dockerfile
+    hostname: discovery-server
+    image: discovery-server-image:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - ${GLOBAL_NETWORK}

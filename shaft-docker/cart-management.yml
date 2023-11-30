@@ -1,0 +1,20 @@
+version: '1.0'
+
+services:
+  cart-management:
+    build:
+      context: ../cart-management
+      dockerfile: ../cart-management/Dockerfile
+    image: cart-management-image:latest
+    environment:
+      - ELASTIC_HOST=elastic
+      - DISCOVERY_SERVER_HOST=discovery-server
+    restart: always
+    depends_on:
+      - elasticsearch
+      - discovery-server
+      - app-gateway
+    ports:
+      - "8083:8083"
+    networks:
+      - ${GLOBAL_NETWORK}

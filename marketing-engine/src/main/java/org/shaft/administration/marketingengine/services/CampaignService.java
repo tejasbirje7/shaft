@@ -50,7 +50,8 @@ public class CampaignService implements CampaignDao {
       .mapNotNull(campaignsForEvent -> {
         if(!campaignsForEvent.isEmpty()) {
           List<Map<String,Object>> campaigns = mapper.convertValue(campaignsForEvent,List.class);
-          ObjectNode queries = queryConstructor.constructMsearchQuery(campaigns,request, (Integer) request.get(CampaignConstants.IDENTITY),accountId + "_*");
+          int identity = Integer.parseInt((String) request.get(CampaignConstants.IDENTITY));
+          ObjectNode queries = queryConstructor.constructMsearchQuery(campaigns,request, identity,accountId + "_*");
           ObjectNode queryResponse = campaignRepository.checkEligibleCampaignsForI(1600,queries.get(CampaignConstants.QUERIES).asText());
           ObjectNode campaignToRender = checkCampaignToRender(queryResponse, (ArrayNode) queries.get(CampaignConstants.CID_MAP));
           if(!campaignToRender.isEmpty()) {

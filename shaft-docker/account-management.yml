@@ -1,0 +1,20 @@
+version: '1.0'
+
+services:
+  account-management:
+    build:
+      context: ../account-management
+      dockerfile: ../account-management/Dockerfile
+    image: account-management-image:latest
+    environment:
+      - ELASTIC_HOST=elastic
+      - DISCOVERY_SERVER_HOST=discovery-server
+    restart: always
+    depends_on:
+      - elasticsearch
+      - discovery-server
+      - app-gateway
+    ports:
+      - "8084:8084"
+    networks:
+      - ${GLOBAL_NETWORK}

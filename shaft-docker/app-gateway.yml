@@ -1,0 +1,19 @@
+version: '1.0'
+
+services:
+  app-gateway:
+    build:
+      context: ../app-gateway
+      dockerfile: ../app-gateway/Dockerfile
+    hostname: app-gateway
+    environment:
+      - ELASTIC_HOST=elastic
+      - DISCOVERY_SERVER_HOST=discovery-server
+    image: app-gateway-image:latest
+    restart: always
+    depends_on:
+      - discovery-server
+    ports:
+      - "8080:8080"
+    networks:
+      - ${GLOBAL_NETWORK}

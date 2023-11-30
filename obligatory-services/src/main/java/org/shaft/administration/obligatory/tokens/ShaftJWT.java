@@ -10,18 +10,21 @@ import org.shaft.administration.obligatory.tokens.services.ValidateToken;
 import org.shaft.administration.obligatory.tokens.utils.APILog;
 import org.shaft.administration.obligatory.tokens.utils.AppLogger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.util.Map;
 
+@Component
 public class ShaftJWT {
 
     private PKCSKeyLoader pkcsKeyLoader;
 
     public ShaftJWT() throws Exception {
-        String KEYS_PATH = "/opt/springboot/unified/obligatory-services/src/main/java/org/shaft/administration/obligatory/tokens/keys";
+        //String KEYS_PATH = "/opt/springboot/shaft/shaft/obligatory-services/src/main/java/org/shaft/administration/obligatory/tokens/keys";
+        String KEYS_PATH = "/tmp/keys";
             try {
                 pkcsKeyLoader = new PKCSKeyLoader(KEYS_PATH);
                 pkcsKeyLoader.load();
