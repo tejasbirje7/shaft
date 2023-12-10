@@ -1,13 +1,12 @@
 package org.shaft.administration.kafka.producer.config.service.impl;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.shaft.administration.kafka.avro.model.EventAvroModel;
 import org.shaft.administration.kafka.producer.config.constants.KafkaProducerLogs;
 import org.shaft.administration.kafka.producer.config.service.KafkaProducer;
 import org.shaft.administration.obligatory.constants.ShaftResponseCode;
-import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;

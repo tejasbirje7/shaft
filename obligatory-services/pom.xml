@@ -68,5 +68,16 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/keys</directory>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/java/org/shaft/administration/obligatory/tokens/keys</directory>
+			</resource>
+		</resources>
+	</build>
+
 
 </project>

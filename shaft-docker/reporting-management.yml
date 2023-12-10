@@ -1,12 +1,12 @@
 version: '1.0'
 
 services:
-  inventory-management:
-    hostname: inventory-management
+  reporting-management:
+    hostname: reporting-management
     build:
-      context: ../inventory-management
-      dockerfile: ../inventory-management/Dockerfile
-    image: inventory-management-image:latest
+      context: ../reporting-management
+      dockerfile: ../reporting-management/Dockerfile
+    image: reporting-management-image:latest
     environment:
       - DISCOVERY_SERVER_HOST=discovery-server
     restart: always
@@ -14,6 +14,6 @@ services:
       - discovery-server
       - app-gateway
     ports:
-      - "8082:8082"
+      - "8087:8087"
     networks:
       - ${GLOBAL_NETWORK}

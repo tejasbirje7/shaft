@@ -1,0 +1,31 @@
+version: '1.0'
+
+services:
+  event-ingestion:
+    build:
+      context: ../event-ingestion
+      dockerfile: ../event-ingestion/Dockerfile
+    image: event-ingestion-image:latest
+    hostname: event-ingestion
+    environment:
+      - "APP_GATEWAY=app-gateway"
+      - "DISCOVERY_SERVER_HOST=discovery-server"
+      - "KAFKA_BROKER_1=kafka-broker-1"
+      - "KAFKA_BROKER_2=kafka-broker-2"
+      - "KAFKA_BROKER_3=kafka-broker-3"
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8181 -Xms128m -Xmx256m"
+      - "KAFKA-CONFIG_TOPIC-NAME=track-event"
+      - "KAFKA-CONFIG_BOOTSTRAP-SERVERS=kafka-broker-1:9092, kafka-broker-2:9092, kafka-broker-3:9092"
+      - "KAFKA-CONFIG_SCHEMA-REGISTRY-URL=http://schema-registry:8081"
+    restart: always
+    depends_on:
+      - discovery-server
+      - app-gateway
+      - marketing-engine
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+    ports:
+      - "8181:8181"
+    networks:
+      - ${GLOBAL_NETWORK}

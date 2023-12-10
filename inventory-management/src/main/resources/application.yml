@@ -1,7 +1,7 @@
 spring:
   elasticsearch:
-    uris: ${ELASTIC_HOST:localhost}:9200
-    host: ${ELASTIC_HOST:localhost}
+    uris: localhost:9200
+    host: localhost
     port: 9200
     username: elastic
     password: 5o1NwRcarr=bpvh*kaX8
@@ -23,8 +23,8 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
-    lease-expiration-duration-in-seconds: 5
-    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 30
     instance-id: ${spring.application.name}:${random.value}
 
 server:

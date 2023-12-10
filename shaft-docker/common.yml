@@ -7,5 +7,7 @@ volumes:
 networks:
   shaft-docker_shaft:
     external: true
+    driver: bridge
   shaft:
+    external: true
     driver: bridge

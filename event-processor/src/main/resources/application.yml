@@ -1,12 +1,10 @@
 server:
   port: 8182
 
-JAVA_OPTS : "-Xms128m -Xmx256m"
-
 kafka-config:
-  bootstrap-servers: localhost:19092, localhost:29092, localhost:39092
+  bootstrap-servers: ${KAFKA_BROKER_1}:19092, ${KAFKA_BROKER_2}:29092, ${KAFKA_BROKER_3}:39092
   schema-registry-url-key: schema.registry.url
-  schema-registry-url: http://localhost:8081
+  schema-registry-url: http://schema-registry:8081
   topic-name: track-event
   topic-names-to-create:
     - track-event

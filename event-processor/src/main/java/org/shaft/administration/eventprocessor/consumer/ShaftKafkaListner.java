@@ -55,6 +55,8 @@ public class ShaftKafkaListner implements ShaftKafkaConsumer<Long, EventAvroMode
     this.kafkaListenerEndpointRegistry = kafkaListenerEndpointRegistry;
     this.mapper = new ObjectMapper();
     this.httpHeaders = new HttpHeaders();
+//    log.info("Property 1 " + consumerConfig.getProperty("bootstrap.servers"));
+//    log.info("Property 2 " + consumerConfig.getProperty("key.deserializer"));
     this.kafkaConsumer = new KafkaConsumer<>(consumerConfig);
   }
 

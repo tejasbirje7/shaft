@@ -7,7 +7,6 @@ services:
       dockerfile: ../app-gateway/Dockerfile
     hostname: app-gateway
     environment:
-      - ELASTIC_HOST=elastic
       - DISCOVERY_SERVER_HOST=discovery-server
     image: app-gateway-image:latest
     restart: always

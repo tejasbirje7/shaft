@@ -26,12 +26,12 @@ public class PKCSKeyLoader {
 
     public PKCSKeyLoader(String keysPath) {
         this.keysPath = keysPath;
-        log.info("KEYS PATH : {}",keysPath);
     }
 
     public void load() throws IOException, InvalidKeySpecException {
         AppLogger.debug(APILog.LOG_045);
         if (this.publickey == null && this.privateKey == null) {
+            log.info("Keys Path {}",this.keysPath + File.separator + "public.key");
             byte[] encodedPublicKey = loadKeysFromSource(this.keysPath + File.separator + "public.key");
             byte[] encodedPrivateKey = loadKeysFromSource(this.keysPath + File.separator + "private.key");
             AppLogger.debug(APILog.LOG_048);
@@ -43,11 +43,11 @@ public class PKCSKeyLoader {
                 throw new RuntimeException(e);
             }
             X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
-                    encodedPublicKey);
+              encodedPublicKey);
             this.publickey = (RSAPublicKey)keyFactory.generatePublic(publicKeySpec);
             AppLogger.debug(APILog.LOG_049);
             PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(
-                    encodedPrivateKey);
+              encodedPrivateKey);
             this.privateKey = (RSAPrivateKey)keyFactory.generatePrivate(privateKeySpec);
         }
     }

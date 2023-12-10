@@ -22,8 +22,8 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
-    lease-expiration-duration-in-seconds: 5
-    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 30
     instance-id: ${spring.application.name}:${random.value}
 
 logging:

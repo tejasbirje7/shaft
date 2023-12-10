@@ -13,6 +13,7 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import java.util.Properties;
 
 @EnableKafka
 @Configuration
+@Component
 public class KafkaConsumerConfig<K extends Serializable, V extends SpecificRecordBase> {
 
     private final KafkaConfigData kafkaConfigData;

@@ -1,0 +1,27 @@
+version: '1.0'
+
+services:
+  event-processor:
+    build:
+      context: ../event-processor
+      dockerfile: ../event-processor/Dockerfile
+    image: event-processor-image:latest
+    hostname: event-processor
+    environment:
+      - "KAFKA_BROKER_1=kafka-broker-1"
+      - "KAFKA_BROKER_2=kafka-broker-2"
+      - "KAFKA_BROKER_3=kafka-broker-3"
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8182 -Xms128m -Xmx256m"
+      - "KAFKA-CONFIG_TOPIC-NAME=track-event"
+      - "KAFKA-CONFIG_BOOTSTRAP-SERVERS=kafka-broker-1:9092, kafka-broker-2:9092, kafka-broker-3:9092"
+      - "KAFKA-CONFIG_SCHEMA-REGISTRY-URL=http://schema-registry:8081"
+    restart: always
+    depends_on:
+      - event-ingestion
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+    ports:
+      - "8182:8182"
+    networks:
+      - ${GLOBAL_NETWORK}

@@ -7,15 +7,14 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.xcontent.ObjectParser;
 import org.shaft.administration.appconfigdata.KafkaConfigData;
 import org.shaft.administration.eventingestion.clients.CampaignRestClient;
 import org.shaft.administration.eventingestion.entity.EventAction;
 import org.shaft.administration.eventingestion.transformer.ShaftEventToAvroTransformer;
 import org.shaft.administration.kafka.avro.model.EventAvroModel;
-import org.shaft.administration.kafka.producer.config.service.KafkaProducer;
 import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
+import org.shaft.administration.kafka.producer.config.service.KafkaProducer;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -41,6 +40,10 @@ public class EventListenerService {
   }
 
   public Mono<ObjectNode> onStatus(int account, ObjectNode request) {
+    /*
+    ObjectNode rts = mapper.createObjectNode();
+    return Mono.just(ShaftResponseBuilder.buildResponse(publishEventRequestToBroker(request,account),rts));
+    */
     return this.campaignRestClient.checkIfCampaignExists(account,request)
       .publishOn(Schedulers.boundedElastic())
       .mapNotNull(campaignResponse -> {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.monorepo</groupId>
 	<artifactId>unified</artifactId>
@@ -31,9 +31,9 @@
 		<springboot-dev-tools>2.7.5</springboot-dev-tools>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<app-config-data-version>0.0.1-SNAPSHOT</app-config-data-version>
-		<common-config-data-version>0.0.1-SNAPSHOT</common-config-data-version>
 		<kafka-model-version>0.0.1-SNAPSHOT</kafka-model-version>
 		<kafka-consumer-version>0.0.1-SNAPSHOT</kafka-consumer-version>
+		<kafka-producer-version>0.0.1-SNAPSHOT</kafka-producer-version>
 		<spring-kafka-version>2.9.2</spring-kafka-version>
 		<kafka-schema-registry-client-version>5.3.0</kafka-schema-registry-client-version>
 		<kafka-schema-registry-version>3.3.1</kafka-schema-registry-version>
@@ -53,7 +53,6 @@
 	<modules>
 		<module>obligatory-services</module>
 		<module>app-config-data</module>
-		<module>common-config-data</module>
 		<module>user-management</module>
 		<module>discovery-server</module>
 		<module>app-gateway</module>
@@ -110,13 +109,6 @@
 				<groupId>org.shaft.administration</groupId>
 				<artifactId>app-config-data</artifactId>
 				<version>${app-config-data-version}</version>
-				<scope>compile</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.shaft.administration</groupId>
-				<artifactId>common-config-data</artifactId>
-				<version>${common-config-data-version}</version>
-				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.shaft.administration</groupId>
@@ -127,6 +119,11 @@
 				<groupId>org.shaft.administration</groupId>
 				<artifactId>kafka-consumer</artifactId>
 				<version>${kafka-consumer-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.shaft.administration</groupId>
+				<artifactId>kafka-producer</artifactId>
+				<version>${kafka-producer-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.avro</groupId>

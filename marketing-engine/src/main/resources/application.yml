@@ -1,7 +1,7 @@
 spring:
   elasticsearch:
-    uris: ${ELASTIC_HOST:localhost}:9200
-    host: ${ELASTIC_HOST:localhost}
+    uris: localhost:9200
+    host: localhost
     port: 9200
     username: elastic
     password: 5o1NwRcarr=bpvh*kaX8
@@ -18,13 +18,12 @@ spring:
 eureka:
   client:
     service-url: { defaultZone: http://discovery-server:8761/eureka/ }
-    # TODO service-url: { defaultZone : 'http://' + ${DISCOVERY_SERVER_HOST:localhost} + ":8761/eureka/" }
     register-with-eureka: true
     fetch-registry: true
   instance:
     prefer-ip-address: true
-    lease-expiration-duration-in-seconds: 60
-    lease-renewal-interval-in-seconds: 60
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 30
     instance-id: ${spring.application.name}:${random.value}
 
 server:

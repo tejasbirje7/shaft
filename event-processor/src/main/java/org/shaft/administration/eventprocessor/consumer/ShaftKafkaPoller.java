@@ -82,7 +82,7 @@ public class ShaftKafkaPoller  {
                   EventModel eventModel = avroToShaftEventTransformer.parseEventAvroModel(eachRecord.value());
                   ObjectToIngest eventData = avroToShaftEventTransformer.formatEventToIngest(eventModel.getI(),
                     avroToShaftEventTransformer.convertEventDataFromAvro(eventModel.getE()));
-                  log.debug("Event Data {}",eventData);
+                  log.info("Event Data {}",eventData);
                   Map<String,Object> request = mapper.convertValue(eventData, new TypeReference<Map<String, Object>>(){});
                   httpHeaders.set("account", String.valueOf(eachRecord.key()));
                   httpHeaders.setContentType(MediaType.APPLICATION_JSON);

@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public class CampaignRestClient {
   private final WebClient webClient;
-  private static final String CAMPAIGN_QUALIFICATION_URL = "http://localhost:8080/marketing/campaign/qualification";
+  private static final String CAMPAIGN_QUALIFICATION_URL = "http://app-gateway:8080/marketing/campaign/qualification";
 
   @Autowired
   public CampaignRestClient(WebClient webClient) {
