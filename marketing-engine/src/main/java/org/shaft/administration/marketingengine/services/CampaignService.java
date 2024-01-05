@@ -18,9 +18,11 @@ import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
 import org.shaft.administration.obligatory.translator.elastic.ShaftQueryTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.RestStatusException;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +34,7 @@ public class CampaignService implements CampaignDao {
   private final QueryConstructor queryConstructor;
   private final ShaftQueryTranslator queryTranslator;
   private final ObjectNode EMPTY_OBJECT_NODE;
+  public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 
   @Autowired
   public CampaignService(CampaignRepository campaignRepository) {
@@ -85,7 +88,8 @@ public class CampaignService implements CampaignDao {
     return campaignToRender;
   }
 
-  public Mono<ObjectNode> saveCampaign(int accountId, ObjectNode requestObject) {
+  @Override
+  public Mono<ObjectNode> saveCampaign(int accountId, ObjectNode requestObject, FilePart image) {
     ObjectNode q = (ObjectNode) requestObject.get(CampaignConstants.QUERY);
     ObjectNode te = (ObjectNode) requestObject.get(CampaignConstants.TRIGGERING_EVENT);
     // #TODO Check if campaigns already exists for event `te` above limit
@@ -107,10 +111,10 @@ public class CampaignService implements CampaignDao {
     requestObject.put(CampaignConstants.STATUS,1);
     CampaignCriteria cc = mapper.convertValue(requestObject,CampaignCriteria.class);
     return campaignRepository.save(accountId,cc)
-      .flatMap(k -> Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.CAMPAIGN_SAVED)))
+      .flatMap(k -> saveAssets(image))
       .onErrorResume(t -> {
         if(isRestStatusException(t)) {
-          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.CAMPAIGN_SAVED));
+          return saveAssets(image);
         } else {
           log.error(CampaignLogs.FAILED_TO_SAVE_CAMPAIGN,t.getMessage(),accountId);
           return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_SAVE_CAMPAIGN));
@@ -137,6 +141,18 @@ public class CampaignService implements CampaignDao {
 
   private boolean isRestStatusException(Throwable t) {
     return t instanceof RestStatusException;
+  }
+
+  public Mono<ObjectNode> saveAssets(FilePart image) {
+    ACCOUNT_ID.remove();
+    log.info("File name: {}", image.filename());
+    return image.transferTo(new File("/opt/shop_assets/1600/campaigns",image.filename()))
+      .map(r -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.CAMPAIGN_SAVED))
+      .onErrorResume(error -> {
+        ACCOUNT_ID.remove();
+        log.error("Exception saving campaign",error);
+        return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_SAVE_CAMPAIGN));
+      });
   }
 
 }

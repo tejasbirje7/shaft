@@ -16,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class ItemsController {
 
     @RequestMapping(value = "/items/id", method = { RequestMethod.GET, RequestMethod.POST })
     public Mono<ResponseEntity<Object>> getItemsById(@RequestHeader(value="account") int account,
-                                                 @RequestBody(required = false) Map<String,Object> body) {
+                                                     @RequestBody(required = false) Map<String,Object> body) {
         return itemsDao.getItemsById(account,body).map(ShaftResponseHandler::generateResponse);
     }
 
@@ -55,6 +56,12 @@ public class ItemsController {
                                                      @RequestBody(required = false) Map<String,Object> body) {
         // #TODO Check if this call can be replaced with getItems() above
         return itemsDao.getBulkItems(account,body).map(ShaftResponseHandler::generateResponse);
+    }
+
+    @RequestMapping(value = "/items/delete", method = { RequestMethod.POST })
+    public Mono<ResponseEntity<Object>> deleteItem(@RequestHeader(value="account") int account,
+                                                   @RequestBody(required = false) Map<String,Object> body) {
+        return itemsDao.deleteItem(account,body).map(ShaftResponseHandler::generateResponse);
     }
 
     @RequestMapping(value = "/items/save", method = { RequestMethod.POST })
@@ -77,7 +84,6 @@ public class ItemsController {
 
             // Handle file
             FilePart image = (FilePart) partMap.get("files");
-            log.info("File name: {}", image.filename());
 
             // Handle item details
             FormFieldPart details = (FormFieldPart) partMap.get("itemDetails");
@@ -86,12 +92,13 @@ public class ItemsController {
             // Parsing and saving item details
             try {
                 Map<String,Object> itemDetails = new ObjectMapper().readValue(value, new TypeReference<Map<String, Object>>() {});
-                return itemsDao.saveItem(account,itemDetails).map(ShaftResponseHandler::generateResponse);
+                return itemsDao.saveItem(account,itemDetails,image).map(ShaftResponseHandler::generateResponse);
             } catch (Exception ex) {
                 // #TODO Throw invalid request [ MAJOR EXCEPTION ] & notify
+                // #TODO Remove this different response handling for this call
+                log.error("Exception while saving item {}",ex);
+                return Mono.just(ShaftResponseHandler.generateResponse("Success","S12345",new ArrayList<>(),headers));
             }
-            // #TODO Remove this different response handling for this call
-            return Mono.just(ShaftResponseHandler.generateResponse("Success","S12345",new ArrayList<>(),headers));
         });
     }
 }

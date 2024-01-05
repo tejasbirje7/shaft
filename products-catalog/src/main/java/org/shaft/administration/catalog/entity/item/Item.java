@@ -17,8 +17,31 @@ import java.util.UUID;
 @ToString
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Document(indexName = "#{T(org.shaft.administration.catalog.services.ItemsService).getAccount()}_items")
 public class Item {
+
+    /*
+    {
+  "name": "Peeled Garlic",
+  "category": "Vegetables",
+  "discountedPrice": 0,
+  "costPrice": 40,
+  "description": "Garlic Cloves",
+  "qt": 12,
+  "options": [
+    "xs",
+    "s",
+    "m",
+    "l",
+    "xl"
+  ],
+  "inStock": true,
+  "onSale": "",
+  "img": "IMG_1649.jpg"
+}
+     */
+
     @Field("id")
     @Id
     private String id;

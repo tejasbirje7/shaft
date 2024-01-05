@@ -10,9 +10,9 @@ services:
     environment:
       - DISCOVERY_SERVER_HOST=discovery-server
     restart: always
-    depends_on:
-      - discovery-server
-      - app-gateway
+#    depends_on:
+#      - discovery-server
+#      - app-gateway
     ports:
       - "8088:8088"
     networks:

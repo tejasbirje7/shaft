@@ -61,7 +61,6 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
 
     @Override
     public Mono<Long> deleteUsersCart(int i) {
-
         DeleteByQueryRequest request = new DeleteByQueryRequest();
         request.setQuery(new BoolQueryBuilder()
           .must(QueryBuilders.termQuery("i",i)));

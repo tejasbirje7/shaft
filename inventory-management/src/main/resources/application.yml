@@ -1,7 +1,7 @@
 spring:
   elasticsearch:
-    uris: localhost:9200
-    host: localhost
+    uris: ${HOST_NAME:localhost}:9200
+    host: ${HOST_NAME:localhost}
     port: 9200
     username: elastic
     password: 5o1NwRcarr=bpvh*kaX8

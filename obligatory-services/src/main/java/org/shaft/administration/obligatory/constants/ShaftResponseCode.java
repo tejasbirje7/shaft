@@ -30,6 +30,7 @@ public class ShaftResponseCode {
   public static String SEGMENT_SAVED_SUCCESSFULLY = "S0027";
   public static String EVENTS_META_RETRIEVED = "S0028";
   public static String CAMPAIGNS_RETRIEVED = "S0029";
+  public static String ITEM_DELETED = "S0030";
 
   /**
    * FAILURE CODES
@@ -110,4 +111,5 @@ public class ShaftResponseCode {
   public static String SAVE_SEGMENT_BAD_REQUEST = "F0072";
   public static String FAILED_TO_FETCH_EVENTS_META = "F0073";
   public static String FAILED_TO_FETCH_SAVED_CAMPAIGNS = "F0074";
+  public static String FAILED_TO_DELETE_ITEM = "F0075";
 }

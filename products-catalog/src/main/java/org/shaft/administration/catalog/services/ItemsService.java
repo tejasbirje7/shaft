@@ -16,11 +16,15 @@ import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.data.elasticsearch.RestStatusException;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -125,21 +129,54 @@ public class ItemsService implements ItemsDAO {
   }
 
   @Override
-  public Mono<ObjectNode> saveItem(int accountId, Map<String, Object> body) {
+  public Mono<ObjectNode> saveItem(int accountId, Map<String, Object> body, FilePart image) {
     // #TODO Save the image item files in S3
     ACCOUNT_ID.set(accountId);
     return itemsRepository.save(createItemPojoFromRequest(body))
-      .map(i -> {
+      .flatMap(i -> saveAssets(image))
+      .onErrorResume(error -> {
         ACCOUNT_ID.remove();
-        return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ITEMS_SAVED_SUCCESSFULLY,
-          mapper.convertValue(i, ObjectNode.class));
+        if(isRestStatusException(error)) {
+          return saveAssets(image);
+        } /*else if (error instanceof FileNotFoundException) {
+          // TODO Throw exception if image is not saved from above map
+
+        } */else {
+          log.error(ProductCatalogLogs.SHAFT_ITEMS_SAVE_EXCEPTION,error);
+          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_ITEMS_SAVE_EXCEPTION));
+        }
+      });
+  }
+
+  public Mono<ObjectNode> deleteItem(int accountId, Map<String, Object> body) {
+    ACCOUNT_ID.set(accountId);
+    return itemsRepository.deleteById(createItemPojoFromRequest(body).getId())
+      .map(response -> {
+        log.info("Received response : {}",response);
+        return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ITEM_DELETED);
       })
+      .onErrorResume(error -> {
+        log.error("Error : {}",error);
+        if(isRestStatusException(error)) {
+          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.ITEM_DELETED));
+        } else {
+          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_DELETE_ITEM));
+        }
+      });
+  }
+
+  public Mono<ObjectNode> saveAssets(FilePart image) {
+    ACCOUNT_ID.remove();
+    log.info("File name: {}", image.filename());
+    return image.transferTo(new File("/opt/shop_assets/1600/store",image.filename()))
+      .map(r -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.ITEMS_SAVED_SUCCESSFULLY))
       .onErrorResume(error -> {
         ACCOUNT_ID.remove();
         log.error(ProductCatalogLogs.SHAFT_ITEMS_SAVE_EXCEPTION,error);
         return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_ITEMS_SAVE_EXCEPTION));
       });
   }
+
 
   public Item createItemPojoFromRequest(Map<String,Object> itemDetails) {
     // #TODO Get all these details from UI, don't replicate here and remove this code

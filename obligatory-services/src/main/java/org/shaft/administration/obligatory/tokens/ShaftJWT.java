@@ -23,8 +23,8 @@ public class ShaftJWT {
     private PKCSKeyLoader pkcsKeyLoader;
 
     public ShaftJWT() throws Exception {
-        //String KEYS_PATH = "/opt/springboot/shaft/shaft/obligatory-services/src/main/java/org/shaft/administration/obligatory/tokens/keys";
-        String KEYS_PATH = "/tmp/keys";
+        String KEYS_PATH = "/opt/springboot/shaft/shaft/obligatory-services/src/main/java/org/shaft/administration/obligatory/tokens/keys";
+        //String KEYS_PATH = "/tmp/keys";
             try {
                 pkcsKeyLoader = new PKCSKeyLoader(KEYS_PATH);
                 pkcsKeyLoader.load();

@@ -12,4 +12,5 @@ public class CampaignCriteria {
   private String nm;
   private TriggerEvent te;
   private FilterStrings fs;
+  private String img;
 }
