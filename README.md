@@ -69,8 +69,7 @@ PUT _cluster/settings
 **INSTALL DOCKER ON LINUX**
 - sudo yum install docker -y
 - sudo service docker start
-  # make docker  autostart
-- sudo chkconfig docker on
+- sudo chkconfig docker on <!--- make docker autostart -->
 
 **INSTALL DOCKER-COMPOSE ON LINUX**
 - sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
