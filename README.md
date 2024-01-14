@@ -1,32 +1,32 @@
 **Features**
-- User authentication and authorization 
-- Product Catalog 
-- Payment 
-- Shopping Cart 
-- Customer Support 
-- Push Notifications 
-- Shipment Tracking 
+- User authentication and authorization
+- Product Catalog
+- Payment
+- Shopping Cart
+- Customer Support
+- Push Notifications
+- Shipment Tracking
 - Comparison Feature
 - Personalise Notification box
 
 **Layers**
-- Authorization — responsible for authorizing/managing a user 
-- Presentation — responsible for handling HTTP requests and responding with HTML or JSON/XML 
-- Business logic — the application’s business logic 
-- Database layer — data access objects responsible for accessing the database 
-- Application integration — integration with other services (e.g. via messaging or REST API). Or integration with any other Data sources 
+- Authorization — responsible for authorizing/managing a user
+- Presentation — responsible for handling HTTP requests and responding with HTML or JSON/XML
+- Business logic — the application’s business logic
+- Database layer — data access objects responsible for accessing the database
+- Application integration — integration with other services (e.g. via messaging or REST API). Or integration with any other Data sources
 - Notification module — responsible for sending email/push notifications whenever needed
 
 **Business capabilities**
-- User Management: This is responsible for user authentication and management through social gateways, manual authentication, email verification and mobile number verification. 
-- Content Management: This is responsible for search bar, navigation and translation services. 
-- Product Catalog: This is responsible for products details, products images and products reviews. 
-- Customer Management: This is responsible for catering facilities like personal subscriptions, saved payment methods, address verification, ship orders, customer credits and loyalty programmes. 
-- Cart Management: This is responsible for shopping cart management, quick order and check out. 
-- Payment Management: This is responsible for processing payment and fraud tracking. 
-- Inventory Management: This is responsible for keep tracking of back orders and pre-orders. 
-- Track Management: This is responsible for keep track of shipment and notifying of orders via push notifications, SMS and email. 
-- Reporting Management: This is responsible for web analytics, business intelligence, products sales reports and many more. 
+- User Management: This is responsible for user authentication and management through social gateways, manual authentication, email verification and mobile number verification.
+- Content Management: This is responsible for search bar, navigation and translation services.
+- Product Catalog: This is responsible for products details, products images and products reviews.
+- Customer Management: This is responsible for catering facilities like personal subscriptions, saved payment methods, address verification, ship orders, customer credits and loyalty programmes.
+- Cart Management: This is responsible for shopping cart management, quick order and check out.
+- Payment Management: This is responsible for processing payment and fraud tracking.
+- Inventory Management: This is responsible for keep tracking of back orders and pre-orders.
+- Track Management: This is responsible for keep track of shipment and notifying of orders via push notifications, SMS and email.
+- Reporting Management: This is responsible for web analytics, business intelligence, products sales reports and many more.
 - Marketing Engine: This is responsible for personalised marketing and management of recommending productInCarts.
 
 **THINGS TO DO IN PRODUCTION**
@@ -55,3 +55,28 @@ PUT _cluster/settings
 - Run mvn clean - mvn compile - mvn install to refresh jars
 - Route to shat-docker directory and execute docker compose build
 - TO start service execute docker compose up
+
+**SETUP ELASTICSEARCH**
+- Install JAVA
+  - wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+  - tar xvf openjdk-17.0.2_linux-x64_bin.tar.gz
+- Set ES_JAVA_HOME in /etc/environment and then do source /etc/environment
+- Set vm.max_map_count=262144 in `/etc/sysctl.conf` then do sysctl -p
+- Set JVM memory in /etc/elasticsearch/jvm.options
+  - -Xms2g
+  - -Xmx2g
+
+**INSTALL DOCKER ON LINUX**
+- sudo yum install docker -y
+- sudo service docker start
+  # make docker  autostart
+- sudo chkconfig docker on
+
+**INSTALL DOCKER-COMPOSE ON LINUX**
+- sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+- sudo chmod +x /usr/local/bin/docker-compose
+- docker-compose version
+
+**CREATE DOCKER NETWORK**
+- sudo docker network ls
+- sudo docker network create -d bridge shaft-docker_shaft

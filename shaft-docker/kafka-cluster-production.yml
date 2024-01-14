@@ -17,11 +17,9 @@ services:
   schema-registry:
     image: confluentinc/cp-schema-registry:${KAFKA_VERSION}
     hostname: schema-registry
+    restart: on-failure
     depends_on:
       - zookeeper
-      - kafka-broker-1
-      - kafka-broker-2
-      - kafka-broker-3
     ports:
       - "8081:8081"
     environment:
@@ -36,12 +34,11 @@ services:
     hostname: kafka-broker-1
     ports:
       - "19092:19092"
-    depends_on:
-      - zookeeper
+      - "9093:9093"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:9093,LISTENER_LOCAL://kafka-broker-1:19092
+      KAFKA_ZOOKEEPER_CONNECT: 172.31.14.19:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://13.234.115.34:9093,LISTENER_LOCAL://ec2-13-234-115-34.ap-south-1.compute.amazonaws.com:19092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,LISTENER_LOCAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_COMPRESSION_TYPE: producer
@@ -52,12 +49,11 @@ services:
     hostname: kafka-broker-2
     ports:
       - "29092:29092"
-    depends_on:
-      - zookeeper
+      - "9093:9093"
     environment:
       KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-2:9093,LISTENER_LOCAL://kafka-broker-2:29092
+      KAFKA_ZOOKEEPER_CONNECT: 172.31.14.19:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://13.201.45.76:9093,LISTENER_LOCAL://ec2-13-201-45-76.ap-south-1.compute.amazonaws.com:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,LISTENER_LOCAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_COMPRESSION_TYPE: producer
@@ -68,12 +64,11 @@ services:
     hostname: kafka-broker-3
     ports:
       - "39092:39092"
-    depends_on:
-      - zookeeper
+      - "9093:9093"
     environment:
       KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-3:9093,LISTENER_LOCAL://kafka-broker-3:39092
+      KAFKA_ZOOKEEPER_CONNECT: 172.31.14.19:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://43.204.32.226:9093,LISTENER_LOCAL://ec2-43-204-32-226.ap-south-1.compute.amazonaws.com:39092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,LISTENER_LOCAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_COMPRESSION_TYPE: producer
