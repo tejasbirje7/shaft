@@ -1,36 +1,35 @@
 spring:
-  elasticsearch:
-    uris: ${HOST_NAME:localhost}:9200
-    host: ${HOST_NAME:localhost}
-    port: 9200
-    username: elastic
-    password: 5o1NwRcarr=bpvh*kaX8
-  jackson:
-    default-property-inclusion: non_null
-  application:
-    name: PRODUCT-CATALOG
-  main:
-    web-application-type: reactive
   devtools:
     restart:
       enabled: true
+  application:
+    name: APP-GATEWAY
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+  main:
+    web-application-type: reactive
+
+server:
+  port: 8080
 
 eureka:
   client:
 #    service-url: { defaultZone : http://${DISCOVERY_SERVER_HOST:localhost}:8761/eureka/ }
+#    service-url: { defaultZone : ${DISCOVERY_SERVER_HOST} }
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: http://${DISCOVERY_SERVER_HOST}:8761/eureka/
+
   instance:
     prefer-ip-address: true
     lease-expiration-duration-in-seconds: 30
     lease-renewal-interval-in-seconds: 30
     instance-id: ${spring.application.name}:${random.value}
 
-server:
-  port: 8088
-
 logging:
   level:
-    root: info
+    root: debug

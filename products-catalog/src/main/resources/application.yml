@@ -15,6 +15,18 @@ spring:
     restart:
       enabled: true
 
+eureka:
+  client:
+    service-url: { defaultZone: http://65.0.68.37:8761/eureka/ }
+#    service-url: { defaultZone: http://localhost:8761/eureka/ }
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 30
+    instance-id: ${spring.application.name}:${random.value}
+
 server:
   port: 8088
 
