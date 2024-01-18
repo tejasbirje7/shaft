@@ -17,9 +17,8 @@ spring:
 
 eureka:
   client:
-#    service-url: { defaultZone : http://localhost:8761/eureka/ }
-    service-url: { defaultZone: http://discovery-server:8761/eureka/ }
-    # TODO service-url: { defaultZone : 'http://' + ${DISCOVERY_SERVER_HOST:localhost} + ":8761/eureka/" }
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
   instance:
