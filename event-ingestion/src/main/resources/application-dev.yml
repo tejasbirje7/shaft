@@ -2,7 +2,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   application:
-    name: EVENT-INGESTION
+    name: event-ingestion
   main:
     web-application-type: reactive
   devtools:
@@ -53,3 +53,6 @@ kafka-producer-config:
   request-timeout-ms: 60000
   retry-count: 5
 
+shaft:
+  services:
+    campaign-url : localhost

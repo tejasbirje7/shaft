@@ -8,24 +8,12 @@ spring:
   jackson:
     default-property-inclusion: non_null
   application:
-    name: PRODUCT-CATALOG
+    name: products-catalog
   main:
     web-application-type: reactive
   devtools:
     restart:
       enabled: true
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://${DISCOVERY_SERVER_HOST}:8761/eureka/
-  instance:
-    prefer-ip-address: true
-    lease-expiration-duration-in-seconds: 30
-    lease-renewal-interval-in-seconds: 30
-    instance-id: ${spring.application.name}:${random.value}
 
 server:
   port: 8088

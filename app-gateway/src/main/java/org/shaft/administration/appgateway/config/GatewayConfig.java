@@ -38,11 +38,42 @@ public class GatewayConfig {
   }
 
   @Bean
-  public RouteLocator routes(RouteLocatorBuilder builder) {
+  public RouteLocator routesForServiceConnect(RouteLocatorBuilder builder) {
     // #TODO Comment out filters once testing is finished
     return builder.routes()
-      .route("product-catalog", r->r.path("/catalog/**")
-        .uri("lb://PRODUCT-CATALOG")) // 8088
+      .route("products-catalog", r->r.path("/catalog/**")
+        .uri("http://products-catalog:8088")) // 8088
+      //.filters(f -> f.filter(authenticationFilter))
+      .route("inventory-management", r->r.path("/inventory/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("http://inventory-management:8082")) // 8082
+      .route("cart-management", r->r.path("/cart/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("http://cart-management:8083")) // 8083
+      .route("account-management", r->r.path("/account/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("http://account-management:8084")) // 8084
+      .route("user-management", r->r.path("/user/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("http://user-management:8085")) // 8085
+      .route("marketing-engine", r->r.path("/marketing/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("http://marketing-engine:8086")) // 8086
+      .route("reporting-engine", r->r.path("/reporting/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("http://reporting-engine:8087")) // 8087
+      .route("event-ingestion", r->r.path("/ingest/**")
+        //.filters(f -> f.filter(authenticationFilter))
+        .uri("http://event-ingestion:8181")) // 8181
+      .build();
+  }
+
+//  @Bean
+  public RouteLocator routesForEurekaServer(RouteLocatorBuilder builder) {
+    // #TODO Comment out filters once testing is finished
+    return builder.routes()
+      .route("products-catalog", r->r.path("/catalog/**")
+        .uri("lb://products-catalog")) // 8088
       //.filters(f -> f.filter(authenticationFilter))
       .route("inventory-management", r->r.path("/inventory/**")
         //.filters(f -> f.filter(authenticationFilter))

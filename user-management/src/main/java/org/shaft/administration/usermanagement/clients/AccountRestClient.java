@@ -14,10 +14,10 @@ import java.util.Map;
 @Component
 @Slf4j
 public class AccountRestClient {
-    @Value("${spring.elasticsearch.host}")
-    private String host;
+    @Value("${shaft.services.account-url}")
+    private String ACCOUNT_HOST;
     private final WebClient webClient;
-    private final String ACCOUNT_META_URL = "http://" + host + " :8084/account/meta/fields";
+    private final String ACCOUNT_META_URL = "http://" + ACCOUNT_HOST + " :8084/account/meta/fields";
 
     @Autowired
     public AccountRestClient(WebClient webClient) {

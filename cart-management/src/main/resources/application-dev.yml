@@ -8,7 +8,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   application:
-    name: CART-MANAGEMENT
+    name: cart-management
   main:
     web-application-type: reactive
   devtools:

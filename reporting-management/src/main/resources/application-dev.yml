@@ -8,7 +8,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   application:
-    name: REPORTING-MANAGEMENT
+    name: reporting-management
   main:
     web-application-type: reactive
   devtools:

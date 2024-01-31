@@ -3,6 +3,7 @@ package org.shaft.administration.eventingestion.clients;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,7 +16,9 @@ import java.util.Map;
 @Slf4j
 public class CampaignRestClient {
   private final WebClient webClient;
-  private static final String CAMPAIGN_QUALIFICATION_URL = "http://app-gateway:8080/marketing/campaign/qualification";
+  @Value("${shaft.services.campaign-url}")
+  private static String CAMPAIGN_HOST;
+  private static final String CAMPAIGN_QUALIFICATION_URL = "http://"+CAMPAIGN_HOST+":8080/marketing/campaign/qualification";
 
   @Autowired
   public CampaignRestClient(WebClient webClient) {

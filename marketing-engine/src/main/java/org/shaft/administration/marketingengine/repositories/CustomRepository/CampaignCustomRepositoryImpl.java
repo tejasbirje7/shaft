@@ -10,6 +10,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.shaft.administration.marketingengine.entity.CampaignCriteria.CampaignCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
@@ -37,6 +38,8 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   HttpHeaders httpHeaders;
   private final RestTemplate restTemplate;
   private final ObjectMapper mapper;
+  @Value("${spring.elasticsearch.host}")
+  private String elasticsearchHost;
 
   @Autowired
   public CampaignCustomRepositoryImpl(ReactiveElasticsearchOperations reactiveElasticsearchOperations,
@@ -72,7 +75,7 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   }
 
   public ObjectNode checkEligibleCampaignsForI(int accountId, String query) {
-    String ELASTIC_URL = "localhost" + ":" + "9200";
+    String ELASTIC_URL = elasticsearchHost + ":" + "9200";
     httpHeaders.setContentType(MediaType.APPLICATION_NDJSON);
     HttpEntity<String> entity = new HttpEntity<>(query,httpHeaders);
     String url = "http://".concat(ELASTIC_URL).concat("/").concat(String.valueOf(accountId)).concat("_camp/").concat("_msearch");

@@ -2,24 +2,12 @@ spring:
   jackson:
     default-property-inclusion: non_null
   application:
-    name: EVENT-INGESTION
+    name: event-ingestion
   main:
     web-application-type: reactive
   devtools:
     restart:
       enabled: true
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://${DISCOVERY_SERVER_HOST}:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-    lease-expiration-duration-in-seconds: 30
-    lease-renewal-interval-in-seconds: 30
-    instance-id: ${spring.application.name}:${random.value}
 
 
 server:
@@ -53,3 +41,6 @@ kafka-producer-config:
   request-timeout-ms: 60000
   retry-count: 5
 
+shaft:
+  services:
+    campaign-url : localhost

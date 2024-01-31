@@ -1,7 +1,7 @@
 package org.shaft.administration.inventory.clients;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,10 +12,13 @@ import java.util.Map;
 
 @Component
 public class RestClient {
-
   private final WebClient webClient;
-  private static final String PRODUCT_CATALOG_URL = "http://localhost:8088/catalog/items/bulk";
-  private static final String CART_URL = "http://localhost:8083/cart/empty";
+  @Value("${shaft.services.products-catalog-host}")
+  private static String PRODUCT_CATALOG_HOST;
+  @Value("${shaft.services.cart-host}")
+  private static String CART_HOST;
+  private static final String PRODUCT_CATALOG_URL = "http://"+PRODUCT_CATALOG_HOST+":8088/catalog/items/bulk";
+  private static final String CART_URL = "http://"+CART_HOST+ "localhost:8083/cart/empty";
 
   public RestClient(WebClient webClient) {
     this.webClient = webClient;

@@ -10,7 +10,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@EnableEurekaClient
+//@EnableEurekaClient
 @ComponentScan(basePackages = "org.shaft.administration")
 public class EventIngestionApplication implements CommandLineRunner {
 
