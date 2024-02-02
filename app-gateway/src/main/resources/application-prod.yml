@@ -18,3 +18,12 @@ server:
 logging:
   level:
     root: debug
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10   # How many requests to check initially to change the state from CLOSED to OPEN
+        permitted-number-of-calls-in-half-open-state: 2 # Only allow 2 requests in half OPENED status
+        failure-rate-threshold: 50 # If 50% of requests failed then change state to OPEN
+        wait-duration-in-open-state: 10000 # Wait for 10 secs and then move to half OPENED state

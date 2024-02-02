@@ -4,16 +4,37 @@ spring:
       enabled: true
   application:
     name: shaft-gateway
+  data:
+    redis:
+      connect-timeout: 2s
+      host: ${REDIS:localhost}
+      port: 6379
+      timeout: 1s
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 5s
   main:
     web-application-type: reactive
 
 server:
   port: 8080
+
+#management:
+#  health:
+#    circuitbreakers:
+#      enabled: true
+#  endpoint:
+#    health:
+#      show-details: "ALWAYS"
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*" #TODO Only expose limited endpoint via actuator
 
 eureka:
   client:
@@ -30,3 +51,13 @@ eureka:
 logging:
   level:
     root: debug
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10   # How many requests to check initially to change the state from CLOSED to OPEN
+        permitted-number-of-calls-in-half-open-state: 2 # Only allow 2 requests in half OPENED status
+        failure-rate-threshold: 50 # If 50% of requests failed then change state to OPEN
+        wait-duration-in-open-state: 10000 # Wait for 10 secs and then move to half OPENED state
+        registerHealthIndicator: true

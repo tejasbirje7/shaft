@@ -8,10 +8,12 @@ services:
     hostname: app-gateway
     environment:
       - DISCOVERY_SERVER_HOST=discovery-server
+      - REDIS=redis
     image: app-gateway-image:latest
     restart: always
     depends_on:
       - discovery-server
+      - redis
     ports:
       - "8080:8080"
     networks:

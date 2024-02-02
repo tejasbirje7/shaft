@@ -9,11 +9,16 @@ services:
     image: products-catalog-image:latest
     environment:
       - DISCOVERY_SERVER_HOST=discovery-server
+      - HOST_NAME=elastic
+      - SPRING_PROFILES_ACTIVE=dev
     restart: always
-#    depends_on:
-#      - discovery-server
-#      - app-gateway
+    depends_on:
+      - elastic
+      - app-gateway
+      - discovery-server
     ports:
       - "8088:8088"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - ${GLOBAL_NETWORK}

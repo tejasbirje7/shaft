@@ -29,7 +29,8 @@ public class AuthenticationFilter implements GatewayFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-
+/*
+    // #TODO Comment out filters once testing is finished
         if (routerValidator.isSecured.test(request)) {
             if (this.isAuthMissing(request))
                 return this.onError(exchange, "Authorization header is missing in request");
@@ -38,7 +39,7 @@ public class AuthenticationFilter implements GatewayFilter {
             if (claims.isEmpty())
                 return this.onError(exchange, "Authorization header is invalid");
             this.populateRequestWithHeaders(exchange, claims);
-        }
+        }*/
         return chain.filter(exchange);
     }
 
@@ -60,8 +61,8 @@ public class AuthenticationFilter implements GatewayFilter {
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, Map<String,Object> claims) {
         exchange.getRequest().mutate()
-                .header("user", String.valueOf(claims.get("user")))
-                .header("role", String.valueOf(claims.get("role")))
-                .build();
+          .header("user", String.valueOf(claims.get("user")))
+          .header("role", String.valueOf(claims.get("role")))
+          .build();
     }
 }

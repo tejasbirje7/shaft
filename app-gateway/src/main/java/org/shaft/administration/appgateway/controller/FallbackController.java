@@ -15,4 +15,9 @@ public class FallbackController {
     public String authFallback() {
         return "Auth services is not available";
     }
+
+    @GetMapping("/circuit-breaker-fallback")
+    public String circuitBreakerFallback() {
+        return "An error occurred. Please try after some time or contact support team";
+    }
 }
