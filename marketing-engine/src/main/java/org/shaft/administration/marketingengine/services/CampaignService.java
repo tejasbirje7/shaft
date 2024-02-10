@@ -55,7 +55,7 @@ public class CampaignService implements CampaignDao {
           List<Map<String,Object>> campaigns = mapper.convertValue(campaignsForEvent,List.class);
           int identity = Integer.parseInt((String) request.get(CampaignConstants.IDENTITY));
           ObjectNode queries = queryConstructor.constructMsearchQuery(campaigns,request, identity,accountId + "_*");
-          ObjectNode queryResponse = campaignRepository.checkEligibleCampaignsForI(1600,queries.get(CampaignConstants.QUERIES).asText());
+          ObjectNode queryResponse = campaignRepository.checkEligibleCampaignsForI(accountId,queries.get(CampaignConstants.QUERIES).asText());
           ObjectNode campaignToRender = checkCampaignToRender(queryResponse, (ArrayNode) queries.get(CampaignConstants.CID_MAP));
           if(!campaignToRender.isEmpty()) {
             return ShaftResponseBuilder.buildResponse(ShaftResponseCode.CAMPAIGNS_TO_RENDER,campaignToRender);
@@ -109,7 +109,7 @@ public class CampaignService implements CampaignDao {
       }
     }
     requestObject.put(CampaignConstants.STATUS,1);
-    CampaignCriteria cc = mapper.convertValue(requestObject,CampaignCriteria.class);
+    CampaignCriteria cc = mapper.convertValue(requestObject,CampaignCriteria.class); // #TODO Handle parsing exception
     return campaignRepository.save(accountId,cc)
       .flatMap(k -> saveAssets(image))
       .onErrorResume(t -> {

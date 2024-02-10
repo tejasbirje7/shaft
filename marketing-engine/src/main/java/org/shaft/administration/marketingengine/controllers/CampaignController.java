@@ -48,7 +48,7 @@ public class CampaignController {
   @RequestMapping(value = "/save/campaign", method = { RequestMethod.GET, RequestMethod.POST })
   public Mono<ResponseEntity<Object>> saveCampaign(@RequestHeader(value="account") int account,
                                                    @RequestBody Mono<MultiValueMap<String, Part>> request) {
-    //return campaignDao.saveCampaign(account,eventRequest).map(ShaftResponseHandler::generateResponse);
+//    return campaignDao.saveCampaign(account,eventRequest).map(ShaftResponseHandler::generateResponse);
     return getResponseEntityMono(account, request);
   }
 

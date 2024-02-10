@@ -36,5 +36,5 @@ logging:
 
 shaft:
   services:
-    products-catalog-host: localhost
-    cart-host: localhost
+    products-catalog-url: "http://localhost:8088/catalog/items/bulk"
+    cart-management-url: "http://localhost:8083/cart/empty"

@@ -16,6 +16,15 @@ import java.util.stream.Collectors;
 
 import static org.shaft.administration.obligatory.translator.elastic.constants.QueryConstants.*;
 
+/**
+ *  This class generates a aggregation query which will give results of total users performing `x` no. of events
+ *  `user_count` will be number of users
+ *  `graph_plot` will have buckets of date range
+ *  Never compare user count documents with graph_plot numbers in bucket for that time range
+ *  As a user can perform a given event multiple time and could be included in multiple buckets.
+ *  If you search for a document says e.eid=2 then the count will be more when compared to bucket number
+ *  because there will be results of other time range too when searched with e.eid=2 in actual result in kibana or query console
+ */
 public class ElasticQueryGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
     private int from = 0;

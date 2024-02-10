@@ -9,7 +9,7 @@ spring:
       connect-timeout: 2s
       host: ${REDIS:localhost}
       port: 6379
-      timeout: 1s
+      timeout: 10s
   cloud:
     gateway:
       discovery:

@@ -13,15 +13,15 @@ import java.util.Map;
 @Component
 public class RestClient {
   private final WebClient webClient;
-  @Value("${shaft.services.products-catalog-host}")
-  private static String PRODUCT_CATALOG_HOST;
-  @Value("${shaft.services.cart-host}")
-  private static String CART_HOST;
-  private static final String PRODUCT_CATALOG_URL = "http://"+PRODUCT_CATALOG_HOST+":8088/catalog/items/bulk";
-  private static final String CART_URL = "http://"+CART_HOST+ "localhost:8083/cart/empty";
+  private final String PRODUCT_CATALOG_URL;
+  private final String CART_HOST;
 
-  public RestClient(WebClient webClient) {
+  public RestClient(WebClient webClient,
+                    @Value("${shaft.services.products-catalog-url}") String productsCatalogURL,
+                    @Value("${shaft.services.cart-management-url}") String cartHostURL) {
     this.webClient = webClient;
+    this.PRODUCT_CATALOG_URL = productsCatalogURL;
+    this.CART_HOST = cartHostURL;
   }
 
   public Mono<String> getProducts(int accountId, List<String> iTemIds) {
@@ -41,7 +41,7 @@ public class RestClient {
   public Mono<String> emptyCart(int accountId, int i) {
     return webClient
       .get()
-      .uri(CART_URL)
+      .uri(CART_HOST)
       .header("account",String.valueOf(accountId))
       .header("i", String.valueOf(i))
       .retrieve()

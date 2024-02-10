@@ -13,7 +13,6 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     restart: always
     depends_on:
-      - elastic
       - app-gateway
       - discovery-server
     ports:

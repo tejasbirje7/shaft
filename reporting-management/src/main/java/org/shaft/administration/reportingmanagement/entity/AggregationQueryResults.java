@@ -85,7 +85,8 @@ public class AggregationQueryResults {
     Aggregation aggregations;
 
     public int getUserCount() {
-        return this.aggregations.getUser_count().getBuckets().get(0).getDoc_count();
+        // #TODO First check if document exists and then directly get(0) - Error handling
+        return this.aggregations.getUser_count().getBuckets().get(0).getDoc_count() + this.aggregations.getUser_count().getSum_other_doc_count();
     }
 
     public ArrayNode getGraphCount() {

@@ -30,6 +30,12 @@ public class QueryController {
         return queryDao.getQueryResults(account,rawQuery).map(ShaftResponseHandler::generateResponse);
     }
 
+    /**
+     *  This function is to evaluate bulk queries which is used in saved custom boards
+     * @param account
+     * @param rawQuery
+     * @return
+     */
     @RequestMapping(value = "/query/eval", method = { RequestMethod.POST })
     public Mono<ResponseEntity<Object>> evaluateEncodedQueries(@RequestHeader(value="account") int account,
                                                          @RequestBody Map<String,Object> rawQuery) {

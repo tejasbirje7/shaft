@@ -210,7 +210,7 @@ public class OrdersService implements OrdersDao {
           }
         })
         .onErrorResume(error -> {
-          log.error(InventoryLogs.BULK_PRODUCT_API_ERROR,error,accountId);
+          log.error("Exception in bulk product api {} account {}",error,accountId);
           return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BULK_PRODUCT_API_ERROR));
         });
     } else {
