@@ -24,11 +24,13 @@ import static org.shaft.administration.obligatory.translator.elastic.constants.Q
  *  As a user can perform a given event multiple time and could be included in multiple buckets.
  *  If you search for a document says e.eid=2 then the count will be more when compared to bucket number
  *  because there will be results of other time range too when searched with e.eid=2 in actual result in kibana or query console
+ *  ----------------------------------------------------------------------------------------------------------------------------------
+ *  must_not will not have events count
  */
 public class ElasticQueryGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
-    private int from = 0;
-    private int to = 0;
+    private int from = Integer.MAX_VALUE;
+    private int to = Integer.MIN_VALUE;
     private boolean isCampaignQuery = false;
     public static void main(String[] args) {
         ElasticQueryGenerator qG = new ElasticQueryGenerator();
@@ -123,7 +125,8 @@ public class ElasticQueryGenerator {
         if (mustQuery.size() > 0 && mustNotQuery.size() > 0) {
             ObjectNode b = mapper.createObjectNode();
             b.set("must",mustQuery);
-            b.set("must_not", mapper.createObjectNode().set("must_not",mapper.createObjectNode().set("bool",mapper.createObjectNode().set("must",mustNotQuery))));
+            b.set("must_not",mustNotQuery);
+//            b.set("must_not", mapper.createObjectNode().set("must_not",mapper.createObjectNode().set("bool",mapper.createObjectNode().set("must",mustNotQuery))));
             return boolQuery.set("bool",b);
         } else if (mustQuery.size() > 0) {
             return boolQuery.set("bool",mapper.createObjectNode().set("must",mustQuery));
@@ -141,17 +144,23 @@ public class ElasticQueryGenerator {
     private ObjectNode getBoolFilteredQuery(ObjectNode jsonRequest) {
         ArrayNode mustQuery = mapper.createArrayNode();
         ArrayNode mustNotQuery = mapper.createArrayNode();
+        this.from = Integer.MAX_VALUE;
+        this.to = Integer.MIN_VALUE;
         Iterator<Map.Entry<String, JsonNode>> it = jsonRequest.fields();
         while (it.hasNext()) {
             Map.Entry<String, JsonNode> entry = it.next();
             ArrayNode queries = (ArrayNode) entry.getValue();
+            int f = Integer.MAX_VALUE;
+            int t = Integer.MIN_VALUE;
             for(int i = 0; i < queries.size(); i++) {
                 ArrayNode should = mapper.createArrayNode();
                 JsonNode query = queries.get(i);
                 for(int j = 0; j<query.size(); j++) {
                     JsonNode q = query.get(j);
-                    from = Math.max(from, q.get("sT").intValue());
-                    to = Math.max(to, q.get("eT").intValue());
+                    int newF = Math.min(from, q.get("sT").intValue());
+                    int newT = Math.max(to, q.get("eT").intValue());
+                    f = Math.min(newF, f);
+                    t = Math.max(newT, t);
                     ObjectNode newQuery = mapper.createObjectNode();
                     if (q.size() > 3) {
                         ArrayNode eachQuery = mapper.createArrayNode();
@@ -202,6 +211,8 @@ public class ElasticQueryGenerator {
                     }
                 }
                 if("whoDid".equals(entry.getKey()) || "commonProp".equals(entry.getKey())) {
+                    this.from = Math.min(this.from,f);
+                    this.to = Math.max(this.to,t);
                     mustQuery.add(mapper.createObjectNode().set("bool",mapper.createObjectNode().set("should",should)));
                 } else if ("didNot".equals(entry.getKey())) {
                     mustNotQuery.add(mapper.createObjectNode().set("bool",mapper.createObjectNode().set("should",should)));
