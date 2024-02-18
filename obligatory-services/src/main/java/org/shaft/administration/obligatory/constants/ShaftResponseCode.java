@@ -31,6 +31,9 @@ public class ShaftResponseCode {
   public static String EVENTS_META_RETRIEVED = "S0028";
   public static String CAMPAIGNS_RETRIEVED = "S0029";
   public static String ITEM_DELETED = "S0030";
+  public static String TEMPLATES_FETCHED = "S0031";
+  public static String TEMPLATE_CONFIG_FETCHED = "S0032";
+  public static String TEMPLATE_CONFIG_UPDATED = "S0033";
 
   /**
    * FAILURE CODES
@@ -112,4 +115,8 @@ public class ShaftResponseCode {
   public static String FAILED_TO_FETCH_EVENTS_META = "F0073";
   public static String FAILED_TO_FETCH_SAVED_CAMPAIGNS = "F0074";
   public static String FAILED_TO_DELETE_ITEM = "F0075";
+  public static String FAILED_TO_FETCH_TEMPLATES = "F0076";
+  public static String FAILED_TO_FETCH_TEMPLATE_CONFIG = "F0077";
+  public static String FAILED_TO_UPDATE_TEMPLATE_CONFIG = "F0078";
+  public static String EXCEPTION_WHILE_UPDATING_TEMPLATE_CONFIG = "F0078";
 }

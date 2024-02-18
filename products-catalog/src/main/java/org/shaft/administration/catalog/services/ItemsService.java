@@ -137,12 +137,14 @@ public class ItemsService implements ItemsDAO {
       .onErrorResume(error -> {
         ACCOUNT_ID.remove();
         if(isRestStatusException(error)) {
+          ACCOUNT_ID.remove();
           return saveAssets(image);
         } /*else if (error instanceof FileNotFoundException) {
           // TODO Throw exception if image is not saved from above map
 
         } */else {
           log.error(ProductCatalogLogs.SHAFT_ITEMS_SAVE_EXCEPTION,error);
+          ACCOUNT_ID.remove();
           return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_ITEMS_SAVE_EXCEPTION));
         }
       });

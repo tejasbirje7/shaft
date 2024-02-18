@@ -1,0 +1,8 @@
+package org.shaft.administration.customermanagement.repositories;
+
+import org.shaft.administration.customermanagement.entity.TemplateConfiguration;
+import org.shaft.administration.customermanagement.repositories.TemplateConfigRepository.CustomTemplateConfigRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+
+public interface TemplateConfigurationRepository extends ReactiveCrudRepository<TemplateConfiguration,String>, CustomTemplateConfigRepository {
+}

@@ -28,7 +28,7 @@ eureka:
     instance-id: ${spring.application.name}:${random.value}
 
 server:
-  port: 8083
+  port: 8089
 
 logging:
   level:

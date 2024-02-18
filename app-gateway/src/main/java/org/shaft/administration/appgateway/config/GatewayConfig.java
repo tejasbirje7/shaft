@@ -141,8 +141,8 @@ public class GatewayConfig {
   @Profile("dev")
   public RouteLocator routesForEurekaServer(RouteLocatorBuilder builder) {
     return builder.routes()
-      .route("products-catalog", r->r.path("/catalog/**")
-        .uri("lb://products-catalog")) // 8088
+      .route("event-ingestion", r->r.path("/ingest/**")
+        .uri("lb://EVENT-INGESTION")) // 8181
       .route("inventory-management", r->r.path("/inventory/**")
         .uri("lb://INVENTORY-MANAGEMENT")) // 8082
       .route("cart-management", r->r.path("/cart/**")
@@ -155,8 +155,10 @@ public class GatewayConfig {
         .uri("lb://MARKETING-ENGINE")) // 8086
       .route("reporting-engine", r->r.path("/reporting/**")
         .uri("lb://REPORTING-MANAGEMENT")) // 8087
-      .route("event-ingestion", r->r.path("/ingest/**")
-        .uri("lb://EVENT-INGESTION")) // 8181
+      .route("products-catalog", r->r.path("/catalog/**")
+        .uri("lb://products-catalog")) // 8088
+      .route("customer-management", r->r.path("/customer/**")
+        .uri("lb://CUSTOMER-MANAGEMENT")) // 8089
       .build();
   }
 
