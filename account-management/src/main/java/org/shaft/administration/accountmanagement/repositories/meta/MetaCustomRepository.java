@@ -9,4 +9,5 @@ public interface MetaCustomRepository {
     Mono<Meta> getMetaFields(int account, String[] fields);
     Mono<Long> pinToDashboard(int accountId, String query);
     Flux<EventsMeta> getEventsMeta(int accountId);
+    Mono<Meta> saveAccountMeta(Meta accountInfo);
 }

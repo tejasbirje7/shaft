@@ -92,7 +92,7 @@ public class IdentityService implements IdentityDAO {
                         .get(UserConstants.ACCOUNT_INDEX);
                     }
                   } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e); // TODO Handle Exception here
                   }
                   if(!idx.isEmpty()) {
                     Identity newFpToI = new Identity();

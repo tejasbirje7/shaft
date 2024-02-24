@@ -40,9 +40,14 @@ public class TemplateConfigController {
   }
 
   @RequestMapping(value = "/template/update/config", method = { RequestMethod.GET, RequestMethod.POST })
-  public Mono<ResponseEntity<Object>> saveTemplateConfig(@RequestHeader(value="account") int account,
-                                                               @RequestBody() Mono<MultiValueMap<String, Part>> request) {
+  public Mono<ResponseEntity<Object>> updateTemplateConfig(@RequestHeader(value="account") int account,
+                                                           @RequestBody() Mono<MultiValueMap<String, Part>> request) {
     return templateConfigurationDao.updateTemplateConfiguration(account,request).map(ShaftResponseHandler::generateResponse);
+  }
+
+  @RequestMapping(value = "/template/save/config", method = { RequestMethod.GET, RequestMethod.POST })
+  public Mono<ResponseEntity<Object>> saveTemplateConfig(@RequestBody() ObjectNode eventRequest) {
+    return templateConfigurationDao.saveTemplateConfig(eventRequest).map(ShaftResponseHandler::generateResponse);
   }
 
 }

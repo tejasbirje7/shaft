@@ -7,7 +7,8 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 public interface CustomTemplateConfigRepository {
-  Flux<TemplateConfiguration> getTemplateConfiguration(int accountId);
-  Mono<TemplateConfiguration> save(int accountId, TemplateConfiguration config);
+  Flux<TemplateConfiguration> getTemplateConfigurationByAccount(int accountId);
+  Mono<TemplateConfiguration> getTemplateConfigurationById(String templateId);
+  Mono<TemplateConfiguration> saveTemplateConfiguration(int accountId, TemplateConfiguration config);
   Mono<Long> update(int accountId, Map<String,Object> config);
 }

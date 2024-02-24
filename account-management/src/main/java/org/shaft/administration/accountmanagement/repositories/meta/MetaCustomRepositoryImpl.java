@@ -25,7 +25,7 @@ import java.util.Objects;
 
 @Slf4j
 @Repository
-public class MetaCustomRepositoryImpl implements MetaCustomRepository{
+public class MetaCustomRepositoryImpl implements MetaCustomRepository {
 
     private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
     private final ReactiveElasticsearchClient reactiveElasticsearchClient;
@@ -88,6 +88,14 @@ public class MetaCustomRepositoryImpl implements MetaCustomRepository{
           .filter(Objects::nonNull)
           .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
     }
+
+    @Override
+    public Mono<Meta> saveAccountMeta(Meta accountInfo) {
+        return reactiveElasticsearchOperations.save(accountInfo,
+          IndexCoordinates.of( "accounts_meta")
+        ).doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+    }
+
 
     @Override
     public Flux<EventsMeta> getEventsMeta(int accountId) {

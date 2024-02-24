@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
@@ -48,7 +49,7 @@ public class CustomTemplateConfigRepositoryImpl implements CustomTemplateConfigR
     httpHeaders = new HttpHeaders();
   }
   @Override
-  public Flux<TemplateConfiguration> getTemplateConfiguration(int accountId) {
+  public Flux<TemplateConfiguration> getTemplateConfigurationByAccount(int accountId) {
     query = QueryBuilders.matchAllQuery();
     ns = new NativeSearchQueryBuilder()
       .withQuery(query)
@@ -65,7 +66,24 @@ public class CustomTemplateConfigRepositoryImpl implements CustomTemplateConfigR
   }
 
   @Override
-  public Mono<TemplateConfiguration> save(int accountId, TemplateConfiguration config) {
+  public Mono<TemplateConfiguration> getTemplateConfigurationById(String templateId) {
+    query = QueryBuilders.boolQuery()
+      .must(QueryBuilders.termQuery("templateId.keyword",templateId));
+    ns = new NativeSearchQueryBuilder()
+      .withQuery(query)
+      .withMaxResults(1)
+      .build();
+
+    return reactiveElasticsearchOperations.search(ns, TemplateConfiguration.class,
+        IndexCoordinates.of("template_configurations"))
+      .map(SearchHit::getContent)
+      .filter(Objects::nonNull)
+      .doOnError(throwable -> log.error(throwable.getMessage(), throwable))
+      .single();
+  }
+
+  @Override
+  public Mono<TemplateConfiguration> saveTemplateConfiguration(int accountId, TemplateConfiguration config) {
     return reactiveElasticsearchOperations.save(config,
       IndexCoordinates.of(accountId + "_template_configuration")
     ).doOnError(throwable -> log.error(throwable.getMessage(), throwable));

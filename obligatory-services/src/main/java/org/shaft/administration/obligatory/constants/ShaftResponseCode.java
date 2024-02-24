@@ -34,6 +34,7 @@ public class ShaftResponseCode {
   public static String TEMPLATES_FETCHED = "S0031";
   public static String TEMPLATE_CONFIG_FETCHED = "S0032";
   public static String TEMPLATE_CONFIG_UPDATED = "S0033";
+  public static String ACCOUNT_BOOTSTRAPPED = "S0034";
 
   /**
    * FAILURE CODES
@@ -119,4 +120,19 @@ public class ShaftResponseCode {
   public static String FAILED_TO_FETCH_TEMPLATE_CONFIG = "F0077";
   public static String FAILED_TO_UPDATE_TEMPLATE_CONFIG = "F0078";
   public static String EXCEPTION_WHILE_UPDATING_TEMPLATE_CONFIG = "F0078";
+  public static String FAILED_TO_UPDATE_EVENT_INDEX_IN_ACC = "F0079";
+  public static String ERROR_UPDATING_EVENT_IDX_IN_ACC = "F0080";
+  public static String FAILED_TO_INSERT_EVENT_TRACKING_INDEX = "F0081";
+  public static String EXCEPTION_PARSING_EVENT_TRACKING_INDEX_RESP = "F0082";
+  public static String ERROR_INSERTING_EVENT_TRACKING_INDEX = "F0083";
+  public static String FAILED_TO_UPDATE_DEVICE_MAPPINGS = "F0084";
+  public static String EXCEPTION_PARSING_DEVICE_MAPPING_RESP = "F0085";
+  public static String FAILED_CREATING_ENTRY_IN_ACCOUNT = "F0086";
+  public static String FAILED_TO_INSERT_TEMPLATE_CONFIG_BOILER = "F0087";
+  public static String ERROR_INSERTING_TEMPLATE_CONFIG_BOILER = "F0088";
+  public static String ERROR_SAVING_TEMPLATE_CONFIG = "F0089";
+  public static String ERROR_FETCHING_TEMPLATE_CONFIG = "F0090";
+  public static String FAILED_RESP_FROM_BOOTSTRAP_ACCOUNT = "F0091";
+  public static String ERROR_WHILE_BOOTSTRAP_ACCOUNT = "F0092";
+  public static String ERROR_PARSING_BOOTSTRAP_ACCOUNT_RESP = "F0093";
 }

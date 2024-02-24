@@ -22,3 +22,6 @@ logging:
   level:
     root: info
 
+shaft:
+  services:
+    account-url : localhost

@@ -13,9 +13,9 @@ import java.util.UUID;
 @Document(indexName = "accounts_meta",createIndex = false)
 public class Meta {
     @Id
-    private String _id = UUID.randomUUID().toString();
     private int aid;
     private String idx;
     private String name;
     private Map<String,String> dashboardQueries;
+    private String templateId;
 }
