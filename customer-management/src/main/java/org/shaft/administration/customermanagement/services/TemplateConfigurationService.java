@@ -144,7 +144,7 @@ public class TemplateConfigurationService implements TemplateConfigurationDao {
                   ObjectNode isCreated = mapper.createObjectNode();
                   isCreated.put("accountIndex",accountIndex);
                   isCreated.put("accountId",accountId);
-                  return ShaftResponseBuilder.buildResponse("S",isCreated);
+                  return ShaftResponseBuilder.buildResponse(ShaftResponseCode.ACCOUNT_BOOTSTRAPPED_AND_TEMPLATE_CONFIG_SUCCESS,isCreated);
                 })
                 .onErrorResume(error -> {
                   if(error instanceof RestStatusException) {
@@ -154,7 +154,7 @@ public class TemplateConfigurationService implements TemplateConfigurationDao {
                         ObjectNode isCreated = mapper.createObjectNode();
                         isCreated.put("accountIndex",accountIndex);
                         isCreated.put("accountId",accountId);
-                        return Mono.just(ShaftResponseBuilder.buildResponse("S",isCreated));
+                        return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.ACCOUNT_BOOTSTRAPPED_AND_TEMPLATE_CONFIG_SUCCESS,isCreated));
                       } else {
                         return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.ERROR_SAVING_TEMPLATE_CONFIG));
                       }

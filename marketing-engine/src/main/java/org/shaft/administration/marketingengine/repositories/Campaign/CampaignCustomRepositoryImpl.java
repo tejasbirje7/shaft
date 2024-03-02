@@ -1,4 +1,4 @@
-package org.shaft.administration.marketingengine.repositories.CustomRepository;
+package org.shaft.administration.marketingengine.repositories.Campaign;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

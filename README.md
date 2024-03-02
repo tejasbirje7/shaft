@@ -61,7 +61,7 @@ PUT _cluster/settings
   - wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
   - tar xvf openjdk-17.0.2_linux-x64_bin.tar.gz
 - Set ES_JAVA_HOME in /etc/environment and then do source /etc/environment
-- Set vm.max_map_count=262144 in `/etc/sysctl.conf` then do sysctl -p
+- Set `vm.max_map_count=262144` in `/etc/sysctl.conf` then do sysctl -p
 - Set JVM memory in /etc/elasticsearch/jvm.options
   - -Xms2g
   - -Xmx2g
@@ -79,3 +79,6 @@ PUT _cluster/settings
 **CREATE DOCKER NETWORK**
 - sudo docker network ls
 - sudo docker network create -d bridge shaft-docker_shaft
+
+**SENDGRID ACCESS KEY**
+- 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

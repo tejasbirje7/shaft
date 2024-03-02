@@ -35,6 +35,7 @@ public class ShaftResponseCode {
   public static String TEMPLATE_CONFIG_FETCHED = "S0032";
   public static String TEMPLATE_CONFIG_UPDATED = "S0033";
   public static String ACCOUNT_BOOTSTRAPPED = "S0034";
+  public static String ACCOUNT_BOOTSTRAPPED_AND_TEMPLATE_CONFIG_SUCCESS = "S0035";
 
   /**
    * FAILURE CODES

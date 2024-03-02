@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public class QueryCustomRepositoryImpl implements QueryCustomRepository{
 
-    private final AggregationQueryResults emptyResults = new AggregationQueryResults();
     private final ObjectMapper mapper;
     private final RestClient restClient;
 
