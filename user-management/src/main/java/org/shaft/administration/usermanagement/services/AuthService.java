@@ -1,7 +1,9 @@
 package org.shaft.administration.usermanagement.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.shaft.administration.obligatory.auth.transact.ShaftHashing;
@@ -9,6 +11,7 @@ import org.shaft.administration.obligatory.auth.utils.Mode;
 import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.tokens.ShaftJWT;
 import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
+import org.shaft.administration.usermanagement.clients.AccountRestClient;
 import org.shaft.administration.usermanagement.constants.UserConstants;
 import org.shaft.administration.usermanagement.constants.UserManagementLogs;
 import org.shaft.administration.usermanagement.dao.AuthDAO;
@@ -31,11 +34,13 @@ import java.util.Map;
 @Service
 public class AuthService implements AuthDAO {
 
-  ShaftJWT shaftJWT;
-  ObjectMapper mapper;
-  ShaftHashing shaftHashing;
-  AuthRepository authRepository;
-  IdentityRepository identityRepository;
+  private final ShaftJWT shaftJWT;
+  private final ObjectMapper mapper;
+  private final ObjectReader mapParser;
+  private final ShaftHashing shaftHashing;
+  private final AuthRepository authRepository;
+  private final IdentityRepository identityRepository;
+  private final AccountRestClient accountRestClient;
   public static int getAccount() {
     return ACCOUNT_ID.get();
   }
@@ -44,12 +49,15 @@ public class AuthService implements AuthDAO {
   @Autowired
   public AuthService(AuthRepository authRepository,
                      ShaftHashing shaftHashing,
+                     AccountRestClient accountRestClient,
                      IdentityRepository identityRepository) throws Exception {
     this.shaftJWT = new ShaftJWT();
     this.mapper = new ObjectMapper();
     this.shaftHashing = shaftHashing;
     this.authRepository = authRepository;
+    this.accountRestClient = accountRestClient;
     this.identityRepository = identityRepository;
+    this.mapParser = new ObjectMapper().readerFor(Map.class);
   }
 
   @Override
@@ -78,6 +86,9 @@ public class AuthService implements AuthDAO {
             // Upsert FP to I identity if it's new fp for i
             return identityRepository.upsertFpAndIPair(user.getA(),fp,user.getI())
               .map(totalUpdated -> {
+                if(totalUpdated <= 0) {
+                  log.info("Failed to upsertFpAndIPair for account {} - user {}",user.getA(),user.getI());
+                }
                 ObjectNode response = interceptUserResponse(user,token);
                 return ShaftResponseBuilder.buildResponse(ShaftResponseCode.LOGIN_SUCCESS,response);
               })
@@ -122,10 +133,89 @@ public class AuthService implements AuthDAO {
             return authRepository.save(user)
               .publishOn(Schedulers.boundedElastic())
               .flatMap(user2 -> {
-                Identity i = getIdentityObject(fp,newI);
+                Identity i = createIdentityObject(fp,newI);
                 return identityRepository.save(account,i)
-                  // #TODO Delete password while responding to request from below `ide` object
-                  .map(ide -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
+                  .map(ide -> {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    return ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class));
+                  })
                   .onErrorResume(t -> {
                     if(isRestStatusException(t)) {
                       return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(i,ObjectNode.class)));
@@ -149,7 +239,7 @@ public class AuthService implements AuthDAO {
     return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BAD_REGISTRATION_REQUEST));
   }
 
-  private Identity getIdentityObject(String fp, int newI) {
+  private Identity createIdentityObject(String fp, int newI) {
     List<Map<String,String>> guidDetails = new ArrayList<>();
     Map<String,String> g = new HashMap<>();
     g.put("g",fp);

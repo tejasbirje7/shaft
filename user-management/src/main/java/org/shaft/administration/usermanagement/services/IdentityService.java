@@ -87,9 +87,7 @@ public class IdentityService implements IdentityDAO {
                     if(meta.containsKey(UserConstants.RESPONSE_CODE)
                       && ((String)meta.get(UserConstants.RESPONSE_CODE))
                       .startsWith(UserConstants.RESPONSE_CODE_INITIAL)) {
-                      idx = (String) ((Map<String, Object>) meta
-                        .get(UserConstants.RESPONSE_DATA))
-                        .get(UserConstants.ACCOUNT_INDEX);
+                      idx = (String) ((Map<String, Object>) meta.get(UserConstants.RESPONSE_DATA)).get(UserConstants.ACCOUNT_INDEX);
                     }
                   } catch (JsonProcessingException e) {
                     throw new RuntimeException(e); // TODO Handle Exception here
@@ -99,6 +97,7 @@ public class IdentityService implements IdentityDAO {
                     if (details.containsKey(UserConstants.REQUEST_TIME)) {
                       int newI = (Integer) details.get(UserConstants.REQUEST_TIME);
                       newFpToI.setIdentity(newI);
+                      newFpToI.setRequestTime(newI);
                       newFpToI.setIdentified(false);
                       Map<String,String> fpMapCreation = new HashMap<>();
                       fpMapCreation.put("g",fp);

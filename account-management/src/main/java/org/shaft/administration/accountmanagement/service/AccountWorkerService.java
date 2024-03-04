@@ -136,10 +136,12 @@ public class AccountWorkerService implements AccountWorkerDao {
       "      },\n" +
       "      \"i\": {\n" +
       "        \"type\": \"long\"\n" +
+      "      },\n" +
+      "      \"email\": {\n" +
+      "        \"type\": \"text\"\n" +
       "      }\n" +
       "    }\n" +
       "  }\n" +
       "}";
   }
-
 }

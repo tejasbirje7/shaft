@@ -45,6 +45,12 @@ public class MetaCustomRepositoryImpl implements MetaCustomRepository {
           .must(QueryBuilders.termQuery("aid",account));
         return queryWithSource(fields);
     }
+    @Override
+    public Mono<Meta> getMetaFields(int account) {
+        query = QueryBuilders.boolQuery()
+          .must(QueryBuilders.termQuery("aid",account));
+        return queryMetaWithoutSource();
+    }
 
     private Mono<Meta> queryWithSource(String[] fields) {
         //include only specific fields
@@ -53,6 +59,23 @@ public class MetaCustomRepositoryImpl implements MetaCustomRepository {
           .withQuery(query)
           .withMaxResults(1)
           .withSourceFilter(filter)
+          .build();
+        try {
+            return reactiveElasticsearchOperations.search(ns, Meta.class)
+              .map(SearchHit::getContent)
+              .filter(Objects::nonNull)
+              .doOnError(throwable -> log.error(throwable.getMessage(), throwable))
+              .single();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Mono.empty();
+    }
+
+    private Mono<Meta> queryMetaWithoutSource() {
+        ns = new NativeSearchQueryBuilder()
+          .withQuery(query)
+          .withMaxResults(1)
           .build();
         try {
             return reactiveElasticsearchOperations.search(ns, Meta.class)

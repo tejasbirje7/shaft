@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 
 public interface MetaCustomRepository {
     Mono<Meta> getMetaFields(int account, String[] fields);
+    Mono<Meta> getMetaFields(int account);
     Mono<Long> pinToDashboard(int accountId, String query);
     Flux<EventsMeta> getEventsMeta(int accountId);
     Mono<Meta> saveAccountMeta(Meta accountInfo);

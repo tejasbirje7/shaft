@@ -36,16 +36,28 @@ public class MetaService implements MetaDAO {
         try {
             if(!fields.isEmpty()) {
                 ACCOUNT_ID.set(account);
-                String[] f = ((ArrayList<String>)fields.get(AccountConstants.FIELDS)).toArray(new String[0]);
-                return metaRepository.getMetaFields(account, f)
-                  .map(metaResponse -> {
-                      ObjectNode n = mapper.convertValue(metaResponse,ObjectNode.class);
-                      return ShaftResponseBuilder.buildResponse(ShaftResponseCode.META_FIELDS_FETCHED,n);
-                  })
-                  .onErrorResume(error -> {
-                      log.error(AccountLogs.EXCEPTION_FETCHING_META_FIELDS,error,account);
-                      return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.EXCEPTION_FETCHING_META_FIELDS));
-                  });
+                if(!fields.isEmpty()) {
+                    String[] f = ((ArrayList<String>)fields.get(AccountConstants.FIELDS)).toArray(new String[0]);
+                    return metaRepository.getMetaFields(account,f)
+                      .map(metaResponse -> {
+                          ObjectNode n = mapper.convertValue(metaResponse,ObjectNode.class);
+                          return ShaftResponseBuilder.buildResponse(ShaftResponseCode.META_FIELDS_FETCHED,n);
+                      })
+                      .onErrorResume(error -> {
+                          log.error(AccountLogs.EXCEPTION_FETCHING_META_FIELDS,error,account);
+                          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.EXCEPTION_FETCHING_META_FIELDS));
+                      });
+                } else {
+                    return metaRepository.getMetaFields(account)
+                      .map(metaResponse -> {
+                          ObjectNode n = mapper.convertValue(metaResponse,ObjectNode.class);
+                          return ShaftResponseBuilder.buildResponse(ShaftResponseCode.META_FIELDS_FETCHED,n);
+                      })
+                      .onErrorResume(error -> {
+                          log.error(AccountLogs.EXCEPTION_FETCHING_META_FIELDS,error,account);
+                          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.EXCEPTION_FETCHING_META_FIELDS));
+                      });
+                }
             } else {
                 log.error(AccountLogs.BAD_META_REQUEST,account);
                 return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BAD_META_REQUEST));
