@@ -15,12 +15,15 @@ import org.shaft.administration.usermanagement.clients.AccountRestClient;
 import org.shaft.administration.usermanagement.constants.UserConstants;
 import org.shaft.administration.usermanagement.constants.UserManagementLogs;
 import org.shaft.administration.usermanagement.dao.AuthDAO;
+import org.shaft.administration.usermanagement.entity.EventIndex;
 import org.shaft.administration.usermanagement.entity.Identity;
 import org.shaft.administration.usermanagement.entity.User;
 import org.shaft.administration.usermanagement.repositories.AuthRepository;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
+import org.shaft.administration.usermanagement.repositories.fingerprint.EventIndexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.RestStatusException;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -41,6 +44,7 @@ public class AuthService implements AuthDAO {
   private final AuthRepository authRepository;
   private final IdentityRepository identityRepository;
   private final AccountRestClient accountRestClient;
+  private final EventIndexRepository eventIndexRepository;
   public static int getAccount() {
     return ACCOUNT_ID.get();
   }
@@ -50,7 +54,8 @@ public class AuthService implements AuthDAO {
   public AuthService(AuthRepository authRepository,
                      ShaftHashing shaftHashing,
                      AccountRestClient accountRestClient,
-                     IdentityRepository identityRepository) throws Exception {
+                     IdentityRepository identityRepository, EventIndexRepository eventIndexRepository) throws Exception {
+    this.eventIndexRepository = eventIndexRepository;
     this.shaftJWT = new ShaftJWT();
     this.mapper = new ObjectMapper();
     this.shaftHashing = shaftHashing;
@@ -135,86 +140,48 @@ public class AuthService implements AuthDAO {
               .flatMap(user2 -> {
                 Identity i = createIdentityObject(fp,newI);
                 return identityRepository.save(account,i)
-                  .map(ide -> {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    return ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class));
+                  .flatMap(ide -> {
+                    return accountRestClient.retrieveAccountMeta(account)
+                      .publishOn(Schedulers.boundedElastic())
+                      .mapNotNull(data -> {
+                        ACCOUNT_ID.set(account);
+                        Map<String,Object> meta;
+                        String idx = "";
+                        try {
+                          meta = mapParser.readValue(data);
+                          if(meta.containsKey(UserConstants.RESPONSE_CODE)
+                            && ((String)meta.get(UserConstants.RESPONSE_CODE))
+                            .startsWith(UserConstants.RESPONSE_CODE_INITIAL)) {
+                            idx = (String) ((Map<String, Object>) meta.get(UserConstants.RESPONSE_DATA)).get(UserConstants.ACCOUNT_INDEX);
+                          }
+                        } catch (JsonProcessingException e) {
+                          return ShaftResponseBuilder.buildResponse(
+                            ShaftResponseCode.SHAFT_UNABLE_TO_RETRIEVE_ACCOUNT_META);
+                        }
+                        if(!idx.isEmpty()) {
+                          EventIndex eventIndex = new EventIndex();
+                          eventIndex.setEmail(email);
+                          return eventIndexRepository.saveEventIndex(idx,eventIndex)
+                            .map(evtIdx -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
+                            .onErrorResume(error -> {
+                              if(!(error instanceof RestStatusException)) {
+                                log.error("Exception while creating document in event index");
+                              }
+                              return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)));
+                            }).block();
+                        } else {
+                          ACCOUNT_ID.remove();
+                          log.error(UserManagementLogs.UNABLE_TO_FETCH_ACCOUNT_META);
+                          return ShaftResponseBuilder.buildResponse(
+                            ShaftResponseCode.SHAFT_UNABLE_TO_RETRIEVE_ACCOUNT_META);
+                        }
+                      })
+                      .onErrorResume(t -> {
+                        ACCOUNT_ID.remove();
+                        log.error(UserManagementLogs.ERROR_IN_FETCHING_ACCOUNT_META,t);
+                        return Mono.just(ShaftResponseBuilder.buildResponse(
+                          ShaftResponseCode.ERROR_IN_FETCHING_ACCOUNT_META));
+                      });
                   })
                   .onErrorResume(t -> {
                     if(isRestStatusException(t)) {
