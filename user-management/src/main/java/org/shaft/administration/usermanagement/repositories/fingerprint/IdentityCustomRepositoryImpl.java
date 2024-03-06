@@ -92,7 +92,7 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
 
     @Override
     public Mono<Long> updateFp(String fp, int i) {
-        String index = IdentityService.getAccount() + "_devices";
+        String index = IdentityService.getAccount() + "_device_mapping";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 
         updateRequest.setConflicts("proceed");
@@ -119,8 +119,8 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     }
 
     @Override
-    public Mono<Long> upsertFpAndIPair(int account,String fp, int i) {
-        String index = account + "_devices";
+    public Mono<Long> upsertFpAndIPair(int account,String fp, long i) {
+        String index = account + "_device_mapping";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 
         updateRequest.setConflicts("proceed");
@@ -147,7 +147,7 @@ public class IdentityCustomRepositoryImpl implements IdentityCustomRepository {
     @Override
     public Mono<Identity> save(int accountId, Identity i) {
         return reactiveElasticsearchOperations.save(i,
-          IndexCoordinates.of(accountId + "_devices")
+          IndexCoordinates.of(accountId + "_device_mapping")
         ).doOnError(throwable -> log.error(throwable.getMessage(), throwable));
     }
 

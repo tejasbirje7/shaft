@@ -6,10 +6,10 @@ import org.springframework.data.elasticsearch.annotations.Document;
 
 @NoArgsConstructor
 @Data
-@Document(indexName = "users")
+@Document(indexName = "users") // #TODO Not to store all users in generic collection instead there should be index <account_id>_users
 public class User {
     @Id
-    int i;
+    long i;
     long c;
     int a;
     String nm;

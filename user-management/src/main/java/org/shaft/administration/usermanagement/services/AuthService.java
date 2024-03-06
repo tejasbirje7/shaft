@@ -22,6 +22,7 @@ import org.shaft.administration.usermanagement.repositories.AuthRepository;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
 import org.shaft.administration.usermanagement.repositories.fingerprint.EventIndexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
@@ -114,17 +115,18 @@ public class AuthService implements AuthDAO {
     }
   }
 
+  @Override
   public Mono<ObjectNode> registerUser(int account, ObjectNode request) {
     if (request.has(UserConstants.DETAILS) && request.has(UserConstants.FINGER_PRINT)) {
       JsonNode details = request.get(UserConstants.DETAILS);
       String email = details.get(UserConstants.EMAIL).asText();
-      int newI = details.get(UserConstants.IDENTITY).asInt();
+      long newI = details.get(UserConstants.IDENTITY).asLong();
       String fp = request.get(UserConstants.FINGER_PRINT).asText();
       return authRepository.countByE(email)
         .collectList()
         .publishOn(Schedulers.boundedElastic())
         .flatMap(userList -> {
-          if(!userList.isEmpty() && userList.get(0) > 0) {
+          if (!userList.isEmpty() && userList.get(0) > 0) {
             // User already exists
             return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_EXISTS));
           } else {
@@ -137,67 +139,20 @@ public class AuthService implements AuthDAO {
             user.setP(shaftHashing.transactPassword(Mode.ENCRYPT, details.get(UserConstants.PASSWORD).asText()));
             return authRepository.save(user)
               .publishOn(Schedulers.boundedElastic())
-              .flatMap(user2 -> {
-                Identity i = createIdentityObject(fp,newI);
-                return identityRepository.save(account,i)
-                  .flatMap(ide -> {
-                    return accountRestClient.retrieveAccountMeta(account)
-                      .publishOn(Schedulers.boundedElastic())
-                      .mapNotNull(data -> {
-                        ACCOUNT_ID.set(account);
-                        Map<String,Object> meta;
-                        String idx = "";
-                        try {
-                          meta = mapParser.readValue(data);
-                          if(meta.containsKey(UserConstants.RESPONSE_CODE)
-                            && ((String)meta.get(UserConstants.RESPONSE_CODE))
-                            .startsWith(UserConstants.RESPONSE_CODE_INITIAL)) {
-                            idx = (String) ((Map<String, Object>) meta.get(UserConstants.RESPONSE_DATA)).get(UserConstants.ACCOUNT_INDEX);
-                          }
-                        } catch (JsonProcessingException e) {
-                          return ShaftResponseBuilder.buildResponse(
-                            ShaftResponseCode.SHAFT_UNABLE_TO_RETRIEVE_ACCOUNT_META);
-                        }
-                        if(!idx.isEmpty()) {
-                          EventIndex eventIndex = new EventIndex();
-                          eventIndex.setEmail(email);
-                          return eventIndexRepository.saveEventIndex(idx,eventIndex)
-                            .map(evtIdx -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)))
-                            .onErrorResume(error -> {
-                              if(!(error instanceof RestStatusException)) {
-                                log.error("Exception while creating document in event index");
-                              }
-                              return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(ide, ObjectNode.class)));
-                            }).block();
-                        } else {
-                          ACCOUNT_ID.remove();
-                          log.error(UserManagementLogs.UNABLE_TO_FETCH_ACCOUNT_META);
-                          return ShaftResponseBuilder.buildResponse(
-                            ShaftResponseCode.SHAFT_UNABLE_TO_RETRIEVE_ACCOUNT_META);
-                        }
-                      })
-                      .onErrorResume(t -> {
-                        ACCOUNT_ID.remove();
-                        log.error(UserManagementLogs.ERROR_IN_FETCHING_ACCOUNT_META,t);
-                        return Mono.just(ShaftResponseBuilder.buildResponse(
-                          ShaftResponseCode.ERROR_IN_FETCHING_ACCOUNT_META));
-                      });
-                  })
-                  .onErrorResume(t -> {
-                    if(isRestStatusException(t)) {
-                      return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(i,ObjectNode.class)));
-                    } else {
-                      log.error(UserManagementLogs.AUTH_SAVE_IDENTITY_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
-                      return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_IDENTITY_REGISTRATION_ERROR));
-                    }
-                  });
+              .flatMap(userSaved -> {
+                ACCOUNT_ID.set(account);
+                Identity i = createIdentityObject(fp, newI);
+                return saveIdentityObject(account,email,i);
               })
               .onErrorResume(t -> {
-                if(isRestStatusException(t)) {
-                  return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED,mapper.convertValue(user,ObjectNode.class)));
-                } else {
-                  log.error(UserManagementLogs.SAVE_USER_EXCEPTION,t.getMessage(),ACCOUNT_ID.get());
+                if (!isRestStatusException(t)) {
+                  ACCOUNT_ID.remove();
+                  log.error(UserManagementLogs.SAVE_USER_EXCEPTION, t.getMessage(), ACCOUNT_ID.get());
                   return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_REGISTRATION_ERROR));
+                } else {
+                  ACCOUNT_ID.set(account);
+                  Identity i = createIdentityObject(fp, newI);
+                  return saveIdentityObject(account,email,i);
                 }
               });
           }
@@ -206,7 +161,73 @@ public class AuthService implements AuthDAO {
     return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BAD_REGISTRATION_REQUEST));
   }
 
-  private Identity createIdentityObject(String fp, int newI) {
+  private Mono<ObjectNode> saveIdentityObject(int account,String email,Identity i) {
+    return identityRepository.save(account, i)
+      .flatMap(ide -> getAccountMetaAndSaveEventIndex(account,email,ide))
+      .onErrorResume(identitySaveException -> {
+        ACCOUNT_ID.remove();
+        if (isRestStatusException(identitySaveException)) {
+          return getAccountMetaAndSaveEventIndex(account,email,new Identity());
+        } else {
+          log.error(UserManagementLogs.AUTH_SAVE_IDENTITY_EXCEPTION, identitySaveException.getMessage(), ACCOUNT_ID.get());
+          return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_IDENTITY_REGISTRATION_ERROR));
+        }
+      });
+  }
+
+
+  private Mono<ObjectNode> getAccountMetaAndSaveEventIndex(int account,String email, Identity savedIdentity) {
+    return accountRestClient.retrieveAccountMeta(account)
+      .publishOn(Schedulers.boundedElastic())
+      .mapNotNull(data -> {
+        ACCOUNT_ID.set(account);
+        Map<String, Object> meta;
+        String idx = "";
+        try {
+          meta = mapParser.readValue(data);
+          if (meta.containsKey(UserConstants.RESPONSE_CODE)
+            && ((String) meta.get(UserConstants.RESPONSE_CODE))
+            .startsWith(UserConstants.RESPONSE_CODE_INITIAL)) {
+            idx = (String) ((Map<String, Object>) meta.get(UserConstants.RESPONSE_DATA)).get(UserConstants.ACCOUNT_INDEX);
+          }
+        } catch (JsonProcessingException e) {
+          return ShaftResponseBuilder.buildResponse(
+            ShaftResponseCode.SHAFT_UNABLE_TO_RETRIEVE_ACCOUNT_META);
+        }
+        if (!idx.isEmpty()) {
+          EventIndex eventIndex = new EventIndex();
+          eventIndex.setEmail(email);
+          return eventIndexRepository.saveEventIndex(idx, eventIndex)
+            .map(savedEvtIdx -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED, mapper.convertValue(savedIdentity, ObjectNode.class)))
+            .onErrorResume(error -> {
+              ACCOUNT_ID.remove();
+              if (!(error instanceof RestStatusException)) {
+                log.error("Exception while creating document in event index");
+              }
+              return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED, mapper.convertValue(savedIdentity, ObjectNode.class)));
+            }).block();
+        } else {
+          ACCOUNT_ID.remove();
+          log.error(UserManagementLogs.UNABLE_TO_FETCH_ACCOUNT_META);
+          return ShaftResponseBuilder.buildResponse(
+            ShaftResponseCode.SHAFT_UNABLE_TO_RETRIEVE_ACCOUNT_META);
+        }
+      })
+      .onErrorResume(accountRESTException -> {
+        ACCOUNT_ID.remove();
+        log.error(UserManagementLogs.ERROR_IN_FETCHING_ACCOUNT_META, accountRESTException);
+        return Mono.just(ShaftResponseBuilder.buildResponse(
+          ShaftResponseCode.ERROR_IN_FETCHING_ACCOUNT_META));
+      });
+  }
+
+
+
+
+
+
+
+  private Identity createIdentityObject(String fp, long newI) {
     List<Map<String,String>> guidDetails = new ArrayList<>();
     Map<String,String> g = new HashMap<>();
     g.put("g",fp);

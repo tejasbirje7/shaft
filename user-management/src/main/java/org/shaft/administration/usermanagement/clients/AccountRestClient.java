@@ -21,7 +21,7 @@ public class AccountRestClient {
     public AccountRestClient(WebClient webClient,
                              @Value("${shaft.services.account-url}") String ACCOUNT_HOST) {
         this.webClient = webClient;
-        this.ACCOUNT_META_URL = "http://" + ACCOUNT_HOST + " :8084/account/meta/fields";
+        this.ACCOUNT_META_URL = "http://" + ACCOUNT_HOST + ":8084/account/meta/fields";
     }
 
     // #TODO Handle if response is not in Map<String,Object>, by parsing response as string in reactive and converting it to Map<String,Object>
