@@ -22,9 +22,7 @@ import org.shaft.administration.usermanagement.repositories.AuthRepository;
 import org.shaft.administration.usermanagement.repositories.IdentityRepository;
 import org.shaft.administration.usermanagement.repositories.fingerprint.EventIndexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.RestStatusException;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -137,12 +135,15 @@ public class AuthService implements AuthDAO {
             user.setNm("Tejas Birje");
             user.setE(email);
             user.setP(shaftHashing.transactPassword(Mode.ENCRYPT, details.get(UserConstants.PASSWORD).asText()));
+            Map<String,Object> props = new HashMap<>();
+            props.put("email",email);
+            props.put("contact",Long.parseLong(details.get(UserConstants.CONTACT).asText()));
             return authRepository.save(user)
               .publishOn(Schedulers.boundedElastic())
               .flatMap(userSaved -> {
                 ACCOUNT_ID.set(account);
                 Identity i = createIdentityObject(fp, newI);
-                return saveIdentityObject(account,email,i);
+                return saveIdentityObject(account,props,i);
               })
               .onErrorResume(t -> {
                 if (!isRestStatusException(t)) {
@@ -152,7 +153,7 @@ public class AuthService implements AuthDAO {
                 } else {
                   ACCOUNT_ID.set(account);
                   Identity i = createIdentityObject(fp, newI);
-                  return saveIdentityObject(account,email,i);
+                  return saveIdentityObject(account,props,i);
                 }
               });
           }
@@ -161,13 +162,13 @@ public class AuthService implements AuthDAO {
     return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.BAD_REGISTRATION_REQUEST));
   }
 
-  private Mono<ObjectNode> saveIdentityObject(int account,String email,Identity i) {
+  private Mono<ObjectNode> saveIdentityObject(int account,Map<String,Object> props,Identity i) {
     return identityRepository.save(account, i)
-      .flatMap(ide -> getAccountMetaAndSaveEventIndex(account,email,ide))
+      .flatMap(ide -> getAccountMetaAndSaveEventIndex(account,props,ide))
       .onErrorResume(identitySaveException -> {
         ACCOUNT_ID.remove();
         if (isRestStatusException(identitySaveException)) {
-          return getAccountMetaAndSaveEventIndex(account,email,new Identity());
+          return getAccountMetaAndSaveEventIndex(account,props,new Identity());
         } else {
           log.error(UserManagementLogs.AUTH_SAVE_IDENTITY_EXCEPTION, identitySaveException.getMessage(), ACCOUNT_ID.get());
           return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.SHAFT_IDENTITY_REGISTRATION_ERROR));
@@ -176,7 +177,7 @@ public class AuthService implements AuthDAO {
   }
 
 
-  private Mono<ObjectNode> getAccountMetaAndSaveEventIndex(int account,String email, Identity savedIdentity) {
+  private Mono<ObjectNode> getAccountMetaAndSaveEventIndex(int account,Map<String,Object> props, Identity savedIdentity) {
     return accountRestClient.retrieveAccountMeta(account)
       .publishOn(Schedulers.boundedElastic())
       .mapNotNull(data -> {
@@ -196,7 +197,9 @@ public class AuthService implements AuthDAO {
         }
         if (!idx.isEmpty()) {
           EventIndex eventIndex = new EventIndex();
-          eventIndex.setEmail(email);
+          eventIndex.setProps(props);
+          eventIndex.setI(savedIdentity.getIdentity());
+          eventIndex.setE(new ArrayList<>());
           return eventIndexRepository.saveEventIndex(idx, eventIndex)
             .map(savedEvtIdx -> ShaftResponseBuilder.buildResponse(ShaftResponseCode.USER_REGISTERED, mapper.convertValue(savedIdentity, ObjectNode.class)))
             .onErrorResume(error -> {

@@ -137,8 +137,8 @@ public class AccountWorkerService implements AccountWorkerDao {
       "      \"i\": {\n" +
       "        \"type\": \"long\"\n" +
       "      },\n" +
-      "      \"email\": {\n" +
-      "        \"type\": \"text\"\n" +
+      "      \"props\": {\n" +
+      "        \"type\": \"nested\"\n" +
       "      }\n" +
       "    }\n" +
       "  }\n" +

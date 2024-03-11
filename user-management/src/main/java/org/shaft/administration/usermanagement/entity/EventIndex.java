@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class EventIndex {
@@ -11,6 +12,6 @@ public class EventIndex {
   @Id
   long i;
   List<Object> e;
-  String email;
+  Map<String,Object> props;
 
 }
