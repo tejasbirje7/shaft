@@ -38,6 +38,45 @@ public class EmailService implements EmailDao {
     try {
       return fireAnalyticsQuery(accountId,elasticQuery)
         .mapNotNull(esResponse -> {
+          /* #STATS API
+          curl --location --request GET 'https://api.sendgrid.com/v3/stats?start_date=2024-03-01' \
+--header 'Authorization: Bearer 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' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'start_date=2024-03-01'
+           */
+
+          /* #SEND EMAIL API
+
+          curl --location --request POST 'https://api.sendgrid.com/v3/mail/send' \
+--header 'Authorization: Bearer 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' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "personalizations": [
+        {
+            "to": [
+                {
+                    "email": "birjetejas2022@gmail.com"
+                },
+                {
+                    "email": "tejas.birje7@gmail.com"
+                }
+            ]
+        }
+    ],
+    "from": {
+        "email": "tejushaft@gmail.com"
+    },
+    "subject": "Sending with SendGrid is Fun",
+    "content": [
+        {
+            "type": "text/plain",
+            "value": "As generative artificial intelligence (AI) has become ubiquitous"
+        }
+    ]
+}'
+
+
+           */
           log.info(esResponse);
           return ShaftResponseBuilder.buildResponse("S");
         })

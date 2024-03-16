@@ -176,7 +176,6 @@ public class AuthService implements AuthDAO {
       });
   }
 
-
   private Mono<ObjectNode> getAccountMetaAndSaveEventIndex(int account,Map<String,Object> props, Identity savedIdentity) {
     return accountRestClient.retrieveAccountMeta(account)
       .publishOn(Schedulers.boundedElastic())
@@ -223,12 +222,6 @@ public class AuthService implements AuthDAO {
           ShaftResponseCode.ERROR_IN_FETCHING_ACCOUNT_META));
       });
   }
-
-
-
-
-
-
 
   private Identity createIdentityObject(String fp, long newI) {
     List<Map<String,String>> guidDetails = new ArrayList<>();
