@@ -4,8 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
+import org.shaft.administration.marketingengine.clients.SendGridRestClient;
 import org.shaft.administration.marketingengine.dao.EmailDao;
-import org.shaft.administration.marketingengine.repositories.EmailRepository;
+import org.shaft.administration.marketingengine.repositories.CampaignRepository;
 import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
 import org.shaft.administration.obligatory.translator.elastic.ShaftQueryTranslator;
@@ -16,16 +17,17 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Service
 public class EmailService implements EmailDao {
-  // #TODO Get this API key from Account meta
-  private static final String SENDGRID_ACCESS_KEY = "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";
+  private static final String SENDGRID_ACCESS_KEY = "Bearer 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";
   public final ObjectMapper mapper;
   private final ShaftQueryTranslator queryTranslator;
-  private final EmailRepository emailRepository;
+  private final CampaignRepository campaignRepository;
+  private final SendGridRestClient sendGridRestClient;
   public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 
   @Autowired
-  public EmailService(EmailRepository emailRepository) {
-    this.emailRepository = emailRepository;
+  public EmailService(CampaignRepository campaignRepository, SendGridRestClient sendGridRestClient) {
+    this.campaignRepository = campaignRepository;
+    this.sendGridRestClient = sendGridRestClient;
     this.queryTranslator = new ShaftQueryTranslator();
     this.mapper = new ObjectMapper();
   }
@@ -38,12 +40,6 @@ public class EmailService implements EmailDao {
     try {
       return fireAnalyticsQuery(accountId,elasticQuery)
         .mapNotNull(esResponse -> {
-          /* #STATS API
-          curl --location --request GET 'https://api.sendgrid.com/v3/stats?start_date=2024-03-01' \
---header 'Authorization: Bearer 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' \
---header 'Content-Type: application/x-www-form-urlencoded' \
---data-urlencode 'start_date=2024-03-01'
-           */
 
           /* #SEND EMAIL API
 
@@ -93,13 +89,26 @@ public class EmailService implements EmailDao {
     }
   }
 
+  public void getStats() {
+    // #TODO Stats API
+
+          /* #STATS API
+          curl --location --request GET 'https://api.sendgrid.com/v3/stats?start_date=2024-03-01' \
+--header 'Authorization: Bearer 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' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'start_date=2024-03-01'
+           */
+
+  }
+
   public Mono<String> fireAnalyticsQuery(int accountId, ObjectNode jsonQuery) throws JsonProcessingException {
     String query = mapper.writeValueAsString(jsonQuery);
     log.info("Query : {}",query);
-    return emailRepository.getQueryResults(accountId,query);
+    return campaignRepository.getQueryResults(accountId,query);
   }
 
   private ObjectNode translateRawQuery(ObjectNode rawQuery) {
     return queryTranslator.translateToElasticQuery(rawQuery,false);
   }
+
 }

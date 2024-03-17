@@ -7,6 +7,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
+import org.shaft.administration.accountmanagement.entity.PropsMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
@@ -126,11 +127,27 @@ public class MetaCustomRepositoryImpl implements MetaCustomRepository {
         ns = new NativeSearchQueryBuilder()
           .withQuery(query)
           .withMaxResults(100)
-          .withPageable(PageRequest.of(0,50))
+          .withPageable(PageRequest.of(0,100))
           .build();
 
         return reactiveElasticsearchOperations.search(ns, EventsMeta.class,
             IndexCoordinates.of(accountId + "_event_schema"))
+          .map(SearchHit::getContent)
+          .filter(Objects::nonNull)
+          .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+    }
+
+    @Override
+    public Flux<PropsMeta> getPropsMeta(int accountId) {
+        query = QueryBuilders.matchAllQuery();
+        ns = new NativeSearchQueryBuilder()
+          .withQuery(query)
+          .withMaxResults(100)
+          .withPageable(PageRequest.of(0,100))
+          .build();
+
+        return reactiveElasticsearchOperations.search(ns, PropsMeta.class,
+            IndexCoordinates.of(accountId + "_props_schema"))
           .map(SearchHit::getContent)
           .filter(Objects::nonNull)
           .doOnError(throwable -> log.error(throwable.getMessage(), throwable));

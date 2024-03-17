@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.shaft.administration.marketingengine.clients.ElasticRestClient;
 import org.shaft.administration.marketingengine.entity.CampaignCriteria.CampaignCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ import java.util.Objects;
 public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
   private final ReactiveElasticsearchClient reactiveElasticsearchClient;
+  private final ElasticRestClient elasticRestClient;
   private QueryBuilder query;
   private NativeSearchQuery ns;
   HttpHeaders httpHeaders;
@@ -44,10 +46,11 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   @Autowired
   public CampaignCustomRepositoryImpl(ReactiveElasticsearchOperations reactiveElasticsearchOperations,
                                       RestTemplate restTemplate,
-                                      ReactiveElasticsearchClient reactiveElasticsearchClient) {
+                                      ReactiveElasticsearchClient reactiveElasticsearchClient, ElasticRestClient elasticRestClient) {
     this.reactiveElasticsearchOperations = reactiveElasticsearchOperations;
     this.reactiveElasticsearchClient = reactiveElasticsearchClient;
     this.restTemplate = restTemplate;
+    this.elasticRestClient = elasticRestClient;
     httpHeaders = new HttpHeaders();
     mapper = new ObjectMapper();
     mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
@@ -110,5 +113,14 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
       .map(SearchHit::getContent)
       .filter(Objects::nonNull)
       .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+  }
+
+  @Override
+  public Mono<String> getQueryResults(int accountId, String query) {
+    try {
+      return elasticRestClient.getQueryResults(accountId,query);
+    } catch (Exception ex){
+      throw new RuntimeException("Error fetching query results",ex);
+    }
   }
 }
