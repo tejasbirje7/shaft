@@ -9,6 +9,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.shaft.administration.marketingengine.clients.ElasticRestClient;
+import org.shaft.administration.marketingengine.constants.CampaignConstants;
 import org.shaft.administration.marketingengine.entity.CampaignCriteria.CampaignCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +18,7 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsea
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SourceFilter;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
@@ -60,7 +58,9 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   @Override
   public Flux<CampaignCriteria> checkIfCampaignExistsForEvent(int account, int eventId) {
     // #TODO If te query has addition filter like User who did app launch and have done added to cart, case needs to be handled here
-    query = new BoolQueryBuilder().must(QueryBuilders.termQuery("te.e",eventId));
+    query = new BoolQueryBuilder()
+      .must(QueryBuilders.termQuery("te.e",eventId))
+      .must(QueryBuilders.termQuery("status", CampaignConstants.STATUS_SCHEDULED));
     final SourceFilter filter = new FetchSourceFilter(new String[]{"cid","q","te"}, null);
     ns = new NativeSearchQueryBuilder()
       .withSourceFilter(filter)
@@ -102,6 +102,24 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   @Override
   public Flux<CampaignCriteria> getSavedCampaigns(int accountId) {
     query = QueryBuilders.matchAllQuery();
+    ns = new NativeSearchQueryBuilder()
+      .withQuery(query)
+      .withMaxResults(100)
+      .withPageable(PageRequest.of(0,50))
+      .build();
+
+    return reactiveElasticsearchOperations.search(ns, CampaignCriteria.class,
+        IndexCoordinates.of(accountId + "_camp"))
+      .map(SearchHit::getContent)
+      .filter(Objects::nonNull)
+      .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+  }
+
+  @Override
+  public Flux<CampaignCriteria> getActivePBSCampaigns(int accountId) {
+    query = new BoolQueryBuilder()
+      .must(QueryBuilders.termQuery("status",CampaignConstants.STATUS_SCHEDULED))
+      .must(QueryBuilders.termQuery("mode",CampaignConstants.PBS_MODE));
     ns = new NativeSearchQueryBuilder()
       .withQuery(query)
       .withMaxResults(100)

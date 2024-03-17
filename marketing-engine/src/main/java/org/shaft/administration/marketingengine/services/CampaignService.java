@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.RestStatusException;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
@@ -108,8 +109,9 @@ public class CampaignService implements CampaignDao {
         throw new RuntimeException(e);
       }
     }
-    requestObject.put(CampaignConstants.STATUS,1);
-    CampaignCriteria cc = mapper.convertValue(requestObject,CampaignCriteria.class); // #TODO Handle parsing exception
+    ObjectNode modifiedRequestDto = addRequiredBackendFlags(requestObject);
+    // #TODO convert this requestObject to CampaignCriteria for safety checks i.e. verify if campaign object is populated completely
+    CampaignCriteria cc = mapper.convertValue(modifiedRequestDto,CampaignCriteria.class); // #TODO Handle parsing exception
     return campaignRepository.save(accountId,cc)
       .flatMap(k -> saveAssets(image))
       .onErrorResume(t -> {
@@ -125,6 +127,19 @@ public class CampaignService implements CampaignDao {
   @Override
   public Mono<ObjectNode> getCampaigns(int accountId, ObjectNode requestObject) {
     return campaignRepository.getSavedCampaigns(accountId)
+      .collectList()
+      .map(campaigns -> {
+        log.info("Campaigns : {}",campaigns);
+        return ShaftResponseBuilder.buildResponse(
+          ShaftResponseCode.CAMPAIGNS_RETRIEVED,mapper.valueToTree(campaigns));
+      })
+      .onErrorResume(error -> Mono.just(ShaftResponseBuilder.buildResponse(
+        ShaftResponseCode.FAILED_TO_FETCH_SAVED_CAMPAIGNS)));
+  }
+
+  @Override
+  public Mono<ObjectNode> getActivePBSCampaigns(int accountId) {
+    return campaignRepository.getActivePBSCampaigns(accountId)
       .collectList()
       .map(campaigns -> {
         log.info("Campaigns : {}",campaigns);
@@ -153,6 +168,12 @@ public class CampaignService implements CampaignDao {
         log.error("Exception saving campaign",error);
         return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_SAVE_CAMPAIGN));
       });
+  }
+
+  public ObjectNode addRequiredBackendFlags(ObjectNode requestObject) {
+    requestObject.put(CampaignConstants.STATUS,CampaignConstants.STATUS_SCHEDULED);
+    requestObject.put(CampaignConstants.IS_SPAWNED,false);
+    return requestObject;
   }
 
 }
