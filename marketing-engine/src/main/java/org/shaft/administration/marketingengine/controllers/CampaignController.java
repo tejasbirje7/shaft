@@ -36,7 +36,7 @@ public class CampaignController {
   @RequestMapping(value = "/campaign/qualification", method = { RequestMethod.GET, RequestMethod.POST })
   public Mono<ResponseEntity<Object>> getCampaignQualifications(@RequestHeader(value="account") int account,
                                                     @RequestBody() Map<String,Object> eventRequest) {
-    return campaignDao.checkForCampaignQualification(account,eventRequest).map(ShaftResponseHandler::generateResponse);
+    return campaignDao.checkIfCampaignExistsForEvent(account,eventRequest).map(ShaftResponseHandler::generateResponse);
   }
 
   @RequestMapping(value = "/get/campaigns", method = { RequestMethod.GET, RequestMethod.POST })

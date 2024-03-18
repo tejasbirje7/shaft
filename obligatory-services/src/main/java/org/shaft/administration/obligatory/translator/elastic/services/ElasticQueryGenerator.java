@@ -263,8 +263,7 @@ public class ElasticQueryGenerator {
         }
         ObjectNode boolQuery = getBoolFilteredQuery(requestQuery);
         if(!aggs) {
-            //return mapper.createObjectNode().set("query",boolQuery);
-            return boolQuery;
+            return mapper.createObjectNode().set("query",boolQuery);
         } else {
             ObjectNode rangeNode = mapper.createObjectNode();
             rangeNode.put("field", "e.ts");

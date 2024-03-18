@@ -138,7 +138,8 @@ public class AccountWorkerService implements AccountWorkerDao {
       "        \"type\": \"long\"\n" +
       "      },\n" +
       "      \"props\": {\n" +
-      "        \"type\": \"nested\"\n" +
+      "        \"type\": \"nested\",\n" +
+      "        \"include_in_root\": true\n" +
       "      }\n" +
       "    }\n" +
       "  }\n" +

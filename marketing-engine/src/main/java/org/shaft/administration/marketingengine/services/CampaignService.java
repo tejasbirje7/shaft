@@ -1,6 +1,7 @@
 package org.shaft.administration.marketingengine.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,6 +25,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +50,7 @@ public class CampaignService implements CampaignDao {
   }
 
   @Override
-  public Mono<ObjectNode> checkForCampaignQualification(int accountId,Map<String,Object> request) {
+  public Mono<ObjectNode> checkIfCampaignExistsForEvent(int accountId,Map<String,Object> request) {
     EventMetadata eventMetadata = mapper.convertValue(request.get(CampaignConstants.EVENT), EventMetadata.class);
     return campaignRepository.checkIfCampaignExistsForEvent(accountId, eventMetadata.getEid())
       .collectList()
@@ -67,6 +70,18 @@ public class CampaignService implements CampaignDao {
       .onErrorResume(t -> {
         log.error("Campaign Qualification Exception{} for account {}",t,accountId);
         return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_CHECK_CAMPAIGN_QUALIFICATION));
+      });
+  }
+
+  @Override
+  public Mono<ObjectNode> qualifyUsersForCampaign(int accountId, JsonNode request) {
+    CampaignCriteria cc = mapper.convertValue(request,CampaignCriteria.class);
+    byte[] decodedBytesQuery = Base64.decodeBase64(cc.getQ());
+    String query = new String(decodedBytesQuery, StandardCharsets.UTF_8);
+    return campaignRepository.getPaginatedQueryResults(accountId,query,0)
+      .map(firstResponse -> {
+        log.info("First Response : {}",firstResponse);
+        return ShaftResponseBuilder.buildResponse("S");
       });
   }
 
@@ -142,20 +157,11 @@ public class CampaignService implements CampaignDao {
     return campaignRepository.getActivePBSCampaigns(accountId)
       .collectList()
       .map(campaigns -> {
-        log.info("Campaigns : {}",campaigns);
         return ShaftResponseBuilder.buildResponse(
           ShaftResponseCode.CAMPAIGNS_RETRIEVED,mapper.valueToTree(campaigns));
       })
       .onErrorResume(error -> Mono.just(ShaftResponseBuilder.buildResponse(
         ShaftResponseCode.FAILED_TO_FETCH_SAVED_CAMPAIGNS)));
-  }
-
-  private ObjectNode translateRawQuery(ObjectNode rawQuery) {
-    return queryTranslator.translateToElasticQuery(rawQuery,false);
-  }
-
-  private boolean isRestStatusException(Throwable t) {
-    return t instanceof RestStatusException;
   }
 
   public Mono<ObjectNode> saveAssets(FilePart image) {
@@ -174,6 +180,13 @@ public class CampaignService implements CampaignDao {
     requestObject.put(CampaignConstants.STATUS,CampaignConstants.STATUS_SCHEDULED);
     requestObject.put(CampaignConstants.IS_SPAWNED,false);
     return requestObject;
+  }
+
+  private ObjectNode translateRawQuery(ObjectNode rawQuery) {
+    return queryTranslator.translateToElasticQuery(rawQuery,false);
+  }
+  private boolean isRestStatusException(Throwable t) {
+    return t instanceof RestStatusException;
   }
 
 }

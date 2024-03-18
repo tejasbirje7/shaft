@@ -2,7 +2,10 @@ package org.shaft.administration.marketingengine.repositories.Campaign;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -38,6 +41,7 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   HttpHeaders httpHeaders;
   private final RestTemplate restTemplate;
   private final ObjectMapper mapper;
+  private final int MAXIMUM_DOCUMENTS_PER_PAGE = 1;
   @Value("${spring.elasticsearch.host}")
   private String elasticsearchHost;
 
@@ -125,7 +129,6 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
       .withMaxResults(100)
       .withPageable(PageRequest.of(0,50))
       .build();
-
     return reactiveElasticsearchOperations.search(ns, CampaignCriteria.class,
         IndexCoordinates.of(accountId + "_camp"))
       .map(SearchHit::getContent)
@@ -134,11 +137,48 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   }
 
   @Override
-  public Mono<String> getQueryResults(int accountId, String query) {
+  public Mono<String> getPaginatedQueryResults(int accountId, String query, int searchAfter) {
     try {
+      String modifiedQuery = addPaginationSupport(query,searchAfter);
       return elasticRestClient.getQueryResults(accountId,query);
     } catch (Exception ex){
       throw new RuntimeException("Error fetching query results",ex);
+    }
+  }
+
+
+  /** Add below structure to enable pagination
+   "search_after": [1672860121],
+   "sort": [
+   {
+   "i": {
+   "order": "asc"
+   }
+   }
+   ],
+   "size": 1
+   */
+  public String addPaginationSupport(String query,int searchAfter) {
+    try {
+      ObjectNode queryToModify = mapper.readValue(query,ObjectNode.class);
+
+      ArrayNode sort = mapper.createArrayNode();
+      ObjectNode i = mapper.createObjectNode();
+      ObjectNode sortElement = mapper.createObjectNode();
+      i.put("order","asc");
+      sortElement.set("i",i);
+      sort.add(sortElement);
+      queryToModify.set("sort",sort);
+
+      ArrayNode searchAfterNode = mapper.createArrayNode();
+      searchAfterNode.add(searchAfter);
+      queryToModify.set("search_after",searchAfterNode);
+
+      queryToModify.put("size",MAXIMUM_DOCUMENTS_PER_PAGE);
+
+      return mapper.writeValueAsString(queryToModify);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 }

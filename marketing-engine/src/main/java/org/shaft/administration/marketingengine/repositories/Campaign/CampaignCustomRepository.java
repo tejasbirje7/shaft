@@ -11,5 +11,5 @@ public interface CampaignCustomRepository {
   Mono<CampaignCriteria> save(int accountId, CampaignCriteria cc);
   Flux<CampaignCriteria> getSavedCampaigns(int accountId);
   Flux<CampaignCriteria> getActivePBSCampaigns(int accountId);
-  Mono<String> getQueryResults(int accountId, String query);
+  Mono<String> getPaginatedQueryResults(int accountId, String query, int searchAfter);
 }

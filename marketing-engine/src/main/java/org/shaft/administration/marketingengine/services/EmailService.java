@@ -104,7 +104,7 @@ public class EmailService implements EmailDao {
   public Mono<String> fireAnalyticsQuery(int accountId, ObjectNode jsonQuery) throws JsonProcessingException {
     String query = mapper.writeValueAsString(jsonQuery);
     log.info("Query : {}",query);
-    return campaignRepository.getQueryResults(accountId,query);
+    return campaignRepository.getPaginatedQueryResults(accountId,query,0);
   }
 
   private ObjectNode translateRawQuery(ObjectNode rawQuery) {
