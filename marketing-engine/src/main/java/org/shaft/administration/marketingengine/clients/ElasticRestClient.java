@@ -1,5 +1,6 @@
 package org.shaft.administration.marketingengine.clients;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class ElasticRestClient {
     this.webClient = webClient;
   }
 
-  public Mono<String> getQueryResults(int accountId, String query) {
+  public Mono<ObjectNode> getQueryResults(int accountId, String query) {
     String ELASTIC_URL = ELASTIC_HOST + ":" + ELASTIC_PORT;
     String url = "http://".concat(ELASTIC_URL).concat("/").concat(String.valueOf(accountId)).concat("_1*/").concat("_search");
     return webClient
@@ -30,7 +31,7 @@ public class ElasticRestClient {
       .contentType(MediaType.APPLICATION_JSON)
       .body(BodyInserters.fromValue(query))
       .retrieve()
-      .bodyToMono(String.class);
+      .bodyToMono(ObjectNode.class);
     //.retryWhen(RetryUtil.retrySpec()) // #TODO Add custom retry specs
   }
 }

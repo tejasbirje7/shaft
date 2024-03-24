@@ -42,4 +42,8 @@ public final class ShaftResponseHandler {
     public static ResponseEntity<Object> generateResponse(ObjectNode response) {
         return new ResponseEntity<>(response,httpHeaders, HttpStatus.OK);
     }
+
+    public static ResponseEntity<Object> generateResponse(String s) {
+        return new ResponseEntity<>(s,httpHeaders, HttpStatus.OK);
+    }
 }

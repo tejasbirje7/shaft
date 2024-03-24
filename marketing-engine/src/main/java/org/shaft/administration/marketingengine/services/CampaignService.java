@@ -3,6 +3,7 @@ package org.shaft.administration.marketingengine.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +39,7 @@ public class CampaignService implements CampaignDao {
   public ObjectMapper mapper;
   private final QueryConstructor queryConstructor;
   private final ShaftQueryTranslator queryTranslator;
+  public final ObjectReader objectNodeParser;
   private final ObjectNode EMPTY_OBJECT_NODE;
   public static ThreadLocal<Integer> ACCOUNT_ID = ThreadLocal.withInitial(() -> 0);
 
@@ -47,6 +50,7 @@ public class CampaignService implements CampaignDao {
     this.mapper = new ObjectMapper();
     this.EMPTY_OBJECT_NODE = mapper.createObjectNode();
     this.queryTranslator = new ShaftQueryTranslator();
+    this.objectNodeParser = new ObjectMapper().readerFor(ObjectNode.class);
   }
 
   @Override
@@ -70,18 +74,6 @@ public class CampaignService implements CampaignDao {
       .onErrorResume(t -> {
         log.error("Campaign Qualification Exception{} for account {}",t,accountId);
         return Mono.just(ShaftResponseBuilder.buildResponse(ShaftResponseCode.FAILED_TO_CHECK_CAMPAIGN_QUALIFICATION));
-      });
-  }
-
-  @Override
-  public Mono<ObjectNode> qualifyUsersForCampaign(int accountId, JsonNode request) {
-    CampaignCriteria cc = mapper.convertValue(request,CampaignCriteria.class);
-    byte[] decodedBytesQuery = Base64.decodeBase64(cc.getQ());
-    String query = new String(decodedBytesQuery, StandardCharsets.UTF_8);
-    return campaignRepository.getPaginatedQueryResults(accountId,query,0)
-      .map(firstResponse -> {
-        log.info("First Response : {}",firstResponse);
-        return ShaftResponseBuilder.buildResponse("S");
       });
   }
 
@@ -140,6 +132,43 @@ public class CampaignService implements CampaignDao {
   }
 
   @Override
+  public Flux<ObjectNode> qualifyUsersForCampaign(int accountId, Map<String,Object> request) {
+    CampaignCriteria cc = mapper.convertValue(request,CampaignCriteria.class);
+    byte[] decodedBytesQuery = Base64.decodeBase64(cc.getQ());
+    String query = new String(decodedBytesQuery, StandardCharsets.UTF_8);
+
+    return campaignRepository.getPaginatedQueryResults(accountId,query,0)
+      .expand(firstResponse -> {
+        if(firstResponse.has("hits")) {
+          ArrayNode firstBatchHits = (ArrayNode) firstResponse.get("hits").get("hits");
+          if(!firstBatchHits.isEmpty()) {
+            queueUsersForSendingCampaign(firstResponse);
+            ArrayNode lastI = (ArrayNode) firstBatchHits.get(firstBatchHits.size()-1).get("sort");
+            int searchAfter = lastI.get(0).asInt();
+            return campaignRepository.getPaginatedQueryResults(accountId,query, searchAfter);
+          }
+        }
+        return Flux.empty();
+      })
+      .repeat()
+      .takeWhile(nextResp -> {
+        if(nextResp.has("hits")) {
+          ArrayNode nextBatchHits = (ArrayNode) nextResp.get("hits").get("hits");
+          return !nextBatchHits.isEmpty();
+        }
+        return false;
+      });
+  }
+
+  private void queueUsersForSendingCampaign(ObjectNode usersInBatch) {
+    log.info("First Batch {}",usersInBatch);
+    /*
+    {"took":0,"timed_out":false,"_shards":{"total":2,"successful":2,"skipped":1,"failed":0},"hits":{"total":{"value":44,"relation":"eq"},"max_score":null,"hits":[{"_index":"1600_1710174530","_id":"XXUOUo4B_ibG4UV0Vdqy","_score":null,"_source":{"e":[{"eid":0,"name":"Babycorn","category":"Vegetables","quantity":10,"costPrice":2116,"ts":1690464167,"fp":"bXX51kp5vhKtXisD"},{"eid":4,"name":"Custard Apple Pulp","category":"Fruits","quantity":4,"costPrice":5395,"ts":1697485909,"fp":"bXX51kp5vhKtXisD"},{"eid":1,"name":"Chopped Methi","category":"Vegetables","quantity":13,"costPrice":3177,"ts":1700824591,"fp":"bXX51kp5vhKtXisD"},{"eid":2,"name":"Chopped Methi","category":"Vegetables","quantity":15,"costPrice":1028,"ts":1695607678,"fp":"bXX51kp5vhKtXisD"},{"eid":3,"name":"Spinach","category":"Vegetables","quantity":3,"costPrice":9673,"ts":1689379547,"fp":"bXX51kp5vhKtXisD"},{"eid":1,"name":"Muskmelon","category":"Fruits","quantity":5,"costPrice":7311,"ts":1690891402,"fp":"bXX51kp5vhKtXisD"},{"eid":4,"name":"Pomegranate","category":"Fruits","quantity":8,"costPrice":1896,"ts":1690779070,"fp":"bXX51kp5vhKtXisD"},{"eid":1,"name":"Chopped Methi","category":"Vegetables","quantity":3,"costPrice":3241,"ts":1706075657,"fp":"bXX51kp5vhKtXisD"},{"eid":4,"name":"Peeled Garlic","category":"Vegetables","quantity":3,"costPrice":929,"ts":1693200034,"fp":"bXX51kp5vhKtXisD"},{"eid":4,"name":"Pumpkin","category":"Vegetables","quantity":4,"costPrice":275,"ts":1691886462,"fp":"bXX51kp5vhKtXisD"}],"i":1684407743,"props":{"email":"tejas@clevertap.com","contact":8591333071}},"sort":[1684407743]},{"_index":"1600_1710174530","_id":"hXUOUo4B_ibG4UV0V9ow","_score":null,"_source":{"e":[{"eid":3,"name":"Pumpkin","category":"Vegetables","quantity":12,"costPrice":1580,"ts":1704892883,"fp":"5cIWMtQWwNTAuDDV"},{"eid":0,"name":"Tender Coconut","category":"Fruits","quantity":15,"costPrice":6238,"ts":1695980529,"fp":"5cIWMtQWwNTAuDDV"},{"eid":4,"name":"Grated coconut","category":"Vegetables","quantity":1,"costPrice":5012,"ts":1689682624,"fp":"5cIWMtQWwNTAuDDV"},{"eid":1,"name":"Chopped Methi","category":"Vegetables","quantity":10,"costPrice":5432,"ts":1702941125,"fp":"5cIWMtQWwNTAuDDV"},{"eid":2,"name":"Peeled Garlic","category":"Vegetables","quantity":2,"costPrice":4350,"ts":1686366992,"fp":"5cIWMtQWwNTAuDDV"},{"eid":2,"name":"Pumpkin","category":"Vegetables","quantity":13,"costPrice":2621,"ts":1690777802,"fp":"5cIWMtQWwNTAuDDV"},{"eid":2,"name":"Muskmelon","category":"Fruits","quantity":4,"costPrice":2602,"ts":1693578461,"fp":"5cIWMtQWwNTAuDDV"},{"eid":0,"name":"Grated coconut","category":"Vegetables","quantity":5,"costPrice":490,"ts":1688922547,"fp":"5cIWMtQWwNTAuDDV"},{"eid":3,"name":"Custard Apple Pulp","category":"Fruits","quantity":7,"costPrice":5363,"ts":1706794741,"fp":"5cIWMtQWwNTAuDDV"},{"eid":0,"name":"Grated coconut","category":"Vegetables","quantity":19,"costPrice":858,"ts":1704337372,"fp":"5cIWMtQWwNTAuDDV"}],"i":1684439686,"props":{"email":"tejas@clevertap.com","contact":8355925240}},"sort":[1684439686]},{"_index":"1600_1710174530","_id":"oHUOUo4B_ibG4UV0WNow","_score":null,"_source":{"e":[{"eid":4,"name":"Custard Apple Pulp","category":"Fruits","quantity":8,"costPrice":9718,"ts":1687050483,"fp":"OwAN3OOS3dEG5GJK"},{"eid":1,"name":"Pomegranate","category":"Fruits","quantity":9,"costPrice":3513,"ts":1686126481,"fp":"OwAN3OOS3dEG5GJK"},{"eid":3,"name":"Custard Apple Pulp","category":"Fruits","quantity":10,"costPrice":3503,"ts":1696848098,"fp":"OwAN3OOS3dEG5GJK"},{"eid":1,"name":"Pomegranate","category":"Fruits","quantity":3,"costPrice":2145,"ts":1698129946,"fp":"OwAN3OOS3dEG5GJK"},{"eid":2,"name":"Peeled Garlic","category":"Vegetables","quantity":15,"costPrice":2575,"ts":1698490673,"fp":"OwAN3OOS3dEG5GJK"},{"eid":4,"name":"Chopped Methi","category":"Vegetables","quantity":5,"costPrice":884,"ts":1705187467,"fp":"OwAN3OOS3dEG5GJK"},{"eid":4,"name":"Muskmelon","category":"Fruits","quantity":9,"costPrice":2346,"ts":1687380024,"fp":"OwAN3OOS3dEG5GJK"},{"eid":3,"name":"Muskmelon","category":"Fruits","quantity":4,"costPrice":4606,"ts":1703168714,"fp":"OwAN3OOS3dEG5GJK"},{"eid":0,"name":"Pumpkin","category":"Vegetables","quantity":12,"costPrice":9051,"ts":1692961267,"fp":"OwAN3OOS3dEG5GJK"},{"eid":0,"name":"Babycorn","category":"Vegetables","quantity":9,"costPrice":9988,"ts":1707333613,"fp":"OwAN3OOS3dEG5GJK"}],"i":1685233837,"props":{"email":"tejas@clevertap.com","contact":8591333071}},"sort":[1685233837]},{"_index":"1600_1710174530","_id":"QnUOUo4B_ibG4UV0VNq0","_score":null,"_source":{"e":[{"eid":0,"name":"Grated coconut","category":"Vegetables","quantity":8,"costPrice":4943,"ts":1703605473,"fp":"Ch7DHkbpEg4F3Njx"},{"eid":1,"name":"Pomegranate","category":"Fruits","quantity":12,"costPrice":3449,"ts":1690304664,"fp":"Ch7DHkbpEg4F3Njx"},{"eid":1,"name":"Custard Apple Pulp","category":"Fruits","quantity":3,"costPrice":7380,"ts":1692020771,"fp":"Ch7DHkbpEg4F3Njx"},{"eid":2,"name":"Custard Apple Pulp","category":"Fruits","quantity":13,"costPrice":6286,"ts":1697429026,"fp":"Ch7DHkbpEg4F3Njx"}],"i":1685383493,"props":{"email":"tejas@clevertap.com","contact":8097036598}},"sort":[1685383493]}]}}
+     */
+
+  }
+
+  @Override
   public Mono<ObjectNode> getCampaigns(int accountId, ObjectNode requestObject) {
     return campaignRepository.getSavedCampaigns(accountId)
       .collectList()
@@ -162,6 +191,21 @@ public class CampaignService implements CampaignDao {
       })
       .onErrorResume(error -> Mono.just(ShaftResponseBuilder.buildResponse(
         ShaftResponseCode.FAILED_TO_FETCH_SAVED_CAMPAIGNS)));
+  }
+
+  @Override
+  public Mono<ObjectNode> updateCampaignStatus(int accountId,int campaignId) {
+    return campaignRepository.updateCampaignStatus(accountId,campaignId,CampaignConstants.STATUS_RUNNING)
+      .map(updated -> {
+        if(updated > 0L) {
+          return ShaftResponseBuilder.buildResponse("S");
+        } else  {
+          return ShaftResponseBuilder.buildResponse("F");
+        }
+      }).onErrorResume(exception -> {
+        log.error("Exception updating campaign status {}",exception.getMessage());
+        return Mono.just(ShaftResponseBuilder.buildResponse("F"));
+      });
   }
 
   public Mono<ObjectNode> saveAssets(FilePart image) {

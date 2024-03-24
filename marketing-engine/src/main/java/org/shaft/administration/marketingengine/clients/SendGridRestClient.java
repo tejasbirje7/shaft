@@ -17,6 +17,7 @@ public class SendGridRestClient {
   }
 
   public Mono<String> dispatchEmail(String payload, String accessKey) {
+    // #TODO Wherever there's Mono<String> return type -> convert into ObjectNode which will not parse the response to convert to ObjectNode
     return webClient
       .post()
       .uri(SENDGRID_URL_TO_SEND_EMAIL)

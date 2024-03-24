@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.UpdateByQueryRequest;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.shaft.administration.marketingengine.clients.ElasticRestClient;
 import org.shaft.administration.marketingengine.constants.CampaignConstants;
 import org.shaft.administration.marketingengine.entity.CampaignCriteria.CampaignCriteria;
@@ -28,6 +31,8 @@ import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -41,7 +46,6 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   HttpHeaders httpHeaders;
   private final RestTemplate restTemplate;
   private final ObjectMapper mapper;
-  private final int MAXIMUM_DOCUMENTS_PER_PAGE = 1;
   @Value("${spring.elasticsearch.host}")
   private String elasticsearchHost;
 
@@ -64,7 +68,8 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
     // #TODO If te query has addition filter like User who did app launch and have done added to cart, case needs to be handled here
     query = new BoolQueryBuilder()
       .must(QueryBuilders.termQuery("te.e",eventId))
-      .must(QueryBuilders.termQuery("status", CampaignConstants.STATUS_SCHEDULED));
+      .must(QueryBuilders.termQuery(CampaignConstants.MODE, CampaignConstants.ONLINE_MODE))
+      .must(QueryBuilders.termQuery(CampaignConstants.STATUS, CampaignConstants.STATUS_SCHEDULED));
     final SourceFilter filter = new FetchSourceFilter(new String[]{"cid","q","te"}, null);
     ns = new NativeSearchQueryBuilder()
       .withSourceFilter(filter)
@@ -122,8 +127,8 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   @Override
   public Flux<CampaignCriteria> getActivePBSCampaigns(int accountId) {
     query = new BoolQueryBuilder()
-      .must(QueryBuilders.termQuery("status",CampaignConstants.STATUS_SCHEDULED))
-      .must(QueryBuilders.termQuery("mode",CampaignConstants.PBS_MODE));
+      .must(QueryBuilders.termQuery(CampaignConstants.STATUS,CampaignConstants.STATUS_SCHEDULED))
+      .must(QueryBuilders.termQuery(CampaignConstants.MODE,CampaignConstants.PBS_MODE));
     ns = new NativeSearchQueryBuilder()
       .withQuery(query)
       .withMaxResults(100)
@@ -137,13 +142,45 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
   }
 
   @Override
-  public Mono<String> getPaginatedQueryResults(int accountId, String query, int searchAfter) {
+  public Mono<ObjectNode> getPaginatedQueryResults(int accountId, String query, int searchAfter) {
     try {
       String modifiedQuery = addPaginationSupport(query,searchAfter);
-      return elasticRestClient.getQueryResults(accountId,query);
-    } catch (Exception ex){
+      return elasticRestClient.getQueryResults(accountId,modifiedQuery);
+    } catch (Exception ex) {
       throw new RuntimeException("Error fetching query results",ex);
     }
+  }
+
+  @Override
+  public Mono<Long> updateCampaignStatus(int accountId, int campaignId, int status) {
+    String index = accountId + "_camp";
+    UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
+
+    updateRequest.setConflicts("proceed");
+    updateRequest.setQuery(QueryBuilders
+      .boolQuery()
+      .must(QueryBuilders
+        .termQuery("cid",campaignId)));
+    updateRequest.setScript(updateCampaignStatusScript(status));
+    updateRequest.setRefresh(true);
+    return reactiveElasticsearchClient.updateBy(updateRequest).map(response -> {
+        if(response != null) {
+          log.info("Total Updated {}",response.getTotal());
+          //TimeValue timeTaken = bulkResponse.getTook();
+          return response.getTotal();
+        }
+        return 0L;
+      })
+      .filter(Objects::nonNull)
+      .doOnError(throwable -> log.error(throwable.getMessage(), throwable));
+  }
+
+  private Script updateCampaignStatusScript(int status) {
+    // #TODO Remove Map dependency and insert string here
+    Map<String,Object> params = new HashMap<>();
+    params.put(CampaignConstants.STATUS,status);
+    String scriptStr = "ctx._source.status = params.get(\"status\")";
+    return new Script(ScriptType.INLINE, "painless", scriptStr, params);
   }
 
 
@@ -174,7 +211,7 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
       searchAfterNode.add(searchAfter);
       queryToModify.set("search_after",searchAfterNode);
 
-      queryToModify.put("size",MAXIMUM_DOCUMENTS_PER_PAGE);
+      queryToModify.put("size",CampaignConstants.MAXIMUM_DOCUMENTS_PER_PAGE);
 
       return mapper.writeValueAsString(queryToModify);
     } catch (JsonProcessingException e) {

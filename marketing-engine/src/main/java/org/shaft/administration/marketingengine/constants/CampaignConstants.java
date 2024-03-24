@@ -20,4 +20,8 @@ public class CampaignConstants {
   public static int STATUS_RUNNING = 1;
   public static int STATUS_STOPPED = 2;
   public static int STATUS_COMPLETED = 3;
+  public static int MAXIMUM_DOCUMENTS_PER_PAGE = 10;
+  public static String SHAFT_RESPONSE_CODE_KEY = "code";
+  public static String SHAFT_RESPONSE_SUCCESS_KEY = "S";
+  public static String SHAFT_RESPONSE_DATA_KEY = "data";
 }

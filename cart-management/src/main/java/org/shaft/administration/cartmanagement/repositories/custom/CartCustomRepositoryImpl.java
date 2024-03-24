@@ -31,6 +31,7 @@ public class CartCustomRepositoryImpl implements CartCustomRepository {
 
     @Override
     public Mono<Long> transactCartProducts(int i, Map<String,Object> product) {
+        // #TODO get account ID as method argument
         String index = CartService.getAccount() + "_cart";
         UpdateByQueryRequest updateRequest = new UpdateByQueryRequest(index);
 

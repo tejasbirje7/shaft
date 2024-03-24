@@ -36,6 +36,7 @@ public class ShaftResponseCode {
   public static String TEMPLATE_CONFIG_UPDATED = "S0033";
   public static String ACCOUNT_BOOTSTRAPPED = "S0034";
   public static String ACCOUNT_BOOTSTRAPPED_AND_TEMPLATE_CONFIG_SUCCESS = "S0035";
+  public static String CAMPAIGN_QUEUED_SUCCESS = "S0036";
 
   /**
    * FAILURE CODES
@@ -136,4 +137,8 @@ public class ShaftResponseCode {
   public static String FAILED_RESP_FROM_BOOTSTRAP_ACCOUNT = "F0091";
   public static String ERROR_WHILE_BOOTSTRAP_ACCOUNT = "F0092";
   public static String ERROR_PARSING_BOOTSTRAP_ACCOUNT_RESP = "F0093";
+  public static String FAILED_UPDATING_CAMPAIGN_STATUS = "F0094";
+  public static String EXCEPTION_UPDATING_CAMPAIGN_STATUS = "F0095";
+  public static String FAILED_ENQUEUE_CAMPAIGN = "F0096";
+  public static String EXCEPTION_ENQUEUE_CAMPAIGN = "F0096";
 }

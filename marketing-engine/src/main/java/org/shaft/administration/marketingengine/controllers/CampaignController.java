@@ -1,6 +1,5 @@
 package org.shaft.administration.marketingengine.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,7 @@ import org.springframework.http.codec.multipart.FormFieldPart;
 import org.springframework.http.codec.multipart.Part;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class CampaignController {
 
   @RequestMapping(value = "/campaign/qualification", method = { RequestMethod.GET, RequestMethod.POST })
   public Mono<ResponseEntity<Object>> getCampaignQualifications(@RequestHeader(value="account") int account,
-                                                    @RequestBody() Map<String,Object> eventRequest) {
+                                                                @RequestBody() Map<String,Object> eventRequest) {
     return campaignDao.checkIfCampaignExistsForEvent(account,eventRequest).map(ShaftResponseHandler::generateResponse);
   }
 
@@ -50,6 +50,12 @@ public class CampaignController {
                                                    @RequestBody Mono<MultiValueMap<String, Part>> request) {
 //    return campaignDao.saveCampaign(account,eventRequest).map(ShaftResponseHandler::generateResponse);
     return getResponseEntityMono(account, request);
+  }
+
+  @RequestMapping(value = "/campaign/queue/users", method = { RequestMethod.GET, RequestMethod.POST })
+  public Flux<Object> qualifyUsersForCampaign(@RequestHeader(value="account") int account,
+                                                              @RequestBody() Map<String,Object> eventRequest) {
+    return campaignDao.qualifyUsersForCampaign(account,eventRequest).map(ShaftResponseHandler::generateResponse);
   }
 
   private Mono<ResponseEntity<Object>> getResponseEntityMono(@RequestHeader("account") int account,
