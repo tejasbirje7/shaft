@@ -15,7 +15,7 @@ public class CampaignCriteria {
   private TriggerEvent te;
   private FilterStrings fs;
   private String img;
-  private String type;
+  private int type;
   private boolean spawned;
   private int mode;
 }

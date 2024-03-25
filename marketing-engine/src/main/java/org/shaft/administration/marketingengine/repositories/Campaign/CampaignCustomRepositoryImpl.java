@@ -207,6 +207,11 @@ public class CampaignCustomRepositoryImpl implements CampaignCustomRepository {
       sort.add(sortElement);
       queryToModify.set("sort",sort);
 
+      ArrayNode _source = mapper.createArrayNode();
+      _source.add("i");
+      _source.add("props");
+      queryToModify.set("_source",_source);
+
       ArrayNode searchAfterNode = mapper.createArrayNode();
       searchAfterNode.add(searchAfter);
       queryToModify.set("search_after",searchAfterNode);

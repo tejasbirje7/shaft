@@ -24,4 +24,26 @@ public class CampaignConstants {
   public static String SHAFT_RESPONSE_CODE_KEY = "code";
   public static String SHAFT_RESPONSE_SUCCESS_KEY = "S";
   public static String SHAFT_RESPONSE_DATA_KEY = "data";
+    /*
+      {
+      "tgtType" : "In-app",
+      "tgtValue" : 1
+    },
+    {
+      "tgtType" : "WhatsApp",
+      "tgtValue" : 2
+    },
+    {
+      "tgtType" : "Email",
+      "tgtValue" : 3
+    },
+    {
+      "tgtType" : "SMS",
+      "tgtValue" : 4
+    },
+    {
+      "tgtType" : "Facebook Ads",
+      "tgtValue" : 5
+    },
+   */
 }
