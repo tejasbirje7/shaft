@@ -3,28 +3,17 @@ package org.shaft.administration.marketingengine.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.shaft.administration.marketingengine.clients.SendGridRestClient;
-import org.shaft.administration.marketingengine.constants.CampaignConstants;
 import org.shaft.administration.marketingengine.dao.EmailDao;
-import org.shaft.administration.marketingengine.entity.CampaignCriteria.CampaignCriteria;
 import org.shaft.administration.marketingengine.repositories.CampaignRepository;
 import org.shaft.administration.obligatory.constants.ShaftResponseCode;
 import org.shaft.administration.obligatory.transactions.ShaftResponseBuilder;
 import org.shaft.administration.obligatory.translator.elastic.ShaftQueryTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service

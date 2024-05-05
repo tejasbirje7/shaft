@@ -65,6 +65,10 @@ PUT _cluster/settings
 - Set JVM memory in /etc/elasticsearch/jvm.options
   - -Xms2g
   - -Xmx2g
+- Setup elasticsearch cluster on production referring the below files :
+  - shaft-docker/elasticsearch-prod-master.yml
+  - shaft-docker/elasticsearch-prod-data-node-1.yml
+  - shaft-docker/elasticsearch-prod-data-node-2.yml
 
 **INSTALL DOCKER ON LINUX**
 - sudo yum install docker -y
@@ -82,3 +86,8 @@ PUT _cluster/settings
 
 **SENDGRID ACCESS KEY**
 - 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
+
+**SETTING UP KAFKA**
+- While setting up kafka - please refer shaft-docker/kafka-cluster-production.yml
+- On server keep 2 files common.yml and according to instance it's configuration file.
+- For Example - In zookeeper server - keep common.yml file and zookeeper.yml file consisting of configuration from above kafka-cluster-production.yml -> services.zookeeper & services.schema-registry

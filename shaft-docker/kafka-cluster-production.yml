@@ -1,5 +1,6 @@
 version: '3.7'
 services:
+#  This should be included in zookeeper server
   zookeeper:
     image: confluentinc/cp-zookeeper:${KAFKA_VERSION:-latest}
     hostname: zookeeper
@@ -29,6 +30,8 @@ services:
       SCHEMA_REGISTRY_DEBUG: 'true'
     networks:
       - ${GLOBAL_NETWORK}
+
+# This should be included on separate server - which will be KAFKA-NODE-1
   kafka-broker-1:
     image: confluentinc/cp-kafka:${KAFKA_VERSION}
     hostname: kafka-broker-1
@@ -44,6 +47,9 @@ services:
       KAFKA_COMPRESSION_TYPE: producer
     networks:
       - ${GLOBAL_NETWORK}
+
+
+  # This should be included on separate server - which will be KAFKA-NODE-2
   kafka-broker-2:
     image: confluentinc/cp-kafka:${KAFKA_VERSION}
     hostname: kafka-broker-2
@@ -59,6 +65,9 @@ services:
       KAFKA_COMPRESSION_TYPE: producer
     networks:
       - ${GLOBAL_NETWORK}
+
+
+  # This should be included on separate server - which will be KAFKA-NODE-3
   kafka-broker-3:
     image: confluentinc/cp-kafka:${KAFKA_VERSION}
     hostname: kafka-broker-3
